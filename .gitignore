@@ -24,3 +24,7 @@ yarn-error.log*
 
 # server
 /server/node_modules
+
+#OAuth
+config.js
+.eslintrc.js
