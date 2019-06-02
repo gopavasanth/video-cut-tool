@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Typography, Layout, Icon, Col, Row, Button } from 'antd';
+import { Menu, Input, Typography, Layout, Icon, Col, Form, Row, Button } from 'antd';
 import { Player } from 'video-react';
-import { Form, FormGroup, Label} from 'reactstrap';
+import { FormGroup, Label} from 'reactstrap';
 
 import './App.css';
 import "antd/dist/antd.css";
@@ -81,16 +81,17 @@ handleValueChange(e) {
         .then(res => console.log(res.data));
 
     this.setState({
-      from_time: '',
-      to_time: '',
       from_location: '',
       inputVideoUrl: '',
       trims: [{from: '', to: ''}],
     })
   }
+
   render() {
-    const { from_time, to_time, out_location } = this.state;
+    const { out_location } = this.state;
     console.log(this.state.trims);
+
+    const fields = this.state.fields;
     const trims = this.state.trims.map((trim, i) =>
         (
             <Row gutter={10} key={i}>
@@ -98,8 +99,6 @@ handleValueChange(e) {
                 <Typography.Text strong style={{paddingRight: '0.2rem'}}>From</Typography.Text>
                 <div className="form-group">
                   <Input placeholder="00:00:00"
-                         label="from_time"
-                         ref="from_time"
                          id={`trim-${i}-from`}
                          value={trim.from}
                          onChange={this.onChange}/>
@@ -109,8 +108,6 @@ handleValueChange(e) {
                 <Typography.Text strong style={{paddingRight: '0.2rem'}}>To</Typography.Text>
                 <div className="form-group">
                   <Input placeholder="00:00:00"
-                         label="to_time"
-                         ref="to_time"
                          id={`trim-${i}-to`}
                          value={trim.to}
                          onChange={this.onChange}/>
@@ -140,7 +137,7 @@ handleValueChange(e) {
                   <div className="docs-example">
                     <Form>
                       <FormGroup>
-                      <Typography.Title level={4} style={{ color: 'Black' }}> Video URL</Typography.Title>
+                       <Typography.Title level={4} style={{ color: 'Black' }}> Video URL</Typography.Title>
                         <Input
                           ref="inputVideoUrl"
                           name="inputVideoUrl"
@@ -179,6 +176,11 @@ handleValueChange(e) {
                     onClick={this.onSubmit}
                     color="primary"
                     value="Submitted" >Trim
+                  </Button>
+                  <Button type="primary"
+                    color="primary"
+                    style={{marginLeft: '10px'}}
+                    value="Submitted" >Upload
                   </Button>
                 </div>
               </Col>
