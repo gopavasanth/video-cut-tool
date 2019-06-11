@@ -130,7 +130,9 @@ handleValueChange(e) {
             mode="horizontal"
             style={{ lineHeight: '64px' }}
             >
-            <Menu.Item key="1" onClick={this.loginRequest} style={{ float: 'right',color: 'White' }}>Login</Menu.Item>
+            <Menu.Item key="1" onClick={this.loginRequest} style={{ float: 'right',color: 'White' }}>
+            <Icon type="login" /> Login
+            </Menu.Item>
             <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
           </Menu>
         </Header>
@@ -167,7 +169,7 @@ handleValueChange(e) {
                 </div>
               </Col>
               <Col span={8}>
-                <h2>Video Trim Settings</h2>
+                <Typography.Title level={4} style={{ color: 'Black' }}> Video Trim Settings</Typography.Title>
                 {trims}
                 <Button type="primary"
                         onClick={this.add}
@@ -180,12 +182,15 @@ handleValueChange(e) {
                   <Button type="primary"
                     onClick={this.onSubmit}
                     color="primary"
-                    value="Submitted" >Trim
+                    value="Submitted" >
+                    <Icon type="radius-setting" /> Trim
                   </Button>
                   <Button type="primary"
                     color="primary"
                     style={{marginLeft: '10px'}}
-                    value="Submitted" >Upload
+                    value="Submitted"
+                    >
+                    <Icon type="upload" />Upload to Commons
                   </Button>
                 </div>
               </Col>
