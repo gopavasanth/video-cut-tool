@@ -195,6 +195,7 @@ class home extends Component {
               <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
             </Menu>
           </Header>
+
           <form onSubmit={this.onSubmit}>
             <Content className='Content' style={{ padding: '50px 50px' }}>
               <Row gutter={16}>
@@ -273,64 +274,68 @@ class home extends Component {
                             { this.state.displayCrop ?
                             <div className="crop-settings">
                               <h2>Video Crop Settings </h2>
-                              <Row gutter={10}>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Width</Typography.Text>
-                                  <div className="form-group">
-                                    <Input placeholder="xxx"
-                                           ref="out_width"
-                                           name="out_width"
-                                           id="out_width"
-                                           onChange={this.onChangeOutWidth}/>
-                                  </div>
-                                </Col>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Height</Typography.Text>
-                                  <div className="form-group">
-                                    <Input
-                                        placeholder="xxx"
-                                        ref="out_height"
-                                        name="out_height"
-                                        id="out_height"
-                                        onChange={this.onChangeOutHeight}
-                                    />
-                                  </div>
+                              <Form>
+                                <FormGroup>
+                                <Row gutter={10}>
+                                  <Col span={6}>
+                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Width</Typography.Text>
+                                    <div className="form-group">
+                                      <Input placeholder="xxx"
+                                             ref="out_width"
+                                             name="out_width"
+                                             id="out_width"
+                                             onChange={this.onChangeOutWidth}/>
+                                    </div>
                                   </Col>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>X</Typography.Text>
-                                  <div className="form-group">
-                                    <Input placeholder="xxx"
-                                           name="x_value"
-                                           id="x_value"
-                                           onChange={this.onChangeXvalue}/>
-                                  </div>
-                                </Col>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Y</Typography.Text>
-                                  <div className="form-group">
-                                    <Input placeholder="xxx"
-                                           name="y_value"
-                                           id="y_value"
-                                           onChange={this.onChangeYvalue}/>
-                                  </div>
-                                </Col>
-                                </Row>
-                                <br/>
-                                  <div className="form-group">
-                                    <Button type="primary"
-                                            onClick={this.onSubmit}
-                                            color="primary"
-                                            value="Submitted">
-                                      <Icon type="radius-setting"/> Crop
-                                    </Button>
-                                    <Button
-                                        color="primary"
-                                        style={{marginLeft: '10px'}}
-                                        value="Submitted"
-                                    >
-                                      <Icon type="upload"/>Upload to Commons
-                                    </Button>
-                                  </div>
+                                  <Col span={6}>
+                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Height</Typography.Text>
+                                    <div className="form-group">
+                                      <Input
+                                          placeholder="xxx"
+                                          ref="out_height"
+                                          name="out_height"
+                                          id="out_height"
+                                          onChange={this.onChangeOutHeight}
+                                      />
+                                    </div>
+                                    </Col>
+                                  <Col span={6}>
+                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>X</Typography.Text>
+                                    <div className="form-group">
+                                      <Input placeholder="xxx"
+                                             name="x_value"
+                                             id="x_value"
+                                             onChange={this.onChangeXvalue}/>
+                                    </div>
+                                  </Col>
+                                  <Col span={6}>
+                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>Y</Typography.Text>
+                                    <div className="form-group">
+                                      <Input placeholder="xxx"
+                                             name="y_value"
+                                             id="y_value"
+                                             onChange={this.onChangeYvalue}/>
+                                    </div>
+                                  </Col>
+                                  </Row>
+                                  <br/>
+                                    <div className="form-group">
+                                      <Button type="primary"
+                                              onClick={this.onSubmit}
+                                              color="primary"
+                                              value="Submitted">
+                                        <Icon type="radius-setting"/> Crop
+                                      </Button>
+                                      <Button
+                                          color="primary"
+                                          style={{marginLeft: '10px'}}
+                                          value="Submitted"
+                                      >
+                                        <Icon type="upload"/>Upload to Commons
+                                      </Button>
+                                    </div>
+                                </FormGroup>
+                              </Form>
                           </div> : null
                          }
                     </Col>
