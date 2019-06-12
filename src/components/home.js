@@ -15,45 +15,79 @@ const { Header, Content, Footer } = Layout;
 
 class home extends Component {
 
-    constructor(props) {
-      super(props);
+  constructor(props) {
+    super(props);
 
-      this.onChange= this.onChange.bind(this);
-      this.onSubmit = this.onSubmit.bind(this);
-      this.handleValueChange = this.handleValueChange.bind(this);
-      this.updatePlayerInfo = this.updatePlayerInfo.bind(this);
+    this.onChange= this.onChange.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
+    this.handleValueChange = this.handleValueChange.bind(this);
+    this.updatePlayerInfo = this.updatePlayerInfo.bind(this);
+    this.onChangeOutHeight = this.onChangeOutHeight.bind(this);
+    this.onChangeOutWidth = this.onChangeOutWidth.bind(this);
+    this.onChangeXvalue = this.onChangeXvalue.bind(this);
+    this.onChangeYvalue = this.onChangeYvalue.bind(this);
 
     this.state = {
       inputVideoUrl: '',
-      trims: [{from: '', to: ''}]
+      trims: [{from: '', to: ''}],
+      out_width: '',
+      out_height: '',
+      x_value: '',
+      y_value: '',
+      display: false
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
-  if (this.state.playerSource !== prevState.playerSource) {
-    this.refs.player.load();
+    if (this.state.playerSource !== prevState.playerSource) {
+      this.refs.player.load();
+    }
   }
-}
 
-handleValueChange(e) {
-  var value = e.target.value;
-  this.setState({
-    [e.target.id]: value
-  });
-}
+  handleValueChange(e) {
+    var value = e.target.value;
+    this.setState({
+      [e.target.id]: value
+    });
+  }
 
   updatePlayerInfo() {
-  this.setState({
-    playerSource: this.state.inputVideoUrl
-  })
-}
+    this.setState({
+      playerSource: this.state.inputVideoUrl,
+      display: true
+    })
+  }
+
+  onChangeOutHeight() {
+    this.setState({
+      out_height: this.state.out_height
+    });
+  }
+
+  onChangeOutWidth () {
+    this.setState({
+      out_width: this.state.out_width
+    });
+  }
+
+  onChangeXvalue () {
+    this.setState({
+      x_value: this.state.x_value
+    });
+  }
+
+  onChangeYvalue () {
+    this.setState({
+      y_value: this.state.y_value
+    });
+  }
 
   add = () => {
-      let trims = this.state.trims;
-      trims.push({"from":'',"to":''});
-      this.setState({
-         trims: trims
-      });
+    let trims = this.state.trims;
+    trims.push({"from":'',"to":''});
+    this.setState({
+      trims: trims
+    });
   };
 
   onChange = (e) => {
@@ -62,11 +96,11 @@ handleValueChange(e) {
     const index = id.match(/\d+/g).map(Number)[0];
 
     if( id.includes("from") ) {
-       trims[index].from = e.target.value;
-     }
-     else if ( id.includes("to") ) {
+      trims[index].from = e.target.value;
+    }
+    else if ( id.includes("to") ) {
       trims[index].to = e.target.value;
-     }
+    }
     this.setState({
       trims: trims
     })
@@ -81,6 +115,10 @@ handleValueChange(e) {
     const obj = {
       inputVideoUrl: this.state.inputVideoUrl,
       trims: this.state.trims,
+      out_width: this.state.out_width,
+      out_height: this.state.out_height,
+      x_value: this.state.x_value,
+      y_value: this.state.y_value,
     };
     axios.post('http://localhost:4000/send', obj)
         .then(res => console.log(res.data));
@@ -89,6 +127,10 @@ handleValueChange(e) {
       from_location: '',
       inputVideoUrl: '',
       trims: [{from: '', to: ''}],
+      out_width: '',
+      out_height: '',
+      x_value: '',
+      y_value: ''
     })
   }
 
@@ -103,7 +145,7 @@ handleValueChange(e) {
               <Col span={6}>
                 <Typography.Text strong style={{paddingRight: '0.2rem'}}>From</Typography.Text>
                 <div className="form-group">
-                  <Input placeholder="00:00:00"
+                  <Input placeholder="hh:mm:ss"
                          id={`trim-${i}-from`}
                          value={trim.from}
                          onChange={this.onChange}/>
@@ -112,7 +154,7 @@ handleValueChange(e) {
               <Col span={6}>
                 <Typography.Text strong style={{paddingRight: '0.2rem'}}>To</Typography.Text>
                 <div className="form-group">
-                  <Input placeholder="00:00:00"
+                  <Input placeholder="hh:mm:ss"
                          id={`trim-${i}-to`}
                          value={trim.to}
                          onChange={this.onChange}/>
@@ -121,85 +163,155 @@ handleValueChange(e) {
             </Row>
         )
     );
+
     return (
         <Layout className="layout">
-        <Header>
-        <div className="logo" />
-          <Menu
-            theme="dark"
-            mode="horizontal"
-            style={{ lineHeight: '64px' }}
+          <Header>
+            <div className="logo" />
+            <Menu
+                theme="dark"
+                mode="horizontal"
+                style={{ lineHeight: '64px' }}
             >
-            <Menu.Item key="1" onClick={this.loginRequest} style={{ float: 'right',color: 'White' }}>
-            <Icon type="login" /> Login
-            </Menu.Item>
-            <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
-          </Menu>
-        </Header>
+              <Menu.Item key="1" onClick={this.loginRequest} style={{ float: 'right',color: 'White' }}>
+                <Icon type="login" /> Login
+              </Menu.Item>
+              <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
+            </Menu>
+          </Header>
           <form onSubmit={this.onSubmit}>
-          <Content className='Content' style={{ padding: '50px 50px' }}>
-            <Row gutter={16}>
-              <Col span={16}>
-                <div>
-                  <div className="docs-example">
-                    <Form>
-                      <FormGroup>
-                       <Typography.Title level={4} style={{ color: 'Black' }}> Video URL</Typography.Title>
-                        <Input
-                          ref="inputVideoUrl"
-                          name="inputVideoUrl"
-                          id="inputVideoUrl"
-                          value={this.state.inputVideoUrl}
-                          onChange={this.handleValueChange}
-                        />
-                      </FormGroup>
-                      <div>
+            <Content className='Content' style={{ padding: '50px 50px' }}>
+              <Row gutter={16}>
+                <Col span={16}>
+                  <div style={{padding: '1rem'}}>
+                    <div className="docs-example" style ={{ height: '100%' }}>
+                      <Form>
                         <FormGroup>
-                          <Button type="primary" onClick={this.updatePlayerInfo} style={{marginTop: '12px'}}>
-                            Update
-                          </Button>
+                            <Typography.Title level={4} style={{ color: 'Black' }}> Video URL <Icon type="question-circle" style={{float: "right"}} /></Typography.Title>
+                            <Input
+                                ref="inputVideoUrl"
+                                name="inputVideoUrl"
+                                id="inputVideoUrl"
+                                value={this.state.inputVideoUrl}
+                                onChange={this.handleValueChange}
+                            />
                         </FormGroup>
-                      </div>
-                    </Form>
-                    <br />
-                    <Player ref="player" videoId="video-1">
-                      <source src={this.state.playerSource} />
-                    </Player>
+                        <div>
+                          <FormGroup>
+                            <Button type="primary" onClick={this.updatePlayerInfo} style={{marginTop: '12px'}}>
+                              Update
+                            </Button>
+                          </FormGroup>
+                        </div>
+                      </Form>
+                      <br />
+
+                          <Player ref="player" videoId="video-1">
+                            <source src={this.state.playerSource}/>
+                          </Player>
+
+                    </div>
                   </div>
-                </div>
-              </Col>
-              <Col span={8}>
-                <Typography.Title level={4} style={{ color: 'Black' }}> Video Trim Settings</Typography.Title>
-                {trims}
-                <Button type="primary"
-                        onClick={this.add}
-                        style={{margin: "1rem"}}
-                >
-                  <Icon type="plus" /> Add More
-                </Button>
-                <br />
-                <div className="form-group">
-                  <Button type="primary"
-                    onClick={this.onSubmit}
-                    color="primary"
-                    value="Submitted" >
-                    <Icon type="radius-setting" /> Trim
-                  </Button>
-                  <Button type="primary"
-                    color="primary"
-                    style={{marginLeft: '10px'}}
-                    value="Submitted"
-                    >
-                    <Icon type="upload" />Upload to Commons
-                  </Button>
-                </div>
-              </Col>
-            </Row>
+                </Col>
+              
+                    <Col span={8}>
+                      <div className="trim-settings">
+                        <h2>Video Trim Settings </h2>
+                        {trims}
+                        <Button type="primary"
+                                onClick={this.add}
+                                style={{margin: "1rem", marginLeft: "2.25rem"}}
+                        >
+                          <Icon type="plus"/> Add More
+                        </Button>
+                        <br/>
+                        <div className="form-group">
+                          <Button type="primary"
+                                  onClick={this.onSubmit}
+                                  color="primary"
+                                  value="Submitted">
+                            <Icon type="radius-setting"/> Trim
+                          </Button>
+                          <Button
+                              color="primary"
+                              style={{marginLeft: '10px'}}
+                              value="Submitted"
+                          >
+                            <Icon type="upload"/>Upload to Commons
+                          </Button>
+                        </div>
+                      </div>
+                      <br/>
+                      <hr/>
+                      <div className="trim-settings">
+                        <h2>Video Crop Settings </h2>
+                        <Row gutter={10}>
+                          <Col span={6}>
+                            <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Width</Typography.Text>
+                            <div className="form-group">
+                              <Input placeholder="xxx"
+                                     ref="out_width"
+                                     name="out_width"
+                                     id="out_width"
+                                     onChange={this.onChangeOutWidth}/>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Height</Typography.Text>
+                            <div className="form-group">
+                              <Input
+                                  placeholder="xxx"
+                                  ref="out_height"
+                                  name="out_height"
+                                  id="out_height"
+                                  onChange={this.onChangeOutHeight}
+                              />
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <Typography.Text strong style={{paddingRight: '0.2rem'}}>X</Typography.Text>
+                            <div className="form-group">
+                              <Input placeholder="xxx"
+                                     name="x_value"
+                                     id="x_value"
+                                     onChange={this.onChangeXvalue}/>
+                            </div>
+                          </Col>
+                          <Col span={6}>
+                            <Typography.Text strong style={{paddingRight: '0.2rem'}}>Y</Typography.Text>
+                            <div className="form-group">
+                              <Input placeholder="xxx"
+                                     name="y_value"
+                                     id="y_value"
+                                     onChange={this.onChangeYvalue}/>
+                            </div>
+                          </Col>
+                        </Row>
+                        <br/>
+                        <div className="form-group">
+                          <Button type="primary"
+                                  onClick={this.onSubmit}
+                                  color="primary"
+                                  value="Submitted">
+                            <Icon type="radius-setting"/> Crop
+                          </Button>
+                          <Button
+                              color="primary"
+                              style={{marginLeft: '10px'}}
+                              value="Submitted"
+                          >
+                            <Icon type="upload"/>Upload to Commons
+                          </Button>
+                        </div>
+                      </div>
+                    </Col>
+
+              </Row>
               <br />
-          </Content>
+            </Content>
           </form>
           <Footer style={{ textAlign: 'center' }}>
-             © 2018 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span></a> |
+            © 2018 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span></a> |
             <a href="https://github.com/gopavasanth/VideoCutTool"><span> Github </span></a>
           </Footer>
         </Layout>
