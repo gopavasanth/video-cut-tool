@@ -22,10 +22,7 @@ class home extends Component {
     this.onSubmit = this.onSubmit.bind(this);
     this.handleValueChange = this.handleValueChange.bind(this);
     this.updatePlayerInfo = this.updatePlayerInfo.bind(this);
-    this.onChangeOutHeight = this.onChangeOutHeight.bind(this);
-    this.onChangeOutWidth = this.onChangeOutWidth.bind(this);
-    this.onChangeXvalue = this.onChangeXvalue.bind(this);
-    this.onChangeYvalue = this.onChangeYvalue.bind(this);
+    this.onChangeCrop = this.onChangeCrop.bind(this);
     this.displayCrop = this.displayCrop.bind(this);
     this.displayTrim = this.displayTrim.bind(this);
 
@@ -38,7 +35,8 @@ class home extends Component {
       y_value: '',
       display: false,
       displayCrop: false,
-      displayTrim: false
+      displayTrim: false,
+      displayPlayer:false
     }
   }
 
@@ -58,7 +56,8 @@ class home extends Component {
   updatePlayerInfo() {
     this.setState({
       playerSource: this.state.inputVideoUrl,
-      display: true
+      display: true,
+      displayPlayer: true
     })
   }
 
@@ -74,27 +73,9 @@ class home extends Component {
     })
   }
 
-  onChangeOutHeight() {
+  onChangeCrop(e){
     this.setState({
-      out_height: this.state.out_height
-    });
-  }
-
-  onChangeOutWidth () {
-    this.setState({
-      out_width: this.state.out_width
-    });
-  }
-
-  onChangeXvalue () {
-    this.setState({
-      x_value: this.state.x_value
-    });
-  }
-
-  onChangeYvalue () {
-    this.setState({
-      y_value: this.state.y_value
+      [e.target.name]: e.target.value
     });
   }
 
@@ -195,7 +176,6 @@ class home extends Component {
               <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
             </Menu>
           </Header>
-
           <form onSubmit={this.onSubmit}>
             <Content className='Content' style={{ padding: '50px 50px' }}>
               <Row gutter={16}>
@@ -222,9 +202,11 @@ class home extends Component {
                         </div>
                       </Form>
                       <br />
-                          <Player ref="player" videoId="video-1">
-                            <source src={this.state.playerSource}/>
-                          </Player>
+                      { this.state.displayPlayer ?
+                        <Player ref="player" videoId="video-1">
+                          <source src={this.state.playerSource}/>
+                        </Player> : null
+                      }
                     </div>
                   </div>
                 </Col>
@@ -274,68 +256,68 @@ class home extends Component {
                             { this.state.displayCrop ?
                             <div className="crop-settings">
                               <h2>Video Crop Settings </h2>
-                              <Form>
-                                <FormGroup>
-                                <Row gutter={10}>
-                                  <Col span={6}>
-                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Width</Typography.Text>
-                                    <div className="form-group">
-                                      <Input placeholder="xxx"
-                                             ref="out_width"
-                                             name="out_width"
-                                             id="out_width"
-                                             onChange={this.onChangeOutWidth}/>
-                                    </div>
+                              <Row gutter={10}>
+                                <Col span={6}>
+                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Width</Typography.Text>
+                                  <div className="form-group">
+                                    <Input placeholder="xxx"
+                                           ref="out_width"
+                                           name="out_width"
+                                           id="out_width"
+                                           value={this.state.out_width}
+                                           onChange={this.onChangeCrop}/>
+                                  </div>
+                                </Col>
+                                <Col span={6}>
+                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Height</Typography.Text>
+                                  <div className="form-group">
+                                    <Input
+                                        placeholder="xxx"
+                                        ref="out_height"
+                                        name="out_height"
+                                        id="out_height"
+                                        value={this.state.out_height}
+                                        onChange={this.onChangeCrop}
+                                    />
+                                  </div>
                                   </Col>
-                                  <Col span={6}>
-                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Height</Typography.Text>
-                                    <div className="form-group">
-                                      <Input
-                                          placeholder="xxx"
-                                          ref="out_height"
-                                          name="out_height"
-                                          id="out_height"
-                                          onChange={this.onChangeOutHeight}
-                                      />
-                                    </div>
-                                    </Col>
-                                  <Col span={6}>
-                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>X</Typography.Text>
-                                    <div className="form-group">
-                                      <Input placeholder="xxx"
-                                             name="x_value"
-                                             id="x_value"
-                                             onChange={this.onChangeXvalue}/>
-                                    </div>
-                                  </Col>
-                                  <Col span={6}>
-                                    <Typography.Text strong style={{paddingRight: '0.2rem'}}>Y</Typography.Text>
-                                    <div className="form-group">
-                                      <Input placeholder="xxx"
-                                             name="y_value"
-                                             id="y_value"
-                                             onChange={this.onChangeYvalue}/>
-                                    </div>
-                                  </Col>
-                                  </Row>
-                                  <br/>
-                                    <div className="form-group">
-                                      <Button type="primary"
-                                              onClick={this.onSubmit}
-                                              color="primary"
-                                              value="Submitted">
-                                        <Icon type="radius-setting"/> Crop
-                                      </Button>
-                                      <Button
-                                          color="primary"
-                                          style={{marginLeft: '10px'}}
-                                          value="Submitted"
-                                      >
-                                        <Icon type="upload"/>Upload to Commons
-                                      </Button>
-                                    </div>
-                                </FormGroup>
-                              </Form>
+                                <Col span={6}>
+                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>X</Typography.Text>
+                                  <div className="form-group">
+                                    <Input placeholder="xxx"
+                                           name="x_value"
+                                           id="x_value"
+                                           value={this.state.x_value}
+                                           onChange={this.onChangeCrop}/>
+                                  </div>
+                                </Col>
+                                <Col span={6}>
+                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Y</Typography.Text>
+                                  <div className="form-group">
+                                    <Input placeholder="xxx"
+                                           name="y_value"
+                                           id="y_value"
+                                           value={this.state.y_value}
+                                           onChange={this.onChangeCrop}/>
+                                  </div>
+                                </Col>
+                                </Row>
+                                <br/>
+                                  <div className="form-group">
+                                    <Button type="primary"
+                                            onClick={this.onSubmit}
+                                            color="primary"
+                                            value="Submitted">
+                                      <Icon type="radius-setting"/> Crop
+                                    </Button>
+                                    <Button
+                                        color="primary"
+                                        style={{marginLeft: '10px'}}
+                                        value="Submitted"
+                                    >
+                                      <Icon type="upload"/>Upload to Commons
+                                    </Button>
+                                  </div>
                           </div> : null
                          }
                     </Col>
