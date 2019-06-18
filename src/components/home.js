@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Typography, Layout, Icon, Col, Form, Row, Button } from 'antd';
+import { Menu, Input, Typography, Layout, Icon, Col, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup, Label} from 'reactstrap';
 import { Route, Redirect, Switch } from 'react-router';
@@ -25,6 +25,7 @@ class home extends Component {
     this.onChangeCrop = this.onChangeCrop.bind(this);
     this.displayCrop = this.displayCrop.bind(this);
     this.displayTrim = this.displayTrim.bind(this);
+    this.ExpandTrim = this.ExpandTrim.bind(this);
 
     this.state = {
       inputVideoUrl: '',
@@ -36,7 +37,8 @@ class home extends Component {
       display: false,
       displayCrop: false,
       displayTrim: false,
-      displayPlayer:false
+      displayPlayer:false,
+      ExpandTrim: false
     }
   }
 
@@ -70,6 +72,12 @@ class home extends Component {
   displayTrim() {
     this.setState({
       displayTrim: true
+    })
+  }
+
+  ExpandTrim() {
+    this.setState({
+      ExpandTrim: true
     })
   }
 
@@ -115,8 +123,10 @@ class home extends Component {
       out_width: this.state.out_width,
       out_height: this.state.out_height,
       x_value: this.state.x_value,
-      y_value: this.state.y_value
+      y_value: this.state.y_value,
+      trimMode: e.target.name
     };
+
     axios.post('http://localhost:4000/send', obj)
         .then(res => console.log(res.data));
 
@@ -133,7 +143,6 @@ class home extends Component {
 
   render() {
     const { out_location } = this.state;
-    console.log(this.state.trims);
 
     const fields = this.state.fields;
     const trims = this.state.trims.map((trim, i) =>
@@ -184,8 +193,9 @@ class home extends Component {
                     <div className="docs-example" style ={{ height: '100%' }}>
                       <Form>
                         <FormGroup>
-                            <Typography.Title level={4} style={{ color: 'Black' }}> Video URL <Icon type="question-circle" style={{float: "right"}} /></Typography.Title>
+                            <Typography.Title level={4} style={{ color: 'Black' }}> Video URL <Button href="https://commons.wikimedia.org/wiki/Commons:VideoCutTool" style={{float: 'right'}}><Icon type="question-circle"  /></Button></Typography.Title>
                             <Input
+                                placeholder="https://upload.wikimedia.org/wikipedia/commons/video.webm"
                                 ref="inputVideoUrl"
                                 name="inputVideoUrl"
                                 id="inputVideoUrl"
@@ -237,19 +247,32 @@ class home extends Component {
                                     </Button>
                                     <br/>
                                     <div className="form-group">
-                                      <Button type="primary"
-                                              onClick={this.onSubmit}
+                                        <div>
+                                          <Col span={12}>
+                                            <Button type="primary"
+                                                    onClick={this.onSubmit}
+                                                    name="single"
+                                                    color="primary"
+                                                    value="Submitted">
+                                              <Icon type="radius-setting"/> As Single Video
+                                            </Button>
+                                          </Col>
+                                          <Col Span={12}>
+                                            <Button type="primary"
+                                                    onClick={this.onSubmit}
+                                                    color="primary"
+                                                    value="Submitted">
+                                              <Icon type="radius-setting"/> As Multiple Videos
+                                            </Button>
+                                          </Col>
+                                          <Button
                                               color="primary"
-                                              value="Submitted">
-                                        <Icon type="radius-setting"/> Trim
-                                      </Button>
-                                      <Button
-                                          color="primary"
-                                          style={{marginLeft: '10px'}}
-                                          value="Submitted"
-                                      >
-                                        <Icon type="upload"/>Upload to Commons
-                                      </Button>
+                                              style={{marginLeft: '10px', marginTop: '10px'}}
+                                              value="Submitted"
+                                          >
+                                            <Icon type="upload"/>Upload to Commons
+                                          </Button>
+                                        </div>
                                   </div>
                                 </div> : null
                             }
