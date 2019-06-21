@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Typography, Layout, Icon, Col, Form, Row, Button, Checkbox } from 'antd';
+import { Menu, Input, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup, Label} from 'reactstrap';
 import { Route, Redirect, Switch } from 'react-router';
@@ -27,6 +27,7 @@ class home extends Component {
     this.displayTrim = this.displayTrim.bind(this);
     this.ExpandTrim = this.ExpandTrim.bind(this);
     this.removeAudio = this.removeAudio.bind(this);
+    this.displayRotate = this.displayRotate.bind(this);
 
     this.state = {
       inputVideoUrl: '',
@@ -38,6 +39,7 @@ class home extends Component {
       display: false,
       displayCrop: false,
       displayTrim: false,
+      displayRotate: false,
       displayPlayer:false,
       ExpandTrim: false,
       removeAudio: false
@@ -83,6 +85,12 @@ class home extends Component {
     })
   }
 
+  displayRotate(){
+    this.setState({
+      displayRotate: true
+    })
+  }
+
   ExpandTrim() {
     this.setState({
       ExpandTrim: true
@@ -94,6 +102,13 @@ class home extends Component {
       [e.target.name]: e.target.value
     });
   }
+
+  onChangeRadioButton = e => {
+    console.log('radio checked', e.target.value);
+    this.setState({
+      value: e.target.value,
+    });
+  };
 
   add = () => {
     let trims = this.state.trims;
@@ -133,7 +148,8 @@ class home extends Component {
       x_value: this.state.x_value,
       y_value: this.state.y_value,
       trimMode: e.target.name,
-      removeAudio: this.state.removeAudio
+      removeAudio: this.state.removeAudio,
+      value: this.state.value
     };
 
     axios.post('http://localhost:4000/send', obj)
@@ -147,13 +163,18 @@ class home extends Component {
       out_height: '',
       x_value: '',
       y_value: '',
-      removeAudio: ''
+      removeAudio: '',
+      value: ''
     })
   }
 
   render() {
     const { out_location } = this.state;
-
+    const radioStyle = {
+      display: 'block',
+      height: '30px',
+      lineHeight: '30px',
+    };
     const fields = this.state.fields;
     const trims = this.state.trims.map((trim, i) =>
         (
@@ -232,8 +253,8 @@ class home extends Component {
                 </Col>
                     <Col span={8}>
                     <h2 style={{ textAlign: 'center' }}>Video Settings </h2>
-                    <div className="removeAudio" style={{ paddingLeft: '30px' }}>
-                      <Checkbox onClick={this.removeAudio}> Disable Audio</Checkbox>
+                    <div className="removeAudio" style={{ pos: '10px' }}>
+                      <Checkbox onClick={this.removeAudio}> Remove Audio</Checkbox>
                     </div>
                     <br />
                     <Button type="primary"
@@ -249,6 +270,7 @@ class home extends Component {
                             <Icon type="plus"/> Cropping
                     </Button>
                     <Button type="primary"
+                          onClick={this.displayRotate}
                           style={{margin: "1rem", marginLeft: "2.25rem"}}
                       >
                             <Icon type="plus"/> Rotate Video
@@ -361,6 +383,31 @@ class home extends Component {
                                     </Button>
                                   </div>
                           </div> : null
+                         }
+                         { this.state.displayRotate ?
+                             <div className="displayRotate">
+                               <Radio.Group onChange={this.onChangeRadioButton} value={this.state.value}>
+                                 <Radio style={radioStyle} value={0}>
+                                   90 CounterCLockwise and Vertical Flip
+                                 </Radio>
+                                 <Radio style={radioStyle} value={1}>
+                                   90 Clockwise
+                                 </Radio>
+                                 <Radio style={radioStyle} value={2}>
+                                   90 CounterClockwise
+                                 </Radio>
+                                 <Radio style={radioStyle} value={3}>
+                                   90 Clockwise and Vertical Flip
+                                   {this.state.value === 4 ? <Input style={{ width: 100, marginLeft: 10 }} /> : null}
+                                 </Radio>
+                               </Radio.Group>
+                               <Button type="primary"
+                                     onClick={this.onSubmit}
+                                     style={{margin: "1rem", marginLeft: "2.25rem"}}
+                                 >
+                                       <Icon type="reload" /> Rotate Video
+                               </Button>
+                             </div> : null
                          }
                     </Col>
               </Row>
