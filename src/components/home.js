@@ -26,6 +26,7 @@ class home extends Component {
     this.displayCrop = this.displayCrop.bind(this);
     this.displayTrim = this.displayTrim.bind(this);
     this.ExpandTrim = this.ExpandTrim.bind(this);
+    this.removeAudio = this.removeAudio.bind(this);
 
     this.state = {
       inputVideoUrl: '',
@@ -38,7 +39,8 @@ class home extends Component {
       displayCrop: false,
       displayTrim: false,
       displayPlayer:false,
-      ExpandTrim: false
+      ExpandTrim: false,
+      removeAudio: false
     }
   }
 
@@ -66,6 +68,12 @@ class home extends Component {
   displayCrop() {
     this.setState({
       displayCrop: true
+    })
+  }
+
+  removeAudio() {
+    this.setState({
+      removeAudio: true
     })
   }
 
@@ -124,7 +132,8 @@ class home extends Component {
       out_height: this.state.out_height,
       x_value: this.state.x_value,
       y_value: this.state.y_value,
-      trimMode: e.target.name
+      trimMode: e.target.name,
+      removeAudio: this.state.removeAudio
     };
 
     axios.post('http://localhost:4000/send', obj)
@@ -137,7 +146,8 @@ class home extends Component {
       out_width: '',
       out_height: '',
       x_value: '',
-      y_value: ''
+      y_value: '',
+      removeAudio: ''
     })
   }
 
@@ -222,18 +232,27 @@ class home extends Component {
                 </Col>
                     <Col span={8}>
                     <h2 style={{ textAlign: 'center' }}>Video Settings </h2>
+                    <div className="removeAudio" style={{ paddingLeft: '30px' }}>
+                      <Checkbox onClick={this.removeAudio}> Disable Audio</Checkbox>
+                    </div>
+                    <br />
                     <Button type="primary"
                             onClick={this.displayTrim}
                             style={{margin: "1rem", marginLeft: "2.25rem"}}
                     >
-                              <Icon type="plus"/> Trimming
-                            </Button>
-                            <Button type="primary"
-                                    onClick={this.displayCrop}
-                                    style={{margin: "1rem", marginLeft: "2.25rem"}}
-                            >
-                              <Icon type="plus"/> Cropping
-                            </Button>
+                            <Icon type="plus"/> Trimming
+                    </Button>
+                    <Button type="primary"
+                          onClick={this.displayCrop}
+                          style={{margin: "1rem", marginLeft: "2.25rem"}}
+                      >
+                            <Icon type="plus"/> Cropping
+                    </Button>
+                    <Button type="primary"
+                          style={{margin: "1rem", marginLeft: "2.25rem"}}
+                      >
+                            <Icon type="plus"/> Rotate Video
+                    </Button>
 
                             { this.state.displayTrim ?
                                   <div className="trim-settings">
