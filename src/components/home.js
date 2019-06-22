@@ -25,8 +25,7 @@ class home extends Component {
     this.onChangeCrop = this.onChangeCrop.bind(this);
     this.displayCrop = this.displayCrop.bind(this);
     this.displayTrim = this.displayTrim.bind(this);
-    this.ExpandTrim = this.ExpandTrim.bind(this);
-    this.removeAudio = this.removeAudio.bind(this);
+    this.disableAudio = this.disableAudio.bind(this);
     this.displayRotate = this.displayRotate.bind(this);
 
     this.state = {
@@ -41,8 +40,7 @@ class home extends Component {
       displayTrim: false,
       displayRotate: false,
       displayPlayer:false,
-      ExpandTrim: false,
-      removeAudio: false
+      disableAudio: false
     }
   }
 
@@ -69,31 +67,31 @@ class home extends Component {
 
   displayCrop() {
     this.setState({
-      displayCrop: true
-    })
-  }
-
-  removeAudio() {
-    this.setState({
-      removeAudio: true
+      displayCrop: true,
+      displayTrim: false,
+      displayRotate: false
     })
   }
 
   displayTrim() {
     this.setState({
-      displayTrim: true
+      displayTrim: true,
+      displayCrop: false,
+      displayRotate: false
     })
   }
 
   displayRotate(){
     this.setState({
-      displayRotate: true
+      displayRotate: true,
+      displayCrop: false,
+      displayTrim: false
     })
   }
 
-  ExpandTrim() {
+  disableAudio() {
     this.setState({
-      ExpandTrim: true
+      disableAudio: true
     })
   }
 
@@ -148,7 +146,7 @@ class home extends Component {
       x_value: this.state.x_value,
       y_value: this.state.y_value,
       trimMode: e.target.name,
-      removeAudio: this.state.removeAudio,
+      disableAudio: this.state.disableAudio,
       value: this.state.value
     };
 
@@ -163,7 +161,7 @@ class home extends Component {
       out_height: '',
       x_value: '',
       y_value: '',
-      removeAudio: '',
+      disableAudio: '',
       value: ''
     })
   }
@@ -237,7 +235,7 @@ class home extends Component {
                         <div>
                           <FormGroup>
                             <Button type="primary" onClick={this.updatePlayerInfo} style={{marginTop: '12px'}}>
-                              Update
+                              Play Video
                             </Button>
                           </FormGroup>
                         </div>
@@ -253,8 +251,8 @@ class home extends Component {
                 </Col>
                     <Col span={8}>
                     <h2 style={{ textAlign: 'center' }}>Video Settings </h2>
-                    <div className="removeAudio" style={{ pos: '10px' }}>
-                      <Checkbox onClick={this.removeAudio}> Remove Audio</Checkbox>
+                    <div className="disableAudio" style={{ pos: '10px' }}>
+                      <Checkbox onClick={this.disableAudio}> Remove Audio</Checkbox>
                     </div>
                     <br />
                     <Button type="primary"
@@ -386,6 +384,7 @@ class home extends Component {
                          }
                          { this.state.displayRotate ?
                              <div className="displayRotate">
+                             <h2> Video Rotate Settings </h2>
                                <Radio.Group onChange={this.onChangeRadioButton} value={this.state.value}>
                                  <Radio style={radioStyle} value={0}>
                                    90 CounterCLockwise and Vertical Flip
@@ -416,7 +415,8 @@ class home extends Component {
           </form>
           <Footer style={{ textAlign: 'center' }}>
             © 2018 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span></a> |
-            <a href="https://github.com/gopavasanth/VideoCutTool"><span> Github </span></a>
+            <a href="https://github.com/gopavasanth/VideoCutTool"><span> Github </span></a> |
+            <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><span> GNU Licence </span></a>
           </Footer>
         </Layout>
     );
