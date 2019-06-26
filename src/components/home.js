@@ -161,6 +161,7 @@ class home extends Component {
       out_height: '',
       x_value: '',
       y_value: '',
+      trimMode: '',
       disableAudio: '',
       value: ''
     })
@@ -300,6 +301,7 @@ class home extends Component {
                                             <Button type="primary"
                                                     onClick={this.onSubmit}
                                                     color="primary"
+                                                    name="multiple"
                                                     value="Submitted">
                                               <Icon type="radius-setting"/> As Multiple Videos
                                             </Button>
@@ -369,6 +371,7 @@ class home extends Component {
                                     <Button type="primary"
                                             onClick={this.onSubmit}
                                             color="primary"
+                                            name="crop"
                                             value="Submitted">
                                       <Icon type="radius-setting"/> Crop
                                     </Button>
@@ -397,11 +400,11 @@ class home extends Component {
                                  </Radio>
                                  <Radio style={radioStyle} value={3}>
                                    90 Clockwise and Vertical Flip
-                                   {this.state.value === 4 ? <Input style={{ width: 100, marginLeft: 10 }} /> : null}
                                  </Radio>
                                </Radio.Group>
                                <Button type="primary"
                                      onClick={this.onSubmit}
+                                     name="rotate"
                                      style={{margin: "1rem", marginLeft: "2.25rem"}}
                                  >
                                        <Icon type="reload" /> Rotate Video
