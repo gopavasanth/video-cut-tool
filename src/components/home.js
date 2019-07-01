@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
+import { Menu, Input, Progress, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup, Label} from 'reactstrap';
 import { Route, Redirect, Switch } from 'react-router';
@@ -40,7 +40,8 @@ class home extends Component {
       displayTrim: false,
       displayRotate: false,
       displayPlayer:false,
-      disableAudio: false
+      disableAudio: false,
+      progressTrack: 0
     }
   }
 
@@ -102,7 +103,6 @@ class home extends Component {
   }
 
   onChangeRadioButton = e => {
-    console.log('radio checked', e.target.value);
     this.setState({
       value: e.target.value,
     });
@@ -151,7 +151,9 @@ class home extends Component {
     };
 
     axios.post('http://localhost:4000/send', obj)
-        .then(res => console.log(res.data));
+        .then(res => console.log(res.data.message))
+        .then(this.setState({ progressTrack: 100 }));
+          console.log("Progress Track: " + this.state.progressTrack)
 
     this.setState({
       from_location: '',
@@ -235,7 +237,7 @@ class home extends Component {
                         </FormGroup>
                         <div>
                           <FormGroup>
-                            <Button type="primary" onClick={this.updatePlayerInfo} style={{marginTop: '12px'}}>
+                            <Button type="primary"  onClick={this.updatePlayerInfo} style={{marginTop: '12px'}}>
                               Play Video
                             </Button>
                           </FormGroup>
@@ -243,9 +245,15 @@ class home extends Component {
                       </Form>
                       <br />
                       { this.state.displayPlayer ?
-                        <Player ref="player" videoId="video-1">
-                          <source src={this.state.playerSource}/>
-                        </Player> : null
+                        <div className="player">
+                          <div id="mydiv">
+                            <div id="mydivheader"></div>
+                          </div>
+                          <Player ref="player" videoId="video-1">
+                            <source src={this.state.playerSource}/>
+                          </Player> 
+                          <Progress percent={this.state.progressTrack} status="active" />
+                        </div>: null
                       }
                     </div>
                   </div>

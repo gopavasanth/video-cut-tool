@@ -39,3 +39,28 @@ body{
     transform: rotate(360deg);
   }
 }
+
+#mydiv {
+  position: absolute;
+  z-index: 9;
+  background-color: #f1f1f1;
+  text-align: center;
+  border: 1px solid #d3d3d3;
+  resize: both;
+  overflow: auto;
+  opacity: 0.5;
+  width: 150px;
+  height: 150px;
+  top: 136px;
+  left: 85px;
+}
+
+#mydivheader {
+  padding: 10px;
+  cursor: move;
+  z-index: 10;
+  background-color: #f1f1f1;
+  color: #fff;
+  resize: both;
+  overflow: none;
+}
