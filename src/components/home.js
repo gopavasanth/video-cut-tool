@@ -28,6 +28,7 @@ class home extends Component {
     this.disableAudio = this.disableAudio.bind(this);
     this.displayRotate = this.displayRotate.bind(this);
 
+
     this.state = {
       inputVideoUrl: '',
       trims: [{from: '', to: ''}],
@@ -150,7 +151,7 @@ class home extends Component {
       value: this.state.value
     };
 
-    axios.post('http://localhost:4000/send', obj)
+    axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
         .then(res => console.log(res.data.message))
         .then(this.setState({ progressTrack: 100 }));
           console.log("Progress Track: " + this.state.progressTrack)
