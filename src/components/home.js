@@ -247,9 +247,10 @@ class home extends Component {
                       <br />
                       { this.state.displayPlayer ?
                         <div className="player">
+                          { this.state.displayCrop ?
                           <div id="mydiv">
                             <div id="mydivheader"></div>
-                          </div>
+                          </div> : null }
                           <Player ref="player" videoId="video-1">
                             <source src={this.state.playerSource}/>
                           </Player> 
