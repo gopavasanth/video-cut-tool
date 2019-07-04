@@ -4,7 +4,7 @@ import { Menu, Input, Progress, Typography, Layout, Icon, Col, Radio, Form, Row,
 import { Player } from 'video-react';
 import { FormGroup, Label} from 'reactstrap';
 import { Route, Redirect, Switch } from 'react-router';
-
+import Draggable from 'react-draggable';
 import '../App.css';
 import "antd/dist/antd.css";
 import "../../node_modules/video-react/dist/video-react.css"; // import css
@@ -58,6 +58,11 @@ class home extends Component {
       [e.target.id]: value
     });
   }
+
+  eventLogger = (e: MouseEvent, data: Object) => {
+    console.log('Event: ', e);
+    console.log('Data: ', data);
+  };
 
   updatePlayerInfo() {
     this.setState({
@@ -248,15 +253,29 @@ class home extends Component {
                       { this.state.displayPlayer ?
                         <div className="player">
                           { this.state.displayCrop ?
-                          <div id="mydiv">
-                            <div id="mydivheader"></div>
-                          </div> : null }
-                          <Player ref="player" videoId="video-1">
-                            <source src={this.state.playerSource}/>
-                          </Player> 
-                          <Progress percent={this.state.progressTrack} status="active" />
-                        </div>: null
-                      }
+                              <div className="draggable">
+                                <Draggable
+                                  axis="both"
+                                  handle=".handle"
+                                  defaultPosition={{x: 0, y: 0}}
+                                  position={null}
+                                  grid={[25, 25]}
+                                  scale={1}
+                                  onStart={this.handleStart}
+                                  onDrag={this.handleDrag}
+                                  onStop={this.handleStop}>
+                                    <div className="handle" id="mydiv">
+                                      <div id="mydivheader"></div>
+                                    </div>
+                                </Draggable>  
+                              </div> : null 
+                          }
+                              <Player ref="player" videoId="video-1">
+                                  <source src={this.state.playerSource}/>
+                              </Player>  
+                            <Progress percent={this.state.progressTrack} status="active" />
+                        </div> : null 
+                    }
                     </div>
                   </div>
                 </Col>
