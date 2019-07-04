@@ -177,6 +177,7 @@ class home extends Component {
 
   render() {
     const { out_location } = this.state;
+    const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
     const radioStyle = {
       display: 'block',
       height: '30px',
@@ -254,19 +255,17 @@ class home extends Component {
                         <div className="player">
                           { this.state.displayCrop ?
                               <div className="draggable">
-                                <Draggable
+                                <Draggable {...dragHandlers}
                                   axis="both"
                                   handle=".handle"
                                   defaultPosition={{x: 0, y: 0}}
                                   position={null}
                                   grid={[25, 25]}
-                                  scale={1}
-                                  onStart={this.handleStart}
-                                  onDrag={this.handleDrag}
-                                  onStop={this.handleStop}>
-                                    <div className="handle" id="mydiv">
-                                      <div id="mydivheader"></div>
-                                    </div>
+                                  bounds={{top: -33, left: -50, right: 400, bottom: 275}}
+                                  scale={1}>
+                                  <div className="handle" id="mydiv">
+                                    <div id="mydivheader"></div>
+                                  </div>
                                 </Draggable>  
                               </div> : null 
                           }
@@ -275,7 +274,7 @@ class home extends Component {
                               </Player>  
                             <Progress percent={this.state.progressTrack} status="active" />
                         </div> : null 
-                    }
+                      }
                     </div>
                   </div>
                 </Col>
