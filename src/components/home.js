@@ -254,25 +254,28 @@ class home extends Component {
                       { this.state.displayPlayer ?
                         <div className="player">
                           { this.state.displayCrop ?
-                              <div className="draggable">
-                                <Draggable {...dragHandlers}
-                                  axis="both"
-                                  handle=".handle"
-                                  defaultPosition={{x: 0, y: 0}}
-                                  position={null}
-                                  grid={[25, 25]}
-                                  bounds={{top: -33, left: -50, right: 400, bottom: 275}}
-                                  scale={1}>
-                                  <div className="handle" id="mydiv">
-                                    <div id="mydivheader"></div>
-                                  </div>
-                                </Draggable>  
-                              </div> : null 
+                                     <div className="box" style={{height: '100%', width: '100%', position: 'relative', overflow: 'auto', padding: '0'}}>
+                                     <div style={{height: '100%', width: '100%', padding: '1px'}}>
+                                       <Draggable bounds="parent" {...dragHandlers}
+                                          axis="both">
+                                          <div className="box" id="mydiv">
+                                            <div id="mydivheader"></div>
+                                          </div>
+                                       </Draggable>
+                                       <Player ref="player" videoId="video-1">
+                                                <source src={this.state.playerSource}/>
+                                        </Player>
+                                     </div>
+                           </div> : null 
+                          } 
+                          { this.state.displayCrop ? null :
+                              <div>
+                                <Player ref="player" videoId="video-1">
+                                    <source src={this.state.playerSource}/>
+                                </Player>  
+                                <Progress percent={this.state.progressTrack} status="active" />
+                              </div>
                           }
-                              <Player ref="player" videoId="video-1">
-                                  <source src={this.state.playerSource}/>
-                              </Player>  
-                            <Progress percent={this.state.progressTrack} status="active" />
                         </div> : null 
                       }
                     </div>
