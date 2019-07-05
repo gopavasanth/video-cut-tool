@@ -157,8 +157,15 @@ class home extends Component {
     };
 
     axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
-        .then(res => console.log(res.data.message))
-        .then(this.setState({ progressTrack: 100 }));
+        // .then(res => console.log(res.data.message))
+        .then( (res) =>{ 
+          // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 }) 
+          console.log(res);
+          if (res.data.message === "Rotating Sucess") {
+            this.setState({ progressTrack: 100 });
+            console.log(res.data.message);
+          }
+        } );
           console.log("Progress Track: " + this.state.progressTrack)
 
     this.setState({
@@ -257,7 +264,10 @@ class home extends Component {
                                      <div className="box" style={{height: '100%', width: '100%', position: 'relative', overflow: 'auto', padding: '0'}}>
                                      <div style={{height: '100%', width: '100%', padding: '1px'}}>
                                        <Draggable bounds="parent" {...dragHandlers}
-                                          axis="both">
+                                          axis="both"
+                                          onDrag={
+                                            (e)=>console.log("X value: " + e.x + "  Y value: " + e.y)
+                                          }>
                                           <div className="box" id="mydiv">
                                             <div id="mydivheader"></div>
                                           </div>
