@@ -5,6 +5,7 @@ import { Player } from 'video-react';
 import { FormGroup, Label} from 'reactstrap';
 import { Route, Redirect, Switch } from 'react-router';
 import Draggable from 'react-draggable';
+
 import '../App.css';
 import "antd/dist/antd.css";
 import "../../node_modules/video-react/dist/video-react.css"; // import css
@@ -266,9 +267,18 @@ class home extends Component {
                                        <Draggable bounds="parent" {...dragHandlers}
                                           axis="both"
                                           onDrag={
-                                            (e)=>console.log("X value: " + e.x + "  Y value: " + e.y)
+                                            (e)=>{
+                                              this.setState({
+                                                x_value: e.x,
+                                                y_value: e.y,
+                                                out_height: e.explicitOriginalTarget.scrollHeight, 
+                                                out_width: e.explicitOriginalTarget.scrollWidth
+                                              })
+                                              console.log("X value: " + e.x + "  Y value: " + e.y);
+                                              console.log( "Height : " + e.explicitOriginalTarget.scrollHeight + " Width : " +   e.explicitOriginalTarget.scrollWidth);
+                                            }
                                           }>
-                                          <div className="box" id="mydiv">
+                                          <div className="box" id="mydiv" onHeightReady={height => console.log("Height: " +  height)}>
                                             <div id="mydivheader"></div>
                                           </div>
                                        </Draggable>
