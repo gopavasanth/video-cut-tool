@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 
 import { Menu, Input, Progress, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
-import { FormGroup, Label} from 'reactstrap';
-import { Route, Redirect, Switch } from 'react-router';
+import { FormGroup } from 'reactstrap';
 import Draggable from 'react-draggable';
 
 import '../App.css';
@@ -184,14 +183,12 @@ class home extends Component {
   }
 
   render() {
-    const { out_location } = this.state;
     const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
     const radioStyle = {
       display: 'block',
       height: '30px',
       lineHeight: '30px',
     };
-    const fields = this.state.fields;
     const trims = this.state.trims.map((trim, i) =>
         (
             <Row gutter={10} key={i}>
