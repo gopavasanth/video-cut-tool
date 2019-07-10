@@ -3,13 +3,13 @@ import React, { Component } from 'react';
 import { Menu, Input, Progress, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
-import Draggable from 'react-draggable';
 
 import '../App.css';
 import "antd/dist/antd.css";
 import "../../node_modules/video-react/dist/video-react.css"; // import css
 
 import axios from 'axios';
+import Draggable from 'react-draggable';
 
 const { Header, Content, Footer } = Layout;
 
@@ -27,9 +27,13 @@ class home extends Component {
     this.displayTrim = this.displayTrim.bind(this);
     this.disableAudio = this.disableAudio.bind(this);
     this.displayRotate = this.displayRotate.bind(this);
-
+    this.handleDrag = this.handleDrag.bind(this);
 
     this.state = {
+      deltaPosition: {
+              x: 0,
+              y: 0,
+      },
       inputVideoUrl: '',
       trims: [{from: '', to: ''}],
       out_width: '',
@@ -140,7 +144,29 @@ class home extends Component {
 
   loginRequest(e){
 
-  }
+  };
+
+  getInitialState() {
+  return {
+    activeDrags: 0,
+    deltaPosition: {
+      x: 0, y: 0
+    },
+    controlledPosition: {
+      x: -400, y: 200
+    }
+  };
+}
+
+  handleDrag(e, ui) {
+      const {x, y} = this.state.deltaPosition;
+      this.setState({
+        deltaPosition: {
+          x: x + ui.deltaX,
+          y: y + ui.deltaY,
+        }
+      });
+  };
 
   onSubmit(e) {
     e.preventDefault();
@@ -158,8 +184,8 @@ class home extends Component {
 
     axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
         // .then(res => console.log(res.data.message))
-        .then( (res) =>{ 
-          // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 }) 
+        .then( (res) =>{
+          // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
           console.log(res);
           if (res.data.message === "Rotating Sucess") {
             this.setState({ progressTrack: 100 });
@@ -183,13 +209,15 @@ class home extends Component {
   }
 
   render() {
+    const { deltaPosition } = this.state;
+
     const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
     const radioStyle = {
       display: 'block',
       height: '30px',
       lineHeight: '30px',
     };
-    const trims = this.state.trims.map((trim, i) =>
+     const trims = this.state.trims.map((trim, i) =>
         (
             <Row gutter={10} key={i}>
               <Col span={6}>
@@ -268,32 +296,34 @@ class home extends Component {
                                               this.setState({
                                                 x_value: e.x,
                                                 y_value: e.y,
-                                                out_height: e.explicitOriginalTarget.scrollHeight, 
+                                                out_height: e.explicitOriginalTarget.scrollHeight,
                                                 out_width: e.explicitOriginalTarget.scrollWidth
                                               })
                                               console.log("X value: " + e.x + "  Y value: " + e.y);
                                               console.log( "Height : " + e.explicitOriginalTarget.scrollHeight + " Width : " +   e.explicitOriginalTarget.scrollWidth);
-                                            }
+                                            },
+                                            this.handleDrag
                                           }>
                                           <div className="box" id="mydiv" onHeightReady={height => console.log("Height: " +  height)}>
                                             <div id="mydivheader"></div>
+                                            <div>x: {deltaPosition.x.toFixed(0)}, y: {deltaPosition.y.toFixed(0)}</div>
                                           </div>
                                        </Draggable>
                                        <Player ref="player" videoId="video-1">
                                                 <source src={this.state.playerSource}/>
                                         </Player>
                                      </div>
-                           </div> : null 
-                          } 
+                           </div> : null
+                          }
                           { this.state.displayCrop ? null :
                               <div>
                                 <Player ref="player" videoId="video-1">
                                     <source src={this.state.playerSource}/>
-                                </Player>  
+                                </Player>
                                 <Progress percent={this.state.progressTrack} status="active" />
                               </div>
                           }
-                        </div> : null 
+                        </div> : null
                       }
                     </div>
                   </div>
@@ -465,7 +495,7 @@ class home extends Component {
             </Content>
           </form>
           <Footer style={{ textAlign: 'center' }}>
-            © 2018 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span></a> |
+            © 2019 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span></a> |
             <a href="https://github.com/gopavasanth/VideoCutTool"><span> Github </span></a> |
             <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><span> GNU Licence </span></a>
           </Footer>
