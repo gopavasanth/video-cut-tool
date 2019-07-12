@@ -289,21 +289,23 @@ class home extends Component {
                           { this.state.displayCrop ?
                                      <div className="box" style={{height: '100%', width: '100%', position: 'relative', overflow: 'auto', padding: '0'}}>
                                      <div style={{height: '100%', width: '100%', padding: '1px'}}>
-                                       <Draggable bounds="parent" {...dragHandlers}
+                                       <Draggable bounds="parent"  {...dragHandlers}
                                           axis="both"
                                           onDrag={
-                                            (e)=>{
-                                              this.setState({
-                                                x_value: e.x,
-                                                y_value: e.y,
-                                                out_height: e.explicitOriginalTarget.scrollHeight,
-                                                out_width: e.explicitOriginalTarget.scrollWidth
-                                              })
-                                              console.log("X value: " + e.x + "  Y value: " + e.y);
-                                              console.log( "Height : " + e.explicitOriginalTarget.scrollHeight + " Width : " +   e.explicitOriginalTarget.scrollWidth);
-                                            },
-                                            this.handleDrag
-                                          }>
+                                              (e, ui)=>{
+                                                this.handleDrag(e, ui);
+                                                this.setState({
+                                                  x_value: e.x,
+                                                  y_value: e.y,
+                                                  out_height: e.explicitOriginalTarget.scrollHeight,
+                                                  out_width: e.explicitOriginalTarget.scrollWidth
+                                                })
+
+                                                console.log("X value: " + e.x + "  Y value: " + e.y);
+                                                console.log( "Height : " + e.explicitOriginalTarget.scrollHeight + " Width : " +   e.explicitOriginalTarget.scrollWidth);
+                                              }                                             
+                                          }
+                                       >
                                           <div className="box" id="mydiv" onHeightReady={height => console.log("Height: " +  height)}>
                                             <div id="mydivheader"></div>
                                             <div>x: {deltaPosition.x.toFixed(0)}, y: {deltaPosition.y.toFixed(0)}</div>
