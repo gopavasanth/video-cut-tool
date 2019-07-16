@@ -182,7 +182,7 @@ class home extends Component {
       value: this.state.value
     };
 
-    axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
+    axios.post('https://video-cut-tool-back-end.herokuapp.com/video-cut-tool-back-end/send', obj)
         // .then(res => console.log(res.data.message))
         .then( (res) =>{
           // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
