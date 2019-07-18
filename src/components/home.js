@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { Menu, Input, Progress, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
+import { Link } from 'react-router-dom'
 
 import '../App.css';
 import "antd/dist/antd.css";
@@ -28,6 +29,7 @@ class home extends Component {
     this.disableAudio = this.disableAudio.bind(this);
     this.displayRotate = this.displayRotate.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
+    this.videoName = this.videoName.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -46,7 +48,9 @@ class home extends Component {
       displayRotate: false,
       displayPlayer:false,
       disableAudio: false,
-      progressTrack: 0
+      progressTrack: 0,
+      videoName: '',
+      displayVideoName: false
     }
   }
 
@@ -73,6 +77,12 @@ class home extends Component {
       playerSource: this.state.inputVideoUrl,
       display: true,
       displayPlayer: true
+    })
+  }
+
+  videoName() {
+    this.setState({
+      videoName: this.state.videoName
     })
   }
 
@@ -103,6 +113,12 @@ class home extends Component {
   disableAudio() {
     this.setState({
       disableAudio: true
+    })
+  }
+
+  displayVideoName(){
+    this.setState({
+      displayVideoName: true
     })
   }
 
@@ -187,9 +203,12 @@ class home extends Component {
         .then( (res) =>{
           // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
           console.log(res);
-          if (res.data.message === "Rotating Sucess") {
+          if (res.data.message === "Rotating Sucess" || res.data.message === "Cropping Sucess"  ) {
             this.setState({ progressTrack: 100 });
+            this.setState({ displayVideoName: true})
+            this.setState({ videoName: res.data.videoName });
             console.log(res.data.message);
+            console.log("VideoName: " + res.data.videoName)
           }
         } );
           console.log("Progress Track: " + this.state.progressTrack)
@@ -210,7 +229,6 @@ class home extends Component {
 
   render() {
     const { deltaPosition } = this.state;
-
     const dragHandlers = {onStart: this.onStart, onStop: this.onStop};
     const radioStyle = {
       display: 'block',
@@ -251,9 +269,7 @@ class home extends Component {
                 mode="horizontal"
                 style={{ lineHeight: '64px' }}
             >
-              <Menu.Item key="1" onClick={this.loginRequest} style={{ float: 'right',color: 'White' }}>
-                <Icon type="login" /> Login
-              </Menu.Item>
+              <a href="https://video-cut-tool-back-end.herokuapp.com/video-cut-tool-back-end/login" style={{float: 'right'}} ><span> Login </span></a>
               <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
             </Menu>
           </Header>
@@ -280,6 +296,12 @@ class home extends Component {
                             <Button type="primary"  onClick={this.updatePlayerInfo} style={{marginTop: '12px'}}>
                               Play Video
                             </Button>
+                            <br />
+                            {
+                              this.state.displayVideoName ?
+                                <Link to={`https://video-cut-tool-back-end.herokuapp.com/video-cut-tool-back-end/routes/${this.state.videoName}`} >Click on {this.state.videoName}> </Link>
+                              : null
+                            }
                           </FormGroup>
                         </div>
                       </Form>
