@@ -299,7 +299,7 @@ class home extends Component {
                             <br />
                             {
                               this.state.displayVideoName ?
-                                <Link to={`https://video-cut-tool-back-end.herokuapp.com/routes/${this.state.videoName}`} >Click on {this.state.videoName}> </Link>
+                                <a href= {`https://video-cut-tool-back-end.herokuapp.com/routes/${this.state.videoName}`} >Click here to view your video {this.state.videoName} </a>
                               : null
                             }
                           </FormGroup>
