@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Progress, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
+import { Menu, Input, Progress, Divider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
-import { Link } from 'react-router-dom'
+import Popup from "reactjs-popup";
+import PopupTools from 'popup-tools';
+import { NotificationManager } from 'react-notifications';
 
 import '../App.css';
 import "antd/dist/antd.css";
@@ -30,6 +32,13 @@ class home extends Component {
     this.displayRotate = this.displayRotate.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
     this.videoName = this.videoName.bind(this);
+    this.rotatingDone = this.rotatingDone.bind(this);
+    this.state = { open: false };
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
+    this.onLogin = this.onLogin.bind(this);
+    this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
+    this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -50,8 +59,39 @@ class home extends Component {
       disableAudio: false,
       progressTrack: 0,
       videoName: '',
-      displayVideoName: false
+      displayVideoName: false,
+      rotate: false,
+      toggle: false,
+      user: null,
+      beforeOnTapCrop: true,
+      AfterOnTapCrop: false
     }
+  }
+
+  // componentDidMount () {
+  //   const script = document.createElement("script");
+  //   const script1 = document.createElement("script");
+  //   script.src = "https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js";
+  //   script1.src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js";
+  //   script.async = true;
+  //   script1.async = true;
+  //   document.body.appendChild(script, script1);
+  // }
+
+  onLogin() {
+    PopupTools.popup('/video-cut-tool/auth/wiki', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
+      if (!err) {
+        console.log(' login response ', err, data);
+        this.setState({user: data.user})
+        NotificationManager.success('Awesome! You can now upload files to VideoWiki directly from your computer.');
+        setTimeout(() => {
+          window.location.reload();
+        }, 3000);
+        if (this.props.onAuth) {
+          this.props.onAuth()
+        }
+      }
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -67,6 +107,22 @@ class home extends Component {
     });
   }
 
+  rotatingDone() {
+    this.setState(function(state) {
+      return {
+        toggle: !state.toggle,
+        rotate: false
+      };
+    });
+  }
+
+  openModal() {
+    this.setState({ open: true });
+  }
+  closeModal() {
+    this.setState({ open: false });
+  }
+
   eventLogger = (e: MouseEvent, data: Object) => {
     console.log('Event: ', e);
     console.log('Data: ', data);
@@ -76,7 +132,9 @@ class home extends Component {
     this.setState({
       playerSource: this.state.inputVideoUrl,
       display: true,
-      displayPlayer: true
+      displayPlayer: true,
+      displayCrop: false,
+      displayRotate: false
     })
   }
 
@@ -90,7 +148,21 @@ class home extends Component {
     this.setState({
       displayCrop: true,
       displayTrim: false,
-      displayRotate: false
+      displayRotate: false,
+      displayPlayer: false
+    })
+  }
+
+  beforeOnTapCrop(){
+    this.setState({
+      beforeOnTapCrop: true
+    })
+  }
+
+  AfterOnTapCrop(){
+    this.setState({
+      beforeOnTapCrop: false,
+      AfterOnTapCrop: true
     })
   }
 
@@ -106,7 +178,8 @@ class home extends Component {
     this.setState({
       displayRotate: true,
       displayCrop: false,
-      displayTrim: false
+      displayTrim: false,
+      displayPlayer: false
     })
   }
 
@@ -118,7 +191,7 @@ class home extends Component {
 
   displayVideoName(){
     this.setState({
-      displayVideoName: true
+      displayVideoName: true,
     })
   }
 
@@ -195,10 +268,11 @@ class home extends Component {
       y_value: this.state.y_value,
       trimMode: e.target.name,
       disableAudio: this.state.disableAudio,
-      value: this.state.value
+      value: this.state.value,
+      user: this.state.user
     };
 
-    axios.post('https://video-cut-tool-back-end.herokuapp.com/video-cut-tool-back-end/send', obj)
+    axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
         // .then(res => console.log(res.data.message))
         .then( (res) =>{
           // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
@@ -235,6 +309,7 @@ class home extends Component {
       height: '30px',
       lineHeight: '30px',
     };
+    
      const trims = this.state.trims.map((trim, i) =>
         (
             <Row gutter={10} key={i}>
@@ -269,7 +344,15 @@ class home extends Component {
                 mode="horizontal"
                 style={{ lineHeight: '64px' }}
             >
-              <a href="https://video-cut-tool-back-end.herokuapp.com/video-cut-tool-back-end/login" style={{float: 'right'}} ><span> Login </span></a>
+              {/* <a href="http://localhost:4000/video-cut-tool-back-end/login" style={{float: 'right'}} ><span> Login </span></a> */}
+                <Button
+                  primary
+                  className="c-auth-buttons__signup"
+                  style={{float: 'right'}}
+                  onClick={this.onLogin.bind(this)}
+                >
+                  Register / Login with Wikipedia
+                </Button>
               <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
             </Menu>
           </Header>
@@ -299,7 +382,8 @@ class home extends Component {
                             <br />
                             {
                               this.state.displayVideoName ?
-                                <a href= {`https://video-cut-tool-back-end.herokuapp.com/routes/${this.state.videoName}`} >Click here to view your video {this.state.videoName} </a>
+                                <a href= {`http://localhost:4000/routes/${this.state.videoName}`} download="{this.state.videoName}">Click here to download your video {this.state.videoName} </a>
+                                // <a href='/somefile.txt' download>Click to download</a>
                               : null
                             }
                           </FormGroup>
@@ -308,47 +392,93 @@ class home extends Component {
                       <br />
                       { this.state.displayPlayer ?
                         <div className="player">
-                          { this.state.displayCrop ?
-                                     <div className="box" style={{height: '100%', width: '100%', position: 'relative', overflow: 'auto', padding: '0'}}>
-                                     <div style={{height: '100%', width: '100%', padding: '1px'}}>
-                                       <Draggable bounds="parent"  {...dragHandlers}
-                                          axis="both"
-                                          onDrag={
-                                              (e, ui)=>{
-                                                this.handleDrag(e, ui);
-                                                this.setState({
-                                                  x_value: e.x,
-                                                  y_value: e.y,
-                                                  out_height: e.explicitOriginalTarget.scrollHeight,
-                                                  out_width: e.explicitOriginalTarget.scrollWidth
-                                                })
+                            <Player ref="player" videoId="video-1">
+                                <source src={this.state.playerSource}/>
+                            </Player> 
+                          </div> : null
+                      }
 
-                                                console.log("X value: " + e.x + "  Y value: " + e.y);
-                                                console.log( "Height : " + e.explicitOriginalTarget.scrollHeight + " Width : " +   e.explicitOriginalTarget.scrollWidth);
-                                              }                                             
-                                          }
-                                       >
-                                          <div className="box" id="mydiv" onHeightReady={height => console.log("Height: " +  height)}>
-                                            <div id="mydivheader"></div>
-                                            <div>x: {deltaPosition.x.toFixed(0)}, y: {deltaPosition.y.toFixed(0)}</div>
-                                          </div>
-                                       </Draggable>
-                                       <Player ref="player" videoId="video-1">
-                                                <source src={this.state.playerSource}/>
-                                        </Player>
-                                     </div>
-                           </div> : null
+                        {/* Crop Video */}
+                          { this.state.displayCrop ?
+                            <div>
+                                <div className="box" style={{height: '100%', width: '100%', position: 'relative', overflow: 'auto', padding: '0'}}>
+                                    <div style={{height: '100%', width: '100%', padding: '1px'}}>
+                                        <Draggable bounds="parent"  {...dragHandlers}
+                                            axis="both"
+                                            onDrag={
+                                                (e, ui)=>{
+                                                  this.handleDrag(e, ui);
+                                                  this.setState({
+                                                    x_value: e.x,
+                                                    y_value: e.y,
+                                                    out_height: e.explicitOriginalTarget.scrollHeight,
+                                                    out_width: e.explicitOriginalTarget.scrollWidth
+                                                  })
+                                                  console.log("X value: " + e.x + "  Y value: " + e.y);
+                                                  // console.log( "Height : " + e.explicitOriginalTarget.scrollHeight + " Width : " +   e.explicitOriginalTarget.scrollWidth);
+                                                  console.log("Height: " + this.state.out_height + " Width: " + this.state.out_width);
+                                                }                                             
+                                            }
+                                        >
+                                            <div className="box" id="mydiv" onHeightReady={height => console.log("Height: " +  height)}>
+                                              <div id="mydivheader"></div>
+                                            </div>
+                                        </Draggable>
+                                        { this.state.beforeOnTapCrop ?
+                                            <div>
+                                              <Player ref="player" height='300' width='300' videoId="video-1">
+                                                      <source src={this.state.playerSource}/>
+                                              </Player>
+                                            </div> : null
+                                        }
+                                    </div>
+                                </div>
+
+                                <div>
+                                  <div className="box" style={{height: this.state.out_height, width: this.state.out_width, position: 'fixed', overflow: 'auto', padding: '0'}}>
+                                      { this.state.AfterOnTapCrop ?
+                                          <div>
+                                            <Player ref="player" videoId="video-1">
+                                                    <source src={this.state.playerSource}/>
+                                            </Player>
+                                          </div> : null
+                                      }                             
+                                </div>
+
+                              </div> 
+                            </div>: null
                           }
-                          { this.state.displayCrop ? null :
-                              <div>
+
+                        {/* Rotate Video */}
+                          { this.state.displayRotate ?
+                            <div>
+                              <div id="RotatePlayer">
                                 <Player ref="player" videoId="video-1">
                                     <source src={this.state.playerSource}/>
                                 </Player>
-                                <Progress percent={this.state.progressTrack} status="active" />
+                                {/* <Popup
+                                          open={this.state.open}
+                                          closeOnDocumentClick
+                                          onClose={this.closeModal}
+                                        >
+                                            <a className="close" onClick={this.closeModal}>
+                                              &times;
+                                            </a>
+                                            <img
+                                                src={ this.state.toggle ? "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
+                                                    : "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
+                                                } style={{align: "middle"}}
+                                                ref={elm => {
+                                                  this.image = elm;
+                                                }}
+                                                className={this.state.rotate ? "rotate" : ""}
+                                              />
+
+                                        </Popup>                                 */}
                               </div>
+                              {/* <Progress percent={this.state.progressTrack} status="active" />  */}
+                            </div>: null     
                           }
-                        </div> : null
-                      }
                     </div>
                   </div>
                 </Col>
@@ -362,19 +492,19 @@ class home extends Component {
                             onClick={this.displayTrim}
                             style={{margin: "1rem", marginLeft: "2.25rem"}}
                     >
-                            <Icon type="plus"/> Trimming
+                            <Icon type="scissor" /> Trimming
                     </Button>
-                    <Button type="primary"
-                          onClick={this.displayCrop}
-                          style={{margin: "1rem", marginLeft: "2.25rem"}}
-                      >
-                            <Icon type="plus"/> Cropping
-                    </Button>
+                      <Button type="primary"
+                            onClick={this.displayCrop}
+                            style={{margin: "1rem", marginLeft: "2.25rem"}}
+                        >
+                              <Icon type="radius-upright" /> Cropping
+                      </Button>
                     <Button type="primary"
                           onClick={this.displayRotate}
                           style={{margin: "1rem", marginLeft: "2.25rem"}}
                       >
-                            <Icon type="plus"/> Rotate Video
+                            <Icon type="reload"/> Rotate Video
                     </Button>
 
                             { this.state.displayTrim ?
@@ -422,56 +552,19 @@ class home extends Component {
                             { this.state.displayCrop ?
                             <div className="crop-settings">
                               <h2>Video Crop Settings </h2>
-                              <Row gutter={10}>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Width</Typography.Text>
-                                  <div className="form-group">
-                                    <Input placeholder="xxx"
-                                           ref="out_width"
-                                           name="out_width"
-                                           id="out_width"
-                                           value={this.state.out_width}
-                                           onChange={this.onChangeCrop}/>
-                                  </div>
-                                </Col>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Out Height</Typography.Text>
-                                  <div className="form-group">
-                                    <Input
-                                        placeholder="xxx"
-                                        ref="out_height"
-                                        name="out_height"
-                                        id="out_height"
-                                        value={this.state.out_height}
-                                        onChange={this.onChangeCrop}
-                                    />
-                                  </div>
-                                  </Col>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>X</Typography.Text>
-                                  <div className="form-group">
-                                    <Input placeholder="xxx"
-                                           name="x_value"
-                                           id="x_value"
-                                           value={this.state.x_value}
-                                           onChange={this.onChangeCrop}/>
-                                  </div>
-                                </Col>
-                                <Col span={6}>
-                                  <Typography.Text strong style={{paddingRight: '0.2rem'}}>Y</Typography.Text>
-                                  <div className="form-group">
-                                    <Input placeholder="xxx"
-                                           name="y_value"
-                                           id="y_value"
-                                           value={this.state.y_value}
-                                           onChange={this.onChangeCrop}/>
-                                  </div>
-                                </Col>
-                                </Row>
                                 <br/>
                                   <div className="form-group">
                                     <Button type="primary"
-                                            onClick={this.onSubmit}
+                                            onClick={(e) => {
+                                              this.setState({
+                                                //progressbar rotate
+                                                rotate: true,
+                                                beforeOnTapCrop: false,
+                                                AfterOnTapCrop: true,
+                                              });
+                                              this.openModal(e);
+                                              // this.onSubmit(e);
+                                            }}
                                             color="primary"
                                             name="crop"
                                             value="Submitted">
@@ -487,32 +580,26 @@ class home extends Component {
                                   </div>
                           </div> : null
                          }
-                         { this.state.displayRotate ?
-                             <div className="displayRotate">
-                             <h2> Video Rotate Settings </h2>
-                               <Radio.Group onChange={this.onChangeRadioButton} value={this.state.value}>
-                                 <Radio style={radioStyle} value={0}>
-                                   90 CounterCLockwise and Vertical Flip
-                                 </Radio>
-                                 <Radio style={radioStyle} value={1}>
-                                   90 Clockwise
-                                 </Radio>
-                                 <Radio style={radioStyle} value={2}>
-                                   90 CounterClockwise
-                                 </Radio>
-                                 <Radio style={radioStyle} value={3}>
-                                   90 Clockwise and Vertical Flip
-                                 </Radio>
-                               </Radio.Group>
-                               <Button type="primary"
-                                     onClick={this.onSubmit}
-                                     name="rotate"
-                                     style={{margin: "1rem", marginLeft: "2.25rem"}}
-                                 >
-                                       <Icon type="reload" /> Rotate Video
-                               </Button>
-                             </div> : null
-                         }
+                               <Divider>Your new video</Divider>
+                              {/* <h2 style={{ textAlign: 'center' }}>Your New Video </h2> */}
+                              <Col span={10}>
+                                  <Button type="primary"
+                                      onClick={this.onSubmit}
+                                      name="rotate"
+                                      style={{margin: "1rem", marginLeft: "2.25rem"}}
+                                  >
+                                        <Icon type="download" /> Download
+                                </Button>
+                              </Col>
+                              <Col span={12}>
+                                <Button type="primary"
+                                      onClick={this.onSubmit}
+                                      name="rotate"
+                                      style={{margin: "1rem", marginLeft: "2.25rem"}}
+                                  >
+                                        <Icon type="upload" /> Upload to Commons
+                                </Button>
+                              </Col>
                     </Col>
               </Row>
               <br />

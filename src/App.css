@@ -62,3 +62,27 @@ body{
   resize: both;
   overflow: none;
 }
+
+#RotatePlayer {
+  /* width: 754px;
+  height: 424px; */
+  padding: 20px;
+  width: 450px;
+  height: 300px;
+  position: relative;
+  transform: rotate(90deg);
+}
+
+.rotate {
+  animation: rotate-keyframes 15s;
+ }
+ 
+ @keyframes rotate-keyframes {
+  from {
+   transform: rotate(0deg);
+  }
+ 
+  to {
+   transform: rotate(360deg);
+  }
+ }
