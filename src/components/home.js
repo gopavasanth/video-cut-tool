@@ -64,22 +64,13 @@ class home extends Component {
       toggle: false,
       user: null,
       beforeOnTapCrop: true,
-      AfterOnTapCrop: false
+      AfterOnTapCrop: false,
+      upload: false
     }
   }
 
-  // componentDidMount () {
-  //   const script = document.createElement("script");
-  //   const script1 = document.createElement("script");
-  //   script.src = "https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js";
-  //   script1.src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js";
-  //   script.async = true;
-  //   script1.async = true;
-  //   document.body.appendChild(script, script1);
-  // }
-
   onLogin() {
-    PopupTools.popup('/video-cut-tool/auth/wiki', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
+    PopupTools.popup('/video-cut-tool/auth/mediawiki/callback', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
       if (!err) {
         console.log(' login response ', err, data);
         this.setState({user: data.user})
@@ -269,7 +260,8 @@ class home extends Component {
       trimMode: e.target.name,
       disableAudio: this.state.disableAudio,
       value: this.state.value,
-      user: this.state.user
+      user: this.state.user,
+      upload: this.state.upload
     };
 
     axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
@@ -382,7 +374,8 @@ class home extends Component {
                             <br />
                             {
                               this.state.displayVideoName ?
-                                <a href= {`http://localhost:4000/routes/${this.state.videoName}`} download="{this.state.videoName}">Click here to download your video {this.state.videoName} </a>
+                                <a href={`/../../../VideoCutTool-Back-End/routes/${this.state.videoName}`} download={`${this.state.videoName}`}>Download Your Video Here</a>
+                                // <a href= {`http://localhost:4000/routes/${this.state.videoName}`} download="{this.state.videoName}">Click here to download your video {this.state.videoName} </a>
                                 // <a href='/somefile.txt' download>Click to download</a>
                               : null
                             }
@@ -542,6 +535,7 @@ class home extends Component {
                                               color="primary"
                                               style={{marginLeft: '10px', marginTop: '10px'}}
                                               value="Submitted"
+                                              upload="true"
                                           >
                                             <Icon type="upload"/>Upload to Commons
                                           </Button>
