@@ -39,6 +39,7 @@ class home extends Component {
     this.onLogin = this.onLogin.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
+    this.upload = this.upload.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -183,6 +184,12 @@ class home extends Component {
   displayVideoName(){
     this.setState({
       displayVideoName: true,
+    })
+  }
+
+  upload(){
+    this.setState({
+      upload: true
     })
   }
 
@@ -535,7 +542,7 @@ class home extends Component {
                                               color="primary"
                                               style={{marginLeft: '10px', marginTop: '10px'}}
                                               value="Submitted"
-                                              upload="true"
+                                              upload={this.state.upload}
                                           >
                                             <Icon type="upload"/>Upload to Commons
                                           </Button>
@@ -587,7 +594,12 @@ class home extends Component {
                               </Col>
                               <Col span={12}>
                                 <Button type="primary"
-                                      onClick={this.onSubmit}
+                                      onClick={(e)=> 
+                                        {
+                                        this.setState({upload: true});
+                                        this.onSubmit(e);
+                                        }
+                                      }
                                       name="rotate"
                                       style={{margin: "1rem", marginLeft: "2.25rem"}}
                                   >
