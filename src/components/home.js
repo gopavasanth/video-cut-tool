@@ -71,7 +71,7 @@ class home extends Component {
   }
 
   onLogin() {
-    PopupTools.popup('/video-cut-tool/auth/mediawiki/callback', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
+    PopupTools.popup('http://localhost:3000/video-cut-tool/auth/mediawiki/callback', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
       if (!err) {
         console.log(' login response ', err, data);
         this.setState({user: data.user})
@@ -612,7 +612,7 @@ class home extends Component {
             </Content>
           </form>
           <Footer style={{ textAlign: 'center' }}>
-            © 2019 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span></a> |
+            © 2019 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span> </a> built with <b>Hassan Amin</b> support &hearts; |
             <a href="https://github.com/gopavasanth/VideoCutTool"><span> Github </span></a> |
             <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><span> GNU Licence </span></a>
           </Footer>
