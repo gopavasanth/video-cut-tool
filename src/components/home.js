@@ -71,17 +71,11 @@ class home extends Component {
   }
 
   onLogin() {
-    PopupTools.popup('http://localhost:3000/video-cut-tool/auth/mediawiki/callback', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
+    PopupTools.popup('http://localhost:4000/video-cut-tool-back-end/login', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
       if (!err) {
         console.log(' login response ', err, data);
         this.setState({user: data.user})
-        NotificationManager.success('Awesome! You can now upload files to VideoWiki directly from your computer.');
-        setTimeout(() => {
-          window.location.reload();
-        }, 3000);
-        if (this.props.onAuth) {
-          this.props.onAuth()
-        }
+        NotificationManager.success('Logged in successfully');
       }
     })
   }
@@ -344,14 +338,25 @@ class home extends Component {
                 style={{ lineHeight: '64px' }}
             >
               {/* <a href="http://localhost:4000/video-cut-tool-back-end/login" style={{float: 'right'}} ><span> Login </span></a> */}
+              {this.state.user ? (
                 <Button
                   primary
                   className="c-auth-buttons__signup"
                   style={{float: 'right'}}
-                  onClick={this.onLogin.bind(this)}
                 >
-                  Register / Login with Wikipedia
+                  {this.state.user.username}
                 </Button>
+              ) : (
+
+                  <Button
+                    primary
+                    className="c-auth-buttons__signup"
+                    style={{float: 'right'}}
+                    onClick={this.onLogin.bind(this)}
+                  >
+                    Register / Login with Wikipedia
+                  </Button>
+                )}
               <Typography.Title level={4} style={{ color: 'White', float: 'left' }}> VideoCutTool</Typography.Title>
             </Menu>
           </Header>
