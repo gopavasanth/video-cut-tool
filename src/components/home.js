@@ -72,7 +72,7 @@ class home extends Component {
   }
 
   onLogin() {
-    PopupTools.popup('http://localhost:4000/auth/mediawiki', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
+    PopupTools.popup('http://localhost:4000/video-cut-tool-back-end/login', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
       if (!err) {
         console.log(' login response ', err, data);
         this.setState({ user: data.user })
@@ -473,24 +473,24 @@ class home extends Component {
                             <source src={this.state.playerSource} />
                           </Player>
                           {/* <Popup
-                                          open={this.state.open}
-                                          closeOnDocumentClick
-                                          onClose={this.closeModal}
-                                        >
-                                            <a className="close" onClick={this.closeModal}>
-                                              &times;
-                                            </a>
-                                            <img
-                                                src={ this.state.toggle ? "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
-                                                    : "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
-                                                } style={{align: "middle"}}
-                                                ref={elm => {
-                                                  this.image = elm;
-                                                }}
-                                                className={this.state.rotate ? "rotate" : ""}
-                                              />
+                              open={this.state.open}
+                              closeOnDocumentClick
+                              onClose={this.closeModal}
+                            >
+                                <a className="close" onClick={this.closeModal}>
+                                  &times;
+                                </a>
+                                <img
+                                    src={ this.state.toggle ? "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
+                                        : "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
+                                    } style={{align: "middle"}}
+                                    ref={elm => {
+                                      this.image = elm;
+                                    }}
+                                    className={this.state.rotate ? "rotate" : ""}
+                                  />
 
-                                        </Popup>                                 */}
+                            </Popup>                                 */}
                         </div>
                         {/* <Progress percent={this.state.progressTrack} status="active" />  */}
                       </div> : null
@@ -598,7 +598,6 @@ class home extends Component {
                   </div> : null
                 }
                 <Divider>Your new video</Divider>
-                {/* <h2 style={{ textAlign: 'center' }}>Your New Video </h2> */}
                 <Col span={10}>
                   <Button type="primary"
                     onClick={this.onSubmit}
@@ -606,7 +605,7 @@ class home extends Component {
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="download" /> Download
-                                </Button>
+                  </Button>
                 </Col>
                 <Col span={12}>
                   <Button type="primary"
@@ -619,7 +618,7 @@ class home extends Component {
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="upload" /> Upload to Commons
-                                </Button>
+                  </Button>
                 </Col>
               </Col>
             </Row>
