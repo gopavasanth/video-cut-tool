@@ -32,15 +32,20 @@ class home extends Component {
     this.displayRotate = this.displayRotate.bind(this);
     this.handleDrag = this.handleDrag.bind(this);
     this.videoName = this.videoName.bind(this);
-    this.rotatingDone = this.rotatingDone.bind(this);
-    this.state = { open: false };
-    this.openModal = this.openModal.bind(this);
-    this.closeModal = this.closeModal.bind(this);
+    // this.rotatingDone = this.rotatingDone.bind(this);
+    // this.state = { open: false };
+    // this.openModal = this.openModal.bind(this);
+    // this.closeModal = this.closeModal.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
     this.upload = this.upload.bind(this);
     this.title = this.title.bind(this);
+
+    this.rotateVideo = this.rotateVideo.bind(this);
+    this.trimIntoMultipleVideos = this.trimIntoMultipleVideos.bind(this);
+    this.trimIntoSingleVideo = this.trimIntoSingleVideo.bind(this);
+    this.cropVideo = this.cropVideo.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -69,7 +74,11 @@ class home extends Component {
       beforeOnTapCrop: true,
       AfterOnTapCrop: false,
       upload: false,
-      title: ''
+      title: '',
+      rotateVideo: false,
+      trimIntoSingleVideo: false,
+      trimIntoMultipleVideos: false,
+      cropVideo: false
     }
   }
 
@@ -111,12 +120,12 @@ class home extends Component {
     })
   }
 
-  openModal() {
-    this.setState({ open: true });
-  }
-  closeModal() {
-    this.setState({ open: false });
-  }
+  // openModal() {
+  //   this.setState({ open: true });
+  // }
+  // closeModal() {
+  //   this.setState({ open: false });
+  // }
 
   eventLogger = (e: MouseEvent, data: Object) => {
     console.log('Event: ', e);
@@ -139,13 +148,36 @@ class home extends Component {
     })
   }
 
+  rotateVideo(){
+    this.setState({
+      rotateVideo: true
+    })
+  }
+
+  cropVideo(){
+    this.setState({
+      cropVideo: true
+    })
+  }
+
+  trimIntoMultipleVideos(){
+    this.setState({
+      trimIntoMultipleVideos: true
+    })
+  }
+
+  trimIntoSingleVideo(){
+    this.setState({
+      trimIntoSingleVideo: true
+    })
+  }
+
   displayCrop() {
     this.setState({
       displayCrop: true,
       displayTrim: false,
       displayRotate: false,
-      displayPlayer: false,
-      trimMode: 'crop',
+      displayPlayer: false
     })
   }
 
@@ -271,11 +303,15 @@ class home extends Component {
       x_value: this.state.x_value,
       y_value: this.state.y_value,
       trimMode: e.target.name,
-      disableAudio: this.state.disableAudio,
       value: this.state.value,
       user: this.state.user,
       upload: this.state.upload,
-      title: this.state.title
+      title: this.state.title,
+      rotateVideo: this.state.rotateVideo,
+      cropVideo: this.state.cropVideo,
+      disableAudio: this.state.disableAudio,
+      trimIntoMultipleVideos: this.state.trimIntoMultipleVideos,
+      trimIntoSingleVideo: this.state.trimIntoSingleVideo
     };
 
     axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
@@ -304,7 +340,11 @@ class home extends Component {
       trimMode: '',
       disableAudio: '',
       value: '',
-      title: ''
+      title: '',
+      trimIntoMultipleVideos: false,
+      trimIntoSingleVideo: false,
+      cropVideo: false,
+      rotateVideo: false
     })
   }
 
@@ -316,6 +356,11 @@ class home extends Component {
       height: '30px',
       lineHeight: '30px',
     };
+    console.log("Rotate Video: " + this.state.rotateVideo);
+    console.log("Trim in to Multiple videos: " + this.state.trimIntoMultipleVideos);
+    console.log("Trim in to single videos: " + this.state.trimIntoSingleVideo);
+    console.log("Crop Video: " + this.state.cropVideo);
+    console.log("Diable Audio: " + this.state.disableAudio);
 
     const trims = this.state.trims.map((trim, i) =>
       (
@@ -527,7 +572,11 @@ class home extends Component {
                   <Icon type="radius-upright" /> Cropping
                       </Button>
                 <Button type="primary"
-                  onClick={this.displayRotate}
+                  onClick={(e)=>{
+                    this.displayRotate(e);
+                    this.setState({rotateVideo: true});
+                   }
+                  }
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
                   <Icon type="reload" /> Rotate Video
@@ -548,21 +597,29 @@ class home extends Component {
                       <div>
                         <Col span={12}>
                           <Button type="primary"
-                            onClick={this.onSubmit}
+                            onClick={(e)=>{
+                              this.setState({trimIntoSingleVideo: true});
+                              this.onSubmit(e);
+                              }
+                            }
                             name="single"
                             color="primary"
                             value="Submitted">
                             <Icon type="radius-setting" /> As Single Video
-                                            </Button>
+                          </Button>
                         </Col>
                         <Col Span={12}>
                           <Button type="primary"
-                            onClick={this.onSubmit}
+                            onClick={(e)=>{
+                              this.setState({trimIntoMultipleVideos: true});
+                              this.onSubmit(e);
+                              }
+                            }
                             color="primary"
                             name="multiple"
                             value="Submitted">
                             <Icon type="radius-setting" /> As Multiple Videos
-                                            </Button>
+                          </Button>
                         </Col>
                         <Button
                           color="primary"
@@ -571,7 +628,7 @@ class home extends Component {
                           upload={this.state.upload}
                         >
                           <Icon type="upload" />Upload to Commons
-                                          </Button>
+                        </Button>
                       </div>
                     </div>
                   </div> : null
@@ -585,25 +642,26 @@ class home extends Component {
                         onClick={(e) => {
                           this.setState({
                             //progressbar rotate
-                            rotate: true,
+                            // rotate: true,
                             beforeOnTapCrop: false,
                             AfterOnTapCrop: true,
+                            cropVideo: true
                           });
                           // this.openModal(e);
-                          this.onSubmit(e);
+                          // this.onSubmit(e);
                         }}
                         color="primary"
-                        name="crop"
-                        value="Submitted">
+                        name="crop">
+                        {/* value="Submitted"> */}
                         <Icon type="radius-setting" /> Crop
-                                    </Button>
+                      </Button>
                       <Button
                         color="primary"
                         style={{ marginLeft: '10px' }}
                         value="Submitted"
                       >
                         <Icon type="upload" />Upload to Commons
-                                    </Button>
+                      </Button>
                     </div>
                   </div> : null
                 }
