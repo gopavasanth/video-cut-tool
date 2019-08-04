@@ -40,6 +40,7 @@ class home extends Component {
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
     this.upload = this.upload.bind(this);
+    this.title = this.title.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -67,7 +68,8 @@ class home extends Component {
       user: null,
       beforeOnTapCrop: true,
       AfterOnTapCrop: false,
-      upload: false
+      upload: false,
+      title: ''
     }
   }
 
@@ -101,6 +103,12 @@ class home extends Component {
         rotate: false
       };
     });
+  }
+  
+  title(){
+    this.setState({
+      title: this.state.title
+    })
   }
 
   openModal() {
@@ -266,7 +274,8 @@ class home extends Component {
       disableAudio: this.state.disableAudio,
       value: this.state.value,
       user: this.state.user,
-      upload: this.state.upload
+      upload: this.state.upload,
+      title: this.state.title
     };
 
     axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
@@ -294,7 +303,8 @@ class home extends Component {
       y_value: '',
       trimMode: '',
       disableAudio: '',
-      value: ''
+      value: '',
+      title: ''
     })
   }
 
@@ -619,6 +629,15 @@ class home extends Component {
                   >
                     <Icon type="upload" /> Upload to Commons
                   </Button>
+                  <Divider>Enter the new video title</Divider>
+                  <Input
+                          placeholder="myNewVideo.webm"
+                          ref="title"
+                          name="title"
+                          id="title"
+                          value={this.state.title}
+                          onChange={this.handleValueChange}
+                      />
                 </Col>
               </Col>
             </Row>
