@@ -14,6 +14,8 @@ import "../../node_modules/video-react/dist/video-react.css"; // import css
 import axios from 'axios';
 import Draggable from 'react-draggable';
 
+const API_URL = 'http://localhost:4000'
+
 const { Header, Content, Footer } = Layout;
 
 class home extends Component {
@@ -52,7 +54,8 @@ class home extends Component {
         x: 0,
         y: 0,
       },
-      trimMode: 'trim',
+      videos: [],
+      trimMode: 'single',
       inputVideoUrl: '',
       trims: [{ from: '', to: '' }],
       out_width: '',
@@ -75,15 +78,16 @@ class home extends Component {
       AfterOnTapCrop: false,
       upload: false,
       title: '',
+      trimVideo: true,
       rotateVideo: false,
-      trimIntoSingleVideo: false,
+      cropVideo: false,
+      trimIntoSingleVideo: true,
       trimIntoMultipleVideos: false,
-      cropVideo: false
     }
   }
 
   onLogin() {
-    PopupTools.popup('http://localhost:4000/video-cut-tool-back-end/login', 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
+    PopupTools.popup(`${API_URL}/video-cut-tool-back-end/login`, 'Wiki Connect', { width: 1000, height: 600 }, (err, data) => {
       if (!err) {
         console.log(' login response ', err, data);
         this.setState({ user: data.user })
@@ -113,8 +117,8 @@ class home extends Component {
       };
     });
   }
-  
-  title(){
+
+  title() {
     this.setState({
       title: this.state.title
     })
@@ -148,27 +152,29 @@ class home extends Component {
     })
   }
 
-  rotateVideo(){
+  rotateVideo() {
     this.setState({
       rotateVideo: true
     })
   }
 
-  cropVideo(){
+  cropVideo() {
     this.setState({
       cropVideo: true
     })
   }
 
-  trimIntoMultipleVideos(){
+  trimIntoMultipleVideos() {
     this.setState({
-      trimIntoMultipleVideos: true
+      trimIntoMultipleVideos: true,
+      trimIntoSingleVideo: false,
     })
   }
 
-  trimIntoSingleVideo(){
+  trimIntoSingleVideo() {
     this.setState({
-      trimIntoSingleVideo: true
+      trimIntoSingleVideo: true,
+      trimIntoMultipleVideos: false,
     })
   }
 
@@ -302,7 +308,7 @@ class home extends Component {
       out_height: this.state.out_height,
       x_value: this.state.x_value,
       y_value: this.state.y_value,
-      trimMode: e.target.name,
+      trimMode: this.state.trimIntoSingleVideo ? 'single' : 'multiple',
       value: this.state.value,
       user: this.state.user,
       upload: this.state.upload,
@@ -313,39 +319,40 @@ class home extends Component {
       trimIntoMultipleVideos: this.state.trimIntoMultipleVideos,
       trimIntoSingleVideo: this.state.trimIntoSingleVideo
     };
-
-    axios.post('http://localhost:4000/video-cut-tool-back-end/send', obj)
+    this.setState({ videos: []});
+    axios.post(`${API_URL}/video-cut-tool-back-end/send`, obj)
       // .then(res => console.log(res.data.message))
       .then((res) => {
         // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
         console.log(res);
-        if (res.data.message === "Rotating Sucess" || res.data.message === "Cropping Sucess") {
-          this.setState({ progressTrack: 100 });
-          this.setState({ displayVideoName: true })
-          this.setState({ videoName: res.data.videoName });
-          console.log(res.data.message);
-          console.log("VideoName: " + res.data.videoName)
-        }
+        this.setState({ videos: res.data.videos });
+        // if (res.data.message === "Rotating Sucess" || res.data.message === "Cropping Sucess") {
+        //   this.setState({ progressTrack: 100 });
+        //   this.setState({ displayVideoName: true })
+        //   this.setState({ videoName: res.data.videoName });
+        //   console.log(res.data.message);
+        //   console.log("VideoName: " + res.data.videoName)
+        // }
       });
-    console.log("Progress Track: " + this.state.progressTrack)
+    // console.log("Progress Track: " + this.state.progressTrack)
 
-    this.setState({
-      from_location: '',
-      inputVideoUrl: '',
-      trims: [{from: '', to: ''}],
-      out_width: '',
-      out_height: '',
-      x_value: '',
-      y_value: '',
-      trimMode: '',
-      disableAudio: '',
-      value: '',
-      title: '',
-      trimIntoMultipleVideos: false,
-      trimIntoSingleVideo: false,
-      cropVideo: false,
-      rotateVideo: false
-    })
+    // this.setState({
+    //   from_location: '',
+    //   inputVideoUrl: '',
+    //   trims: [{from: '', to: ''}],
+    //   out_width: '',
+    //   out_height: '',
+    //   x_value: '',
+    //   y_value: '',
+    //   trimMode: '',
+    //   disableAudio: '',
+    //   value: '',
+    //   title: '',
+    //   trimIntoMultipleVideos: false,
+    //   trimIntoSingleVideo: false,
+    //   cropVideo: false,
+    //   rotateVideo: false
+    // })
   }
 
   render() {
@@ -443,13 +450,16 @@ class home extends Component {
                             Play Video
                             </Button>
                           <br />
-                          {
+                          {this.state.videos && this.state.videos.map((video) => (
+                            <video controls src={`${API_URL}/${video}`} />
+                          ))}
+                          {/* {
                             this.state.displayVideoName ?
                               <a href={`/../../../VideoCutTool-Back-End/routes/${this.state.videoName}`} download={`${this.state.videoName}`}>Download Your Video Here</a>
                               // <a href= {`http://localhost:4000/routes/${this.state.videoName}`} download="{this.state.videoName}">Click here to download your video {this.state.videoName} </a>
                               // <a href='/somefile.txt' download>Click to download</a>
                               : null
-                          }
+                          } */}
                         </FormGroup>
                       </div>
                     </Form>
@@ -555,6 +565,17 @@ class home extends Component {
               </Col>
               <Col span={8}>
                 <h2 style={{ textAlign: 'center' }}>Video Settings </h2>
+                <Row gutter={16}>
+                  <Col span={6}>
+                    <Checkbox checked={this.state.trimVideo} onChange={(e) => this.setState({ trimVideo: e.target.checked })} >Trim Video</Checkbox>
+                  </Col>
+                  <Col span={6}>
+                    <Checkbox checked={this.state.cropVideo} onChange={(e) => this.setState({ cropVideo: e.target.checked })} >Crop Video</Checkbox>
+                  </Col>
+                  <Col span={6}>
+                    <Checkbox checked={this.state.rotateVideo} onChange={(e) => this.setState({ rotateVideo: e.target.checked })} >Rotate Video</Checkbox>
+                  </Col>
+                </Row>
                 <div className="disableAudio" style={{ pos: '10px' }}>
                   <Checkbox onClick={this.disableAudio}> Remove Audio</Checkbox>
                 </div>
@@ -572,10 +593,10 @@ class home extends Component {
                   <Icon type="radius-upright" /> Cropping
                       </Button>
                 <Button type="primary"
-                  onClick={(e)=>{
+                  onClick={(e) => {
                     this.displayRotate(e);
-                    this.setState({rotateVideo: true});
-                   }
+                    this.setState({ rotateVideo: true });
+                  }
                   }
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
@@ -596,30 +617,32 @@ class home extends Component {
                     <div className="form-group">
                       <div>
                         <Col span={12}>
-                          <Button type="primary"
-                            onClick={(e)=>{
-                              this.setState({trimIntoSingleVideo: true});
+                          <Radio checked={this.state.trimIntoSingleVideo} onClick={this.trimIntoSingleVideo}>As single video</Radio>
+                          {/* <Button type="primary"
+                            onClick={(e) => {
+                              this.setState({ trimIntoSingleVideo: true });
                               this.onSubmit(e);
-                              }
+                            }
                             }
                             name="single"
                             color="primary"
                             value="Submitted">
                             <Icon type="radius-setting" /> As Single Video
-                          </Button>
+                          </Button> */}
                         </Col>
                         <Col Span={12}>
-                          <Button type="primary"
-                            onClick={(e)=>{
-                              this.setState({trimIntoMultipleVideos: true});
+                          <Radio checked={this.state.trimIntoMultipleVideos} onClick={this.trimIntoMultipleVideos}>As multiple videos</Radio>
+                          {/* <Button type="primary"
+                            onClick={(e) => {
+                              this.setState({ trimIntoMultipleVideos: true });
                               this.onSubmit(e);
-                              }
+                            }
                             }
                             color="primary"
                             name="multiple"
                             value="Submitted">
                             <Icon type="radius-setting" /> As Multiple Videos
-                          </Button>
+                          </Button> */}
                         </Col>
                         <Button
                           color="primary"
@@ -689,13 +712,13 @@ class home extends Component {
                   </Button>
                   <Divider>Enter the new video title</Divider>
                   <Input
-                          placeholder="myNewVideo.webm"
-                          ref="title"
-                          name="title"
-                          id="title"
-                          value={this.state.title}
-                          onChange={this.handleValueChange}
-                      />
+                    placeholder="myNewVideo.webm"
+                    ref="title"
+                    name="title"
+                    id="title"
+                    value={this.state.title}
+                    onChange={this.handleValueChange}
+                  />
                 </Col>
               </Col>
             </Row>
