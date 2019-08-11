@@ -48,6 +48,7 @@ class home extends Component {
     this.trimIntoMultipleVideos = this.trimIntoMultipleVideos.bind(this);
     this.trimIntoSingleVideo = this.trimIntoSingleVideo.bind(this);
     this.cropVideo = this.cropVideo.bind(this);
+    this.UndodisableAudio = this.UndodisableAudio.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -71,17 +72,18 @@ class home extends Component {
       progressTrack: 0,
       videoName: '',
       displayVideoName: false,
-      rotate: false,
-      toggle: false,
+      // this we are not using for now
+      // rotate: false,
+      // toggle: false,
       user: null,
       beforeOnTapCrop: true,
       AfterOnTapCrop: false,
       upload: false,
       title: '',
-      trimVideo: true,
+      trimVideo: false,
       rotateVideo: false,
       cropVideo: false,
-      trimIntoSingleVideo: true,
+      trimIntoSingleVideo: false,
       trimIntoMultipleVideos: false,
     }
   }
@@ -224,6 +226,12 @@ class home extends Component {
       disableAudio: true
     })
   }
+  
+  UndodisableAudio() {
+    this.setState({
+      disableAudio: false
+    })
+  }
 
   displayVideoName() {
     this.setState({
@@ -325,7 +333,7 @@ class home extends Component {
       .then((res) => {
         // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
         console.log(res);
-        this.setState({ videos: res.data.videos });
+        this.setState({ videos: res.data.videos, displayRotate: false });
         // if (res.data.message === "Rotating Sucess" || res.data.message === "Cropping Sucess") {
         //   this.setState({ progressTrack: 100 });
         //   this.setState({ displayVideoName: true })
@@ -363,10 +371,12 @@ class home extends Component {
       height: '30px',
       lineHeight: '30px',
     };
+    console.log("============================");
     console.log("Rotate Video: " + this.state.rotateVideo);
     console.log("Trim in to Multiple videos: " + this.state.trimIntoMultipleVideos);
     console.log("Trim in to single videos: " + this.state.trimIntoSingleVideo);
     console.log("Crop Video: " + this.state.cropVideo);
+    console.log("Trim Video: " + this.state.trimVideo);
     console.log("Diable Audio: " + this.state.disableAudio);
 
     const trims = this.state.trims.map((trim, i) =>
@@ -516,7 +526,7 @@ class home extends Component {
                         </div>
 
                         <div>
-                          <div className="box" style={{ height: this.state.out_height, width: this.state.out_width, position: 'fixed', overflow: 'auto', padding: '0' }}>
+                          <div className="box" >
                             {this.state.AfterOnTapCrop ?
                               <div>
                                 <Player ref="player" videoId="video-1">
@@ -565,34 +575,89 @@ class home extends Component {
               </Col>
               <Col span={8}>
                 <h2 style={{ textAlign: 'center' }}>Video Settings </h2>
-                <Row gutter={16}>
-                  <Col span={6}>
-                    <Checkbox checked={this.state.trimVideo} onChange={(e) => this.setState({ trimVideo: e.target.checked })} >Trim Video</Checkbox>
-                  </Col>
-                  <Col span={6}>
-                    <Checkbox checked={this.state.cropVideo} onChange={(e) => this.setState({ cropVideo: e.target.checked })} >Crop Video</Checkbox>
-                  </Col>
-                  <Col span={6}>
-                    <Checkbox checked={this.state.rotateVideo} onChange={(e) => this.setState({ rotateVideo: e.target.checked })} >Rotate Video</Checkbox>
-                  </Col>
-                </Row>
-                <div className="disableAudio" style={{ pos: '10px' }}>
+                {/* <div className="disableAudio" style={{ pos: '10px' }}>
                   <Checkbox onClick={this.disableAudio}> Remove Audio</Checkbox>
-                </div>
+                </div> */}
+                <Col span={10}>
+                  <Button type="primary"
+                    onClick={this.disableAudio}
+                    onChange={(e) => this.setState({ trimVideo: e.target.checked })}
+                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                  >
+                    <Icon type="scissor" /> Remove Audio
+                  </Button>
+                </Col>
+                <Col span={12}>
+                  <Button type="primary"
+                    onClick={this.UndodisableAudio}
+                    onChange={(e) => this.setState({ trimVideo: e.target.checked })}
+                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                  >
+                    <Icon type="scissor" /> Undo
+                  </Button>
+                </Col>
                 <br />
+                <Col span={10}>
+                  <Button type="primary"
+                    onClick={(e)=>{this.rotateVideo();
+                        this.displayRotate();
+                    }}
+                    onChange={(e) => this.setState({ trimVideo: e.target.checked })}
+                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                  >
+                    <Icon type="scissor" /> Rotate Video
+                  </Button>
+                </Col>
+                <Col span={12}>
+                  <Button type="primary"
+                    onClick={(e) => this.setState({rotateVideo: false})}
+                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                  >
+                    <Icon type="scissor" /> Undo
+                  </Button>
+                </Col>
+                <br />
+                <Col span={10}>
                 <Button type="primary"
-                  onClick={this.displayTrim}
+                  onClick={(e)=> {
+                    this.displayTrim();
+                    this.setState({
+                      trimVideo: true
+                    })
+                   }}
+                  onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
-                  <Icon type="scissor" /> Trimming
-                    </Button>
+                  <Icon type="scissor" /> Trim Video
+                </Button>
+                </Col>
+                <Col span={10}>
+                  <Button type="primary"
+                      onClick={(e) => this.setState({trimVideo: false})}
+                      style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                    >
+                      <Icon type="radius-upright" /> Undo
+                  </Button>
+                </Col>
+                <Col span={10}>
                 <Button type="primary"
-                  onClick={this.displayCrop}
+                  onClick={(e)=>{this.cropVideo();
+                  this.displayCrop()}}
+                  onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
-                  <Icon type="radius-upright" /> Cropping
-                      </Button>
-                <Button type="primary"
+                  <Icon type="scissor" /> Crop Video
+                </Button>
+                </Col>
+                <Col span={10}>
+                  <Button type="primary"
+                      onClick={(e) => this.setState({cropVideo: false})}
+                      style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                    >
+                      <Icon type="radius-upright" /> Undo
+                  </Button>
+                </Col>
+                {/* <Button type="primary"
                   onClick={(e) => {
                     this.displayRotate(e);
                     this.setState({ rotateVideo: true });
@@ -601,8 +666,8 @@ class home extends Component {
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
                   <Icon type="reload" /> Rotate Video
-                    </Button>
-
+                    </Button> */}
+      
                 {this.state.displayTrim ?
                   <div className="trim-settings">
                     <h2>Video Trim Settings </h2>
