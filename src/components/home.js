@@ -321,6 +321,7 @@ class home extends Component {
       user: this.state.user,
       upload: this.state.upload,
       title: this.state.title,
+      trimVideo: this.state.trimVideo,
       rotateVideo: this.state.rotateVideo,
       cropVideo: this.state.cropVideo,
       disableAudio: this.state.disableAudio,
