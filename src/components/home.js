@@ -579,18 +579,20 @@ class home extends Component {
                   <Checkbox onClick={this.disableAudio}> Remove Audio</Checkbox>
                 </div> */}
                 <Col span={10}>
-                  <Button type="primary"
+                  <Button 
+                    type={'primary'}
+                    // disabled={this.state.disableAudio}
                     onClick={this.disableAudio}
-                    onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="scissor" /> Remove Audio
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button type="primary"
+                  <Button
+                    disabled={!this.state.disableAudio}
+                    // type={this.state.disableAudio ? 'primary' : 'default'}
                     onClick={this.UndodisableAudio}
-                    onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="scissor" /> Undo
@@ -598,11 +600,11 @@ class home extends Component {
                 </Col>
                 <br />
                 <Col span={10}>
-                  <Button type="primary"
+                  <Button 
+                    type="primary"
                     onClick={(e)=>{this.rotateVideo();
                         this.displayRotate();
                     }}
-                    onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="scissor" /> Rotate Video
@@ -610,6 +612,7 @@ class home extends Component {
                 </Col>
                 <Col span={12}>
                   <Button type="primary"
+                    disabled={!this.state.rotateVideo}
                     onClick={(e) => this.setState({rotateVideo: false})}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
@@ -625,7 +628,6 @@ class home extends Component {
                       trimVideo: true
                     })
                    }}
-                  onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
                   <Icon type="scissor" /> Trim Video
@@ -633,6 +635,7 @@ class home extends Component {
                 </Col>
                 <Col span={10}>
                   <Button type="primary"
+                      disabled={!this.state.trimVideo}
                       onClick={(e) => this.setState({trimVideo: false})}
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
                     >
@@ -643,7 +646,6 @@ class home extends Component {
                 <Button type="primary"
                   onClick={(e)=>{this.cropVideo();
                   this.displayCrop()}}
-                  onChange={(e) => this.setState({ trimVideo: e.target.checked })}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
                   <Icon type="scissor" /> Crop Video
@@ -651,6 +653,7 @@ class home extends Component {
                 </Col>
                 <Col span={10}>
                   <Button type="primary"
+                    disabled={!this.state.cropVideo}
                       onClick={(e) => this.setState({cropVideo: false})}
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
                     >
