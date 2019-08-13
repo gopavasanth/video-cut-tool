@@ -702,14 +702,14 @@ class home extends Component {
       
                 {this.state.displayTrim ?
                   <div className="trim-settings">
-                    <h2>Video Trim Settings </h2>
+                    <h2>VideoTrim Settings </h2>
                     {trims}
                     <Button type="primary"
                       onClick={this.add}
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
                     >
                       <Icon type="plus" /> Add More
-                                    </Button>
+                    </Button>
                     <br />
                     <div className="form-group">
                       <div>
@@ -741,21 +741,13 @@ class home extends Component {
                             <Icon type="radius-setting" /> As Multiple Videos
                           </Button> */}
                         </Col>
-                        <Button
-                          color="primary"
-                          style={{ marginLeft: '10px', marginTop: '10px' }}
-                          value="Submitted"
-                          upload={this.state.upload}
-                        >
-                          <Icon type="upload" />Upload to Commons
-                        </Button>
                       </div>
                     </div>
                   </div> : null
                 }
                 {this.state.displayCrop ?
                   <div className="crop-settings">
-                    <h2>Video Crop Settings </h2>
+                    <h2>VideoCrop Settings </h2>
                     <br />
                     <div className="form-group">
                       <Button type="primary"
