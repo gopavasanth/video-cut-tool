@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Progress, Divider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
+import { Menu, Input, Slider, Progress, Divider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
 import Popup from "reactjs-popup";
@@ -19,6 +19,14 @@ import { SyncLoader } from 'react-spinners';
 const API_URL = 'http://localhost:4000'
 
 const { Header, Content, Footer } = Layout;
+
+function onChangeSlider(value) {
+  console.log('onChangeSlider: ', value);
+}
+
+function onAfterChangeSlider(value) {
+  console.log('onAfterChangeSlider: ', value);
+}
 
 class home extends Component {
 
@@ -332,6 +340,7 @@ class home extends Component {
       trimMode: this.state.trimIntoSingleVideo ? 'single' : 'multiple',
       value: this.state.value,
       user: this.state.user,
+      trimVideo: this.state.trimVideo,
       upload: this.state.upload,
       title: this.state.title,
       rotateVideo: this.state.rotateVideo,
@@ -348,13 +357,6 @@ class home extends Component {
         console.log(res);
         //here var loading is for button loading 
         this.setState({ videos: res.data.videos, displayRotate: false, displayCrop: false, loading: false, displayPlayer: false, displayLoadingMessage: false });
-        // if (res.data.message === "Rotating Sucess" || res.data.message === "Cropping Sucess") {
-        //   this.setState({ progressTrack: 100 });
-        //   this.setState({ displayVideoName: true })
-        //   this.setState({ videoName: res.data.videoName });
-        //   console.log(res.data.message);
-        //   console.log("VideoName: " + res.data.videoName)
-        // }
       });
     // console.log("Progress Track: " + this.state.progressTrack)
 
@@ -402,6 +404,7 @@ class home extends Component {
               <Input placeholder="hh:mm:ss"
                 id={`trim-${i}-from`}
                 value={trim.from}
+                // value={value[0]}
                 onChange={this.onChange} />
             </div>
           </Col>
@@ -476,7 +479,7 @@ class home extends Component {
                             </Button>
                           <br />
                           {this.state.videos && this.state.videos.map((video) => (
-                            <video height="100%" width="100%" controls src={`${API_URL}/${video}`} />
+                            <video height="300px" width="450px" controls src={`${API_URL}/${video}`} />
                           ))}
                           {/* {
                             this.state.displayVideoName ?
@@ -507,6 +510,13 @@ class home extends Component {
                         <Player ref="player" videoId="video-1">
                           <source src={this.state.playerSource} />
                         </Player>
+                        <Slider
+                          range
+                          step={10}
+                          defaultValue={[20, 50]}
+                          onChange={onChangeSlider}
+                          onAfterChange={onAfterChangeSlider}
+                        />
                       </div> : null
                     }
 
@@ -552,7 +562,6 @@ class home extends Component {
                             }
                           </div>
                         </div>
-
                         <div>
                           <div className="box" >
                             {this.state.AfterOnTapCrop ?
@@ -563,7 +572,6 @@ class home extends Component {
                               </div> : null
                             }
                           </div>
-
                         </div>
                       </div> : null
                     }
@@ -612,7 +620,7 @@ class home extends Component {
                     onClick={this.disableAudio}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
-                    <Icon type="scissor" /> Remove Audio
+                    <Icon type="sound" /> Remove Audio
                   </Button>
                 </Col>
                 <Col span={12}>
@@ -633,7 +641,7 @@ class home extends Component {
                     }}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
-                    <Icon type="scissor" /> Rotate Video
+                    <Icon type="redo" /> Rotate Video
                   </Button>
                 </Col>
                 <Col span={12}>
@@ -677,7 +685,7 @@ class home extends Component {
                   this.displayCrop()}}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
-                  <Icon type="scissor" /> Crop Video
+                  <Icon type="radius-setting" /> Crop Video
                 </Button>
                 </Col>
                 <Col span={10}>
@@ -715,65 +723,11 @@ class home extends Component {
                       <div>
                         <Col span={12}>
                           <Radio checked={this.state.trimIntoSingleVideo} onClick={this.trimIntoSingleVideo}>As single video</Radio>
-                          {/* <Button type="primary"
-                            onClick={(e) => {
-                              this.setState({ trimIntoSingleVideo: true });
-                              this.onSubmit(e);
-                            }
-                            }
-                            name="single"
-                            color="primary"
-                            value="Submitted">
-                            <Icon type="radius-setting" /> As Single Video
-                          </Button> */}
                         </Col>
                         <Col Span={12}>
                           <Radio checked={this.state.trimIntoMultipleVideos} onClick={this.trimIntoMultipleVideos}>As multiple videos</Radio>
-                          {/* <Button type="primary"
-                            onClick={(e) => {
-                              this.setState({ trimIntoMultipleVideos: true });
-                              this.onSubmit(e);
-                            }
-                            }
-                            color="primary"
-                            name="multiple"
-                            value="Submitted">
-                            <Icon type="radius-setting" /> As Multiple Videos
-                          </Button> */}
                         </Col>
                       </div>
-                    </div>
-                  </div> : null
-                }
-                {this.state.displayCrop ?
-                  <div className="crop-settings">
-                    <h2>VideoCrop Settings </h2>
-                    <br />
-                    <div className="form-group">
-                      <Button type="primary"
-                        onClick={(e) => {
-                          this.setState({
-                            //progressbar rotate
-                            // rotate: true,
-                            beforeOnTapCrop: false,
-                            AfterOnTapCrop: true,
-                            cropVideo: true
-                          });
-                          // this.openModal(e);
-                          // this.onSubmit(e);
-                        }}
-                        color="primary"
-                        name="crop">
-                        {/* value="Submitted"> */}
-                        <Icon type="radius-setting" /> Crop
-                      </Button>
-                      <Button
-                        color="primary"
-                        style={{ marginLeft: '10px' }}
-                        value="Submitted"
-                      >
-                        <Icon type="upload" />Upload to Commons
-                      </Button>
                     </div>
                   </div> : null
                 }
