@@ -9,10 +9,12 @@ import { NotificationManager } from 'react-notifications';
 
 import '../App.css';
 import "antd/dist/antd.css";
+import { css } from '@emotion/core';
 import "../../node_modules/video-react/dist/video-react.css"; // import css
 
 import axios from 'axios';
 import Draggable from 'react-draggable';
+import { SyncLoader } from 'react-spinners';
 
 const API_URL = 'http://localhost:4000'
 
@@ -85,7 +87,17 @@ class home extends Component {
       cropVideo: false,
       trimIntoSingleVideo: false,
       trimIntoMultipleVideos: false,
+      //loading button
+      loading: false,
+      displayLoadingMessage: false
     }
+  }
+
+  enterLoading = () => {
+    this.setState({
+      loading: true,
+      displayLoadingMessage: true
+    });
   }
 
   onLogin() {
@@ -205,6 +217,7 @@ class home extends Component {
   displayTrim() {
     this.setState({
       displayTrim: true,
+      displayPlayer: true,
       displayCrop: false,
       displayRotate: false,
       trimMode: 'trim',
@@ -334,7 +347,8 @@ class home extends Component {
       .then((res) => {
         // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
         console.log(res);
-        this.setState({ videos: res.data.videos, displayRotate: false });
+        //here var loading is for button loading 
+        this.setState({ videos: res.data.videos, displayRotate: false, displayCrop: false, loading: false, displayPlayer: false, displayLoadingMessage: false });
         // if (res.data.message === "Rotating Sucess" || res.data.message === "Cropping Sucess") {
         //   this.setState({ progressTrack: 100 });
         //   this.setState({ displayVideoName: true })
@@ -452,6 +466,7 @@ class home extends Component {
                           name="inputVideoUrl"
                           id="inputVideoUrl"
                           value={this.state.inputVideoUrl}
+                          // value="https://upload.wikimedia.org/wikipedia/commons/4/47/1_a%C3%B1o_-_Trata_de_imitar_las_palabras_que_escucha.webm"
                           onChange={this.handleValueChange}
                         />
                       </FormGroup>
@@ -462,7 +477,7 @@ class home extends Component {
                             </Button>
                           <br />
                           {this.state.videos && this.state.videos.map((video) => (
-                            <video controls src={`${API_URL}/${video}`} />
+                            <video height="100%" width="100%" controls src={`${API_URL}/${video}`} />
                           ))}
                           {/* {
                             this.state.displayVideoName ?
@@ -477,6 +492,19 @@ class home extends Component {
                     <br />
                     {this.state.displayPlayer ?
                       <div className="player">
+                        { this.state.displayLoadingMessage ? 
+                          <div>
+                            <p>Your video is processing...</p>
+                              <SyncLoader
+                              sizeUnit={"px"}
+                              size={'20'}
+                              color={'#001529'}
+                              id="loading"
+                              loading={this.state.loading} 
+                            /> 
+                          </div>: null
+                        }
+                        <br />
                         <Player ref="player" videoId="video-1">
                           <source src={this.state.playerSource} />
                         </Player>
@@ -581,8 +609,7 @@ class home extends Component {
                 </div> */}
                 <Col span={10}>
                   <Button 
-                    type={'primary'}
-                    // disabled={this.state.disableAudio}
+                    type="primary"
                     onClick={this.disableAudio}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
@@ -592,16 +619,15 @@ class home extends Component {
                 <Col span={12}>
                   <Button
                     disabled={!this.state.disableAudio}
-                    // type={this.state.disableAudio ? 'primary' : 'default'}
                     onClick={this.UndodisableAudio}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
-                    <Icon type="scissor" /> Undo
+                    <Icon type="undo" /> Undo
                   </Button>
                 </Col>
                 <br />
                 <Col span={10}>
-                  <Button 
+                  <Button
                     type="primary"
                     onClick={(e)=>{this.rotateVideo();
                         this.displayRotate();
@@ -612,17 +638,18 @@ class home extends Component {
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button type="primary"
+                  <Button
                     disabled={!this.state.rotateVideo}
                     onClick={(e) => this.setState({rotateVideo: false})}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
-                    <Icon type="scissor" /> Undo
+                    <Icon type="undo" /> Undo
                   </Button>
                 </Col>
                 <br />
                 <Col span={10}>
-                <Button type="primary"
+                <Button
+                  type="primary"
                   onClick={(e)=> {
                     this.displayTrim();
                     this.setState({
@@ -635,16 +662,18 @@ class home extends Component {
                 </Button>
                 </Col>
                 <Col span={10}>
-                  <Button type="primary"
+                  <Button
+                      type="primary"
                       disabled={!this.state.trimVideo}
                       onClick={(e) => this.setState({trimVideo: false})}
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
                     >
-                      <Icon type="radius-upright" /> Undo
+                      <Icon type="undo" /> Undo
                   </Button>
                 </Col>
                 <Col span={10}>
-                <Button type="primary"
+                <Button
+                  type="primary"
                   onClick={(e)=>{this.cropVideo();
                   this.displayCrop()}}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
@@ -653,12 +682,12 @@ class home extends Component {
                 </Button>
                 </Col>
                 <Col span={10}>
-                  <Button type="primary"
+                  <Button
                     disabled={!this.state.cropVideo}
-                      onClick={(e) => this.setState({cropVideo: false})}
-                      style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                    >
-                      <Icon type="radius-upright" /> Undo
+                    onClick={(e) => this.setState({cropVideo: false})}
+                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                  >
+                      <Icon type="undo" /> Undo
                   </Button>
                 </Col>
                 {/* <Button type="primary"
@@ -674,14 +703,14 @@ class home extends Component {
       
                 {this.state.displayTrim ?
                   <div className="trim-settings">
-                    <h2>Video Trim Settings </h2>
+                    <h2>VideoTrim Settings </h2>
                     {trims}
                     <Button type="primary"
                       onClick={this.add}
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
                     >
                       <Icon type="plus" /> Add More
-                                    </Button>
+                    </Button>
                     <br />
                     <div className="form-group">
                       <div>
@@ -713,21 +742,13 @@ class home extends Component {
                             <Icon type="radius-setting" /> As Multiple Videos
                           </Button> */}
                         </Col>
-                        <Button
-                          color="primary"
-                          style={{ marginLeft: '10px', marginTop: '10px' }}
-                          value="Submitted"
-                          upload={this.state.upload}
-                        >
-                          <Icon type="upload" />Upload to Commons
-                        </Button>
                       </div>
                     </div>
                   </div> : null
                 }
                 {this.state.displayCrop ?
                   <div className="crop-settings">
-                    <h2>Video Crop Settings </h2>
+                    <h2>VideoCrop Settings </h2>
                     <br />
                     <div className="form-group">
                       <Button type="primary"
@@ -759,10 +780,15 @@ class home extends Component {
                 }
                 <Divider>Your new video</Divider>
                 <Col span={10}>
-                  <Button type="primary"
-                    onClick={this.onSubmit}
+                <Button type="primary"
+                    onClick={(e)=>{
+                      this.onSubmit(e);
+                      this.enterLoading();
+                    }}
                     name="rotate"
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                    shape="round"
+                    loading={this.state.loading} 
                   >
                     <Icon type="download" /> Download
                   </Button>
