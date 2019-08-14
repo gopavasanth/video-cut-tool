@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { Menu, Input, Slider, Progress, Divider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox } from 'antd';
+import { Menu, Steps, Input, notification, Slider, Progress, Divider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox, InputNumber } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
 import Popup from "reactjs-popup";
@@ -19,14 +19,31 @@ import { SyncLoader } from 'react-spinners';
 const API_URL = 'http://localhost:4000'
 
 const { Header, Content, Footer } = Layout;
+const { Step } = Steps;
 
-function onChangeSlider(value) {
-  console.log('onChangeSlider: ', value);
-}
+const showNotificationWithIconToAdd = type => {
+  notification[type]({
+    message: 'Notification !',
+    description:
+      'Your turned on a new feature',
+  });
+};
 
-function onAfterChangeSlider(value) {
-  console.log('onAfterChangeSlider: ', value);
-}
+const showNotificationWithIconToRemove = type => {
+  notification[type]({
+    message: 'Notification !',
+    description:
+      'Your turned off a new feature',
+  });
+};
+
+const showNotificationWithIconToWait = type => {
+  notification[type]({
+    message: 'Notification !',
+    description:
+      'Your video is being processing, Please wait until the new video is generated',
+  });
+};
 
 class home extends Component {
 
@@ -59,6 +76,9 @@ class home extends Component {
     this.trimIntoSingleVideo = this.trimIntoSingleVideo.bind(this);
     this.cropVideo = this.cropVideo.bind(this);
     this.UndodisableAudio = this.UndodisableAudio.bind(this);
+
+    //Implementing steps
+    this.changeStep = this.changeStep.bind(this);
 
     this.state = {
       deltaPosition: {
@@ -97,8 +117,19 @@ class home extends Component {
       trimIntoMultipleVideos: false,
       //loading button
       loading: false,
-      displayLoadingMessage: false
+      displayLoadingMessage: false,
+      //Slider Values,
+      changeStep: 0
     }
+  }
+
+  onChangeSlider(value, e) {
+    let trims = this.state.trims;
+    const id = e.target.id;
+    const index = id.match(/\d+/g).map(Number)[0];
+    // console.log('onChangeSlider: ', value);
+    trims[index].from = value[0];
+    trims[index].from = value[1];
   }
 
   enterLoading = () => {
@@ -106,6 +137,12 @@ class home extends Component {
       loading: true,
       displayLoadingMessage: true
     });
+  }
+
+  changeStep=(num) => {
+    this.setState({
+      changeStep: num
+    })
   }
 
   onLogin() {
@@ -120,7 +157,7 @@ class home extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     if (this.state.playerSource !== prevState.playerSource) {
-      this.refs.player.load();
+      this.refs.player.load();  
     }
   }
 
@@ -328,6 +365,27 @@ class home extends Component {
     });
   };
 
+  // handleStateChange(state) {
+  //   // copy player state to this component's state
+  //   this.setState({
+  //     player: state
+  //   });
+  // }
+
+  // onChangeSliders() {
+  //   const sliders = this.state.sliders;  
+  //   sliders.append(  {             
+  //       <Slider                            
+  //       range
+  //       step={10}
+  //       defaultValue={[20, 50]}
+  //       onChange={this.onChangeSlider} 
+  //     />
+  //     this.setState({  sliders });
+  //   }
+  // }
+
+
   onSubmit(e) {
     e.preventDefault();
     const obj = {
@@ -356,7 +414,7 @@ class home extends Component {
         // res.data.message === "Rotating success" ? null : this.setState({ progressTrack: 50 })
         console.log(res);
         //here var loading is for button loading 
-        this.setState({ videos: res.data.videos, displayRotate: false, displayCrop: false, loading: false, displayPlayer: false, displayLoadingMessage: false });
+        this.setState({ videos: res.data.videos, displayRotate: false, displayCrop: false, loading: false, displayPlayer: false, displayLoadingMessage: false, changeStep: 3 });
       });
     // console.log("Progress Track: " + this.state.progressTrack)
 
@@ -387,13 +445,13 @@ class home extends Component {
       height: '30px',
       lineHeight: '30px',
     };
-    console.log("============================");
-    console.log("Rotate Video: " + this.state.rotateVideo);
-    console.log("Trim in to Multiple videos: " + this.state.trimIntoMultipleVideos);
-    console.log("Trim in to single videos: " + this.state.trimIntoSingleVideo);
-    console.log("Crop Video: " + this.state.cropVideo);
-    console.log("Trim Video: " + this.state.trimVideo);
-    console.log("Diable Audio: " + this.state.disableAudio);
+    // console.log("============================");
+    // console.log("Rotate Video: " + this.state.rotateVideo);
+    // console.log("Trim in to Multiple videos: " + this.state.trimIntoMultipleVideos);
+    // console.log("Trim in to single videos: " + this.state.trimIntoSingleVideo);
+    // console.log("Crop Video: " + this.state.cropVideo);
+    // console.log("Trim Video: " + this.state.trimVideo);
+    // console.log("Diable Audio: " + this.state.disableAudio);
 
     const trims = this.state.trims.map((trim, i) =>
       (
@@ -440,7 +498,6 @@ class home extends Component {
                 {this.state.user.username}
               </Button>
             ) : (
-
                 <Button
                   primary
                   className="c-auth-buttons__signup"
@@ -459,6 +516,20 @@ class home extends Component {
               <Col span={16}>
                 <div style={{ padding: '1rem' }}>
                   <div className="docs-example" style={{ height: '100%' }}>
+                  
+                  <div id="steps"  align="center">
+                    <Row gutter={25}>
+                      <Col className="gutter-row" span={25}>
+                      <Steps current={this.state.changeStep}>
+                        <Step title="Video URL"/>
+                        <Step title="Video Settings" />
+                        <Step title="Result"  />
+                      </Steps>
+                      </Col>
+                    </Row>
+                  </div>
+                  
+                  <br />
                     <Form>
                       <FormGroup>
                         <Typography.Title level={4} style={{ color: 'Black' }}> Video URL <Button href="https://commons.wikimedia.org/wiki/Commons:VideoCutTool" style={{ float: 'right' }}><Icon type="question-circle" /></Button></Typography.Title>
@@ -474,9 +545,9 @@ class home extends Component {
                       </FormGroup>
                       <div>
                         <FormGroup>
-                          <Button type="primary" onClick={this.updatePlayerInfo} style={{ marginTop: '12px' }}>
+                          <Button type="primary" onClick={(e)=> {this.updatePlayerInfo(); this.changeStep(1)}} style={{ marginTop: '12px' }}>
                             Play Video
-                            </Button>
+                          </Button>
                           <br />
                           {this.state.videos && this.state.videos.map((video) => (
                             <video height="300px" width="450px" controls src={`${API_URL}/${video}`} />
@@ -495,7 +566,7 @@ class home extends Component {
                     {this.state.displayPlayer ?
                       <div className="player">
                         { this.state.displayLoadingMessage ? 
-                          <div>
+                          <div style={{ paddingLeft: "330px", align: "center" }}>
                             <p>Your video is processing...</p>
                               <SyncLoader
                               sizeUnit={"px"}
@@ -507,19 +578,11 @@ class home extends Component {
                           </div>: null
                         }
                         <br />
-                        <Player ref="player" videoId="video-1">
+                        <Player ref={(player) => { this.player = player }} ref="player" videoId="video-1">
                           <source src={this.state.playerSource} />
                         </Player>
-                        <Slider
-                          range
-                          step={10}
-                          defaultValue={[20, 50]}
-                          onChange={onChangeSlider}
-                          onAfterChange={onAfterChangeSlider}
-                        />
                       </div> : null
                     }
-
                     {/* Crop Video */}
                     {this.state.displayCrop ?
                       <div>
@@ -547,6 +610,19 @@ class home extends Component {
                                 })
                               }}
                             >
+                              {/* {this is a problem} */}
+                              {/* { this.state.displayLoadingMessage ? 
+                                <div style={{ paddingLeft: "330px", align: "center" }}>
+                                  <p>Your video is processing...</p>
+                                    <SyncLoader
+                                    sizeUnit={"px"}
+                                    size={'20'}
+                                    color={'#001529'}
+                                    id="loading"
+                                    loading={this.state.loading} 
+                                  /> 
+                                </div>: null
+                              } */}
                               <div
                                 ref={ref => this.dragRef = ref}
                                 className="box" id="mydiv" onHeightReady={height => console.log("Height: " + height)}>
@@ -566,6 +642,18 @@ class home extends Component {
                           <div className="box" >
                             {this.state.AfterOnTapCrop ?
                               <div>
+                                { this.state.displayLoadingMessage ? 
+                                  <div style={{ paddingLeft: "330px", align: "center" }}>
+                                    <p>Your video is processing...</p>
+                                      <SyncLoader
+                                      sizeUnit={"px"}
+                                      size={'20'}
+                                      color={'#001529'}
+                                      id="loading"
+                                      loading={this.state.loading} 
+                                    /> 
+                                  </div>: null
+                                }
                                 <Player ref="player" videoId="video-1">
                                   <source src={this.state.playerSource} />
                                 </Player>
@@ -575,36 +663,31 @@ class home extends Component {
                         </div>
                       </div> : null
                     }
+                        <div> 
+                          { this.state.displayLoadingMessage ? 
+                            <div style={{ paddingLeft: "330px", align: "center" }}>
+                              <p>Your video is processing...</p>
+                                <SyncLoader
+                                sizeUnit={"px"}
+                                size={'20'}
+                                color={'#001529'}
+                                id="loading"
+                                loading={this.state.loading} 
+                              /> 
+                            </div>: null
+                          }
+                          <br /> <br /> <br />
+                        </div>
 
                     {/* Rotate Video */}
                     {this.state.displayRotate ?
-                      <div>
+                    <div>
                         <div id="RotatePlayer">
                           <Player ref="player" videoId="video-1">
                             <source src={this.state.playerSource} />
                           </Player>
-                          {/* <Popup
-                              open={this.state.open}
-                              closeOnDocumentClick
-                              onClose={this.closeModal}
-                            >
-                                <a className="close" onClick={this.closeModal}>
-                                  &times;
-                                </a>
-                                <img
-                                    src={ this.state.toggle ? "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
-                                        : "https://upload.wikimedia.org/wikipedia/commons/c/c7/Commons-logo-square.png"
-                                    } style={{align: "middle"}}
-                                    ref={elm => {
-                                      this.image = elm;
-                                    }}
-                                    className={this.state.rotate ? "rotate" : ""}
-                                  />
-
-                            </Popup>                                 */}
                         </div>
-                        {/* <Progress percent={this.state.progressTrack} status="active" />  */}
-                      </div> : null
+                    </div> : null
                     }
                   </div>
                 </div>
@@ -617,7 +700,10 @@ class home extends Component {
                 <Col span={10}>
                   <Button 
                     type="primary"
-                    onClick={this.disableAudio}
+                    onClick={(e)=>{
+                      this.disableAudio();
+                      showNotificationWithIconToAdd('success');
+                    }}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="sound" /> Remove Audio
@@ -626,7 +712,10 @@ class home extends Component {
                 <Col span={12}>
                   <Button
                     disabled={!this.state.disableAudio}
-                    onClick={this.UndodisableAudio}
+                    onClick={(e)=> {
+                      this.UndodisableAudio();
+                      showNotificationWithIconToRemove('info');
+                    }}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="undo" /> Undo
@@ -638,6 +727,7 @@ class home extends Component {
                     type="primary"
                     onClick={(e)=>{this.rotateVideo();
                         this.displayRotate();
+                        showNotificationWithIconToAdd('success');
                     }}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
@@ -647,7 +737,10 @@ class home extends Component {
                 <Col span={12}>
                   <Button
                     disabled={!this.state.rotateVideo}
-                    onClick={(e) => this.setState({rotateVideo: false})}
+                    onClick={(e) => {
+                      this.setState({rotateVideo: false});
+                      showNotificationWithIconToRemove('info');
+                    }}
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                     <Icon type="undo" /> Undo
@@ -659,6 +752,7 @@ class home extends Component {
                   type="primary"
                   onClick={(e)=> {
                     this.displayTrim();
+                    showNotificationWithIconToRemove("success");
                     this.setState({
                       trimVideo: true
                     })
@@ -670,9 +764,13 @@ class home extends Component {
                 </Col>
                 <Col span={10}>
                   <Button
-                      type="primary"
                       disabled={!this.state.trimVideo}
-                      onClick={(e) => this.setState({trimVideo: false})}
+                      onClick={(e) => 
+                        {
+                          this.setState({trimVideo: false});
+                          showNotificationWithIconToRemove('info');
+                        }
+                      }
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
                     >
                       <Icon type="undo" /> Undo
@@ -681,8 +779,11 @@ class home extends Component {
                 <Col span={10}>
                 <Button
                   type="primary"
-                  onClick={(e)=>{this.cropVideo();
-                  this.displayCrop()}}
+                  onClick={(e)=>{
+                    this.cropVideo();
+                    this.displayCrop();
+                    showNotificationWithIconToAdd('success');
+                  }}
                   style={{ margin: "1rem", marginLeft: "2.25rem" }}
                 >
                   <Icon type="radius-setting" /> Crop Video
@@ -691,7 +792,11 @@ class home extends Component {
                 <Col span={10}>
                   <Button
                     disabled={!this.state.cropVideo}
-                    onClick={(e) => this.setState({cropVideo: false})}
+                    onClick={(e) => {
+                      this.setState({cropVideo: false});
+                      showNotificationWithIconToRemove('info');
+                    }
+                  }
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
                   >
                       <Icon type="undo" /> Undo
@@ -711,7 +816,50 @@ class home extends Component {
                 {this.state.displayTrim ?
                   <div className="trim-settings">
                     <h2>VideoTrim Settings </h2>
-                    {trims}
+                    {/* {trims} */}
+                    {
+                          this.state.trims.map((trim, i) => (
+                            <React.Fragment>
+                              <Slider
+                              range
+                              step={1}
+                              min={1}
+                              max={100}
+                              value={[trim.from, trim.to]}
+                              onChange={(obj) => 
+                              {
+                                let trims = this.state.trims;
+                                trims[i].from = obj[0];
+                                trims[i].to = obj[1];
+                                this.setState({
+                                  trims: trims
+                                })
+                              }}
+                            />
+                            <Row gutter={10} key={i}>
+                              <Col span={6}>
+                                <Typography.Text strong style={{ paddingRight: '0.2rem' }}>From</Typography.Text>
+                                <div className="form-group">
+                                  <Input placeholder="hh:mm:ss"
+                                    id={`trim-${i}-from`}
+                                    value={trim.from}
+                                    // value={value[0]}
+                                    onChange={this.onChange} />
+                                </div>
+                              </Col>
+                              <Col span={6}>
+                                <Typography.Text strong style={{ paddingRight: '0.2rem' }}>To</Typography.Text>
+                                <div className="form-group">
+                                  <Input placeholder="hh:mm:ss"
+                                    id={`trim-${i}-to`}
+                                    value={trim.to}
+                                    onChange={this.onChange} />
+                                </div>
+                              </Col>
+                            </Row>
+                          </React.Fragment>
+                          ))
+                        }
                     <Button type="primary"
                       onClick={this.add}
                       style={{ margin: "1rem", marginLeft: "2.25rem" }}
@@ -737,6 +885,8 @@ class home extends Component {
                     onClick={(e)=>{
                       this.onSubmit(e);
                       this.enterLoading();
+                      showNotificationWithIconToWait("info");
+                      this.changeStep(2)
                     }}
                     name="rotate"
                     style={{ margin: "1rem", marginLeft: "2.25rem" }}
@@ -747,18 +897,7 @@ class home extends Component {
                   </Button>
                 </Col>
                 <Col span={12}>
-                  <Button type="primary"
-                    onClick={(e) => {
-                      this.setState({ upload: true });
-                      this.onSubmit(e);
-                    }
-                    }
-                    name="rotate"
-                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                  >
-                    <Icon type="upload" /> Upload to Commons
-                  </Button>
-                  <Divider>Enter the new video title</Divider>
+                <Divider >    Enter the new video title</Divider>
                   <Input
                     placeholder="myNewVideo.webm"
                     ref="title"
@@ -766,15 +905,30 @@ class home extends Component {
                     id="title"
                     value={this.state.title}
                     onChange={this.handleValueChange}
+                    style={{padding: "10px"}}
+                    required="true"
                   />
+                  <Button type="primary"
+                    onClick={(e) => {
+                      this.setState({ upload: true });
+                      this.onSubmit(e);
+                    }
+                    }
+                    name="rotate"
+                    shape="round"
+                    style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                  >
+                    <Icon type="upload" /> Upload to Commons
+                  </Button>
                 </Col>
               </Col>
             </Row>
             <br />
           </Content>
         </form>
+
         <Footer style={{ textAlign: 'center' }}>
-          © 2019 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span> </a> built with <b>Hassan Amin</b> support &hearts; |
+          © 2019 <a href="https://www.mediawiki.org/wiki/User:Gopavasanth"><span> Gopa Vasanth </span> </a> and <b>Hassan Amin</b>  &hearts; |
             <a href="https://github.com/gopavasanth/VideoCutTool"><span> Github </span></a> |
             <a href="https://www.gnu.org/licenses/gpl-3.0.txt"><span> GNU Licence </span></a>
         </Footer>
