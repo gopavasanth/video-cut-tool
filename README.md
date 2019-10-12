@@ -18,7 +18,7 @@ In the project directory, you can run:
 
 - Go to App.js https://github.com/gopavasanth/video-cut-tool-front-end/blob/master/src/App.js#L14
   and change this line to the following to run locally.
-  <Route exact path="/" component={home} /> 
+  `<Route exact path="/" component={home} />` 
 
 ### `npm start`
 
