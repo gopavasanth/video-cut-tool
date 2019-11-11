@@ -19,7 +19,10 @@ In the project directory, you can run:
 - Go to App.js https://github.com/gopavasanth/video-cut-tool-front-end/blob/master/src/App.js#L14
   and change this line to the following to run locally.
   `<Route exact path="/" component={home} />` 
-
+  
+- If your also using VideoCutTool back-end in your localsystem then change the var API_URL to "http://localhost:4000"
+  here: https://github.com/gopavasanth/video-cut-tool-front-end/blob/master/src/components/home.js#L21 
+  
 ### `npm start`
 
 Runs the app in the development mode.<br>
