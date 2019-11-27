@@ -1026,7 +1026,7 @@ class home extends Component {
                       <h2 style={{ textAlign: "center" }}>Step3: Choose your choice </h2>
                       <Col span="12">
                         <Button type="primary">
-                          <a href={`${API_URL}/${video}?download`}>Download</a>
+                          <a href={`${API_URL}/download/${video}`}>Download</a>
                         </Button>
                       </Col>
                       <Col span="12">
