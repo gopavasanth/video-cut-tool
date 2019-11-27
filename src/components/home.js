@@ -17,8 +17,8 @@ import { SyncLoader } from "react-spinners";
 
 // These are the API URL's
 // const API_URL = 'https://video-cut-tool-back-end.herokuapp.com'
-const API_URL = "http://localhost:4000"
-// const API_URL = 'https://tools.wmflabs.org/video-cut-tool-back-end'
+// const API_URL = "http://localhost:4000"
+const API_URL = 'https://tools.wmflabs.org/video-cut-tool-back-end'
 
 const { Header, Content, Footer } = Layout;
 const { Step } = Steps;
