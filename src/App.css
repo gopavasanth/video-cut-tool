@@ -35,3 +35,7 @@
     transform: rotate(360deg);
   }
 }
+
+.videeoSettings .ant-btn {
+  width: 160px;
+}
