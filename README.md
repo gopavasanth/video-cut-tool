@@ -16,12 +16,12 @@ In the project directory, you can run:
 
 ### Run VideoCutTool locally
 
-- Go to App.js https://github.com/gopavasanth/video-cut-tool-front-end/blob/master/src/App.js#L14
+- Go to App.js https://github.com/gopavasanth/video-cut-tool/blob/master/src/App.js#L14
   and change this line to the following to run locally.
   `<Route exact path="/" component={home} />` 
   
 - If your also using VideoCutTool back-end in your localsystem then change the var API_URL to "http://localhost:4000"
-  here: https://github.com/gopavasanth/video-cut-tool-front-end/blob/master/src/components/home.js#L21 
+  here: https://github.com/gopavasanth/video-cut-tool/blob/master/src/components/home.js#L21 
   
 ### `npm start`
 

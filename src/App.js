@@ -11,7 +11,7 @@ function AppRoutes() {
   return (
     <Switch>
       {/* <Route exact path="*" component={NotFound} /> */}
-      <Route exact path="/video-cut-tool-front-end/" component={home} />
+      <Route exact path="/video-cut-tool/" component={home} />
       {/* <Route component={NotFound} /> */}
     </Switch>
   );

@@ -1107,7 +1107,7 @@ class home extends Component {
             <span> Gopa Vasanth </span>
           </a>
           and <b>Hassan Amin</b> &hearts; |
-          <a href="https://github.com/gopavasanth/video-cut-tool-front-end">
+         <a href="https://github.com/gopavasanth/video-cut-tool-front-end">
             <span> Github </span>
           </a>
           |
