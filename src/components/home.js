@@ -942,6 +942,16 @@ class home extends Component {
                                 this.setState({
                                   trims: trims
                                 });
+                                if( this.unsubscribeToStateChanges ) {
+                                  this.unsubscribeToStateChanges();
+                                }
+                                this.refs.player.seek(obj[0]);
+                                this.refs.player.play();
+                                this.unsubscribeToStateChanges = this.refs.player.subscribeToStateChange( ( state ) => {
+                                  if ( state.currentTime > obj[1]) {
+                                    this.refs.player.pause();
+                                  }
+                                } );
                               }}
                             />
                             <Row gutter={12} key={i}>
