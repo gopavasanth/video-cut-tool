@@ -28,7 +28,7 @@
     "redux": "^4.0.1",
     "video-react": "^0.13.6"
   },
-  "homepage": "/video-cut-tool-front-end",
+  "homepage": "/video-cut-tool",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
