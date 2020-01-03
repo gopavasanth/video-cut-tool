@@ -6,14 +6,14 @@ import { FormGroup } from 'reactstrap';
 import PopupTools from 'popup-tools';
 import { NotificationManager } from 'react-notifications';
 
+import Draggable from "react-draggable";
+import { SyncLoader } from "react-spinners";
+import axios from "axios";
+
 import "../App.css";
 import "antd/dist/antd.css";
 
 import "../../node_modules/video-react/dist/video-react.css"; // import css
-
-import axios from "axios";
-import Draggable from "react-draggable";
-import { SyncLoader } from "react-spinners";
 
 // These are the API URL's
 // const API_URL = 'https://video-cut-tool-back-end.herokuapp.com'
@@ -147,7 +147,7 @@ class home extends Component {
       displayVideoSettings: false,
       validateVideoURL: false,
       AddedMore: false,
-      RotateValue: -1, 
+      RotateValue: -1,
       displaynewVideoName: false,
       DisplayFailedNotification: false
     };
@@ -232,7 +232,7 @@ class home extends Component {
       }
     );
   }
-  
+
   handleValueChange(e) {
     var value = e.target.value;
     this.setState({
@@ -496,7 +496,7 @@ class home extends Component {
       height: "30px",
       lineHeight: "30px"
     };
-    
+
     console.log("URL: " + this.state.inputVideoUrl);
     // console.log("============================");
     // console.log("Rotate Video: " + this.state.rotateVideo);
@@ -587,7 +587,7 @@ class home extends Component {
                         message="Something went wrong !"
                         type="error"
                         closable
-                      /> 
+                      />
                       </div>
                     ) : null
                   }
@@ -681,7 +681,7 @@ class home extends Component {
                           </div>
                     ) : null}
                     {
-                      this.state.displaynewVideoName ? 
+                      this.state.displaynewVideoName ?
                       <p>Your New video URL will be here `https://commons.wikimedia.org/wiki/File:{this.state.title}` </p>: null
                     }
                     {this.state.displayPlayer ? (
@@ -966,7 +966,7 @@ class home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-from`}
-                                    
+
                                     value={formatTime(trim.from)}
                                   />
                                 </div>
@@ -982,7 +982,7 @@ class home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-to`}
-                                    
+
                                     value={formatTime(trim.to)}
                                   />
                                 </div>
