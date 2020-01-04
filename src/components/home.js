@@ -309,10 +309,9 @@ class home extends Component {
       const minSize = 100;
       let original_width = 0;
       let original_height = 0;
-      let original_x = 0;
-      let original_y = 0;
       let original_mouse_x = 0;
       let original_mouse_y = 0;
+      let transformValue = [0, 0];
 
       let width = 0;
       let height = 0;
@@ -323,16 +322,23 @@ class home extends Component {
         return parseFloat(getComputedStyle(resizerBlock, null).getPropertyValue(property).replace('px', ''));
       }
 
+      function getTransformValue() {
+        return resizerBlock.style.transform.replace(/[^0-9\-.,]/g, '').split(',').map(Number);
+      }
+
+      function getPlayerCoords() {
+        return document.getElementById('video-1').getBoundingClientRect();
+      }
+
       resizers.forEach(resizer => {
         const resizerPosition = resizer.className.split(' ')[1];
 
         resizer.addEventListener('mousedown', e => {
           e.preventDefault();
-          
+
           original_width = getTruePropertyValue('width');
           original_height = getTruePropertyValue('height');
-          original_x = getTruePropertyValue('left');
-          original_y = getTruePropertyValue('top');
+          transformValue = getTransformValue();
           original_mouse_x = e.pageX;
           original_mouse_y = e.pageY;
 
@@ -343,78 +349,77 @@ class home extends Component {
         function resize(e) {
           switch (resizerPosition) {
             case 'top-center':
-              top = original_y + (e.pageY - original_mouse_y);
+              top = e.pageY - original_mouse_y;
               height = original_height - (e.pageY - original_mouse_y);
-              if (height > minSize && e.layerY > 0) {
-                resizerBlock.style.top = `${top}px`;
+              if (height > minSize && transformValue[1]+top >= 0) {
+                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1]+top}px)`;
                 resizerBlock.style.height = `${height}px`;
               }
               break;
             case 'bottom-center':
               height = original_height + (e.pageY - original_mouse_y);
-              if (height > minSize) {
+              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
                 resizerBlock.style.height = `${height}px`;
               }
               break;
             case 'left-center':
-              left = original_x + (e.pageX - original_mouse_x);
+              left = e.pageX - original_mouse_x;
               width = original_width - (e.pageX - original_mouse_x);
-              if (width > minSize) {
-                resizerBlock.style.left = `${left}px`;
+              if (width > minSize && transformValue[0]+left >= 0) {
+                resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]}px)`;
                 resizerBlock.style.width = `${width}px`;
               }
               break;
             case 'right-center':
               width = original_width + (e.pageX - original_mouse_x);
-              if (width > minSize) {
+              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
                 resizerBlock.style.width = `${width}px`;
               }
               break;
             case 'top-left':
               width = original_width - (e.pageX - original_mouse_x);
               height = original_height - (e.pageY - original_mouse_y);
-              left = original_x + (e.pageX - original_mouse_x);
-              top = original_y + (e.pageY - original_mouse_y);
-              if (width > minSize) {
+              if (width > minSize && transformValue[0]+(e.pageX - original_mouse_x) >= 0) {
                 resizerBlock.style.width = `${width}px`;
-                resizerBlock.style.left = `${left}px`;
+                left = e.pageX - original_mouse_x;
               }
-              if (height > minSize) {
+              if (height > minSize && transformValue[1]+(e.pageY - original_mouse_y) >= 0) {
                 resizerBlock.style.height = `${height}px`;
-                resizerBlock.style.top = `${top}px`;
+                top = e.pageY - original_mouse_y;
               }
+              resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]+top}px)`;
               break;
             case 'top-right':
               width = original_width + (e.pageX - original_mouse_x);
               height = original_height - (e.pageY - original_mouse_y);
-              top = original_y + (e.pageY - original_mouse_y);
-              if (width > minSize) {
+              top = e.pageY - original_mouse_y;
+              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
                 resizerBlock.style.width = `${width}px`;
               }
-              if (height > minSize) {
+              if (height > minSize && transformValue[1]+top >= 0) {
                 resizerBlock.style.height = `${height}px`;
-                resizerBlock.style.top = `${top}px`;
+                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1]+top}px)`;
               }
               break;
             case 'bottom-left':
               height = original_height + (e.pageY - original_mouse_y);
               width = original_width - (e.pageX - original_mouse_x);
-              left = original_x + (e.pageX - original_mouse_x);
-              if (height > minSize) {
+              left = e.pageX - original_mouse_x;
+              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
                 resizerBlock.style.height = `${height}px`;
               }
-              if (width > minSize) {
+              if (width > minSize && transformValue[0]+left >= 0) {
                 resizerBlock.style.width = `${width}px`;
-                resizerBlock.style.left = `${left}px`;
+                resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]}px)`;
               }
               break;
             case 'bottom-right':
               width = original_width + (e.pageX - original_mouse_x);
               height = original_height + (e.pageY - original_mouse_y);
-              if (width > minSize) {
+              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
                 resizerBlock.style.width = `${width}px`;
               }
-              if (height > minSize) {
+              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
                 resizerBlock.style.height = `${height}px`;
               }
               break;
