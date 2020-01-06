@@ -89,6 +89,7 @@ class home extends Component {
     this.displayVideoSettings = this.displayVideoSettings.bind(this);
 
     this.handleDrag = this.handleDrag.bind(this);
+    this.onDragStop = this.onDragStop.bind(this);
     this.onLogin = this.onLogin.bind(this);
     this.onLogOut = this.onLogOut.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
@@ -300,6 +301,138 @@ class home extends Component {
       displayTrim: false,
       displayRotate: false,
       displayPlayer: false
+    }, () => {
+      const self = this;
+      const resizerBlock = this.dragRef;
+      const resizers = resizerBlock.querySelectorAll('.resizer');
+
+      const minSize = 100;
+      let original_width = 0;
+      let original_height = 0;
+      let original_mouse_x = 0;
+      let original_mouse_y = 0;
+      let transformValue = [0, 0];
+
+      let width = 0;
+      let height = 0;
+      let top = 0;
+      let left = 0;
+
+      function getTruePropertyValue(property) {
+        return parseFloat(getComputedStyle(resizerBlock, null).getPropertyValue(property).replace('px', ''));
+      }
+
+      function getTransformValue() {
+        return resizerBlock.style.transform.replace(/[^0-9\-.,]/g, '').split(',').map(Number);
+      }
+
+      function getPlayerCoords() {
+        return document.getElementById('video-1').getBoundingClientRect();
+      }
+
+      resizers.forEach(resizer => {
+        const resizerPosition = resizer.className.split(' ')[1];
+
+        resizer.addEventListener('mousedown', e => {
+          e.preventDefault();
+
+          original_width = getTruePropertyValue('width');
+          original_height = getTruePropertyValue('height');
+          transformValue = getTransformValue();
+          original_mouse_x = e.pageX;
+          original_mouse_y = e.pageY;
+
+          window.addEventListener('mousemove', resize);
+          window.addEventListener('mouseup', stopResize);
+        });
+
+        function resize(e) {
+          switch (resizerPosition) {
+            case 'top-center':
+              top = e.pageY - original_mouse_y;
+              height = original_height - (e.pageY - original_mouse_y);
+              if (height > minSize && transformValue[1]+top >= 0) {
+                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1]+top}px)`;
+                resizerBlock.style.height = `${height}px`;
+              }
+              break;
+            case 'bottom-center':
+              height = original_height + (e.pageY - original_mouse_y);
+              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
+                resizerBlock.style.height = `${height}px`;
+              }
+              break;
+            case 'left-center':
+              left = e.pageX - original_mouse_x;
+              width = original_width - (e.pageX - original_mouse_x);
+              if (width > minSize && transformValue[0]+left >= 0) {
+                resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]}px)`;
+                resizerBlock.style.width = `${width}px`;
+              }
+              break;
+            case 'right-center':
+              width = original_width + (e.pageX - original_mouse_x);
+              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
+                resizerBlock.style.width = `${width}px`;
+              }
+              break;
+            case 'top-left':
+              width = original_width - (e.pageX - original_mouse_x);
+              height = original_height - (e.pageY - original_mouse_y);
+              if (width > minSize && transformValue[0]+(e.pageX - original_mouse_x) >= 0) {
+                resizerBlock.style.width = `${width}px`;
+                left = e.pageX - original_mouse_x;
+              }
+              if (height > minSize && transformValue[1]+(e.pageY - original_mouse_y) >= 0) {
+                resizerBlock.style.height = `${height}px`;
+                top = e.pageY - original_mouse_y;
+              }
+              resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]+top}px)`;
+              break;
+            case 'top-right':
+              width = original_width + (e.pageX - original_mouse_x);
+              height = original_height - (e.pageY - original_mouse_y);
+              top = e.pageY - original_mouse_y;
+              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
+                resizerBlock.style.width = `${width}px`;
+              }
+              if (height > minSize && transformValue[1]+top >= 0) {
+                resizerBlock.style.height = `${height}px`;
+                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1]+top}px)`;
+              }
+              break;
+            case 'bottom-left':
+              height = original_height + (e.pageY - original_mouse_y);
+              width = original_width - (e.pageX - original_mouse_x);
+              left = e.pageX - original_mouse_x;
+              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
+                resizerBlock.style.height = `${height}px`;
+              }
+              if (width > minSize && transformValue[0]+left >= 0) {
+                resizerBlock.style.width = `${width}px`;
+                resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]}px)`;
+              }
+              break;
+            case 'bottom-right':
+              width = original_width + (e.pageX - original_mouse_x);
+              height = original_height + (e.pageY - original_mouse_y);
+              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
+                resizerBlock.style.width = `${width}px`;
+              }
+              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
+                resizerBlock.style.height = `${height}px`;
+              }
+              break;
+            default:
+              break;
+          }
+        }
+
+        function stopResize() {
+          self.onDragStop();
+          window.removeEventListener('mousemove', resize);
+        }
+      });
     });
   }
 
@@ -412,6 +545,25 @@ class home extends Component {
         x: x + ui.deltaX,
         y: y + ui.deltaY
       }
+    });
+  }
+
+  onDragStop() {
+    const parentBox = this.refs.player.video.video.getBoundingClientRect();
+    this.setState({
+      duration: this.refs.player.video.video
+        .duration
+    });
+    const dragElBox = this.dragRef.getBoundingClientRect();
+    const xPercentage = ((dragElBox.x - parentBox.x) / parentBox.width * 100);
+    const yPercentage = ((dragElBox.y - parentBox.y) / parentBox.height * 100);
+    const widthPercentage = (dragElBox.width / parentBox.width * 100);
+    const heightPercentage = (dragElBox.height / parentBox.height * 100);
+    this.setState({
+      x_value: xPercentage,
+      y_value: yPercentage,
+      out_height: heightPercentage,
+      out_width: widthPercentage
     });
   }
 
@@ -707,7 +859,7 @@ class home extends Component {
                             height: "100%",
                             width: "100%",
                             position: "relative",
-                            overflow: "auto"
+                            overflow: "hidden"
                           }}
                         >
                           <div style={{ height: "100%", width: "100%" }}>
@@ -715,37 +867,32 @@ class home extends Component {
                               bounds="parent"
                               {...dragHandlers}
                               axis="both"
+                              handle="#draggable-area"
                               onDrag={(e, ui) => {
-                                // this.handleDrag(e, ui);
+                                this.handleDrag(e, ui);
                               }}
-                              onStop={() => {
-                                const parentBox = this.refs.player.video.video.getBoundingClientRect();
-                                this.setState({
-                                  duration: this.refs.player.video.video
-                                    .duration
-                                });
-                                const dragElBox = this.dragRef.getBoundingClientRect();
-                                const xPercentage = ((dragElBox.x - parentBox.x) / parentBox.width * 100);
-                                const yPercentage = ((dragElBox.y - parentBox.y) / parentBox.height * 100);
-                                const widthPercentage = (dragElBox.width / parentBox.width * 100);
-                                const heightPercentage = (dragElBox.height / parentBox.height * 100);
-                                this.setState({
-                                  x_value: xPercentage,
-                                  y_value: yPercentage,
-                                  out_height: heightPercentage,
-                                  out_width: widthPercentage
-                                });
-                              }}
+                              onStop={this.onDragStop}
                             >
                               <div
                                 ref={ref => (this.dragRef = ref)}
                                 className="box"
-                                id="mydiv"
+                                id="crop-area"
                                 onHeightReady={height =>
                                   console.log("Height: " + height)
                                 }
                               >
-                                <div id="mydivheader"></div>
+                                <div id="draggable-area"></div>
+                                <div className="resizers">
+                                  <div className="resizer top-left"></div>
+                                  <div className="resizer top-center"></div>
+                                  <div className="resizer top-right"></div>
+                                  <div className="resizer bottom-left"></div>
+                                  <div className="resizer bottom-center"></div>
+                                  <div className="resizer bottom-right"></div>
+                                  <div className="resizer left-center"></div>
+                                  <div className="resizer right-center"></div>
+                                </div>
+                                <div className="crosshair"></div>
                               </div>
                             </Draggable>
                             {this.state.beforeOnTapCrop ? (
