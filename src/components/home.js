@@ -222,16 +222,8 @@ class home extends Component {
   }
 
   onLogOut() {
-    PopupTools.popup(
-      `${API_URL}/video-cut-tool-back-end/logout`, "Wiki Connect", { width: 1000, height: 600 }, (err, data) => {
-        if (!err) {
-          console.log(" logout response ", err, data);
-          this.setState({ user: null });
-          NotificationManager.success("Logged out successfully");
-        }
-        this.setState({ user: null });
-      }
-    );
+    localStorage.removeItem('user');
+    NotificationManager.success("Logged out successfully");
   }
 
   handleValueChange(e) {
