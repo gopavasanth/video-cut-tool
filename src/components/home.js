@@ -688,14 +688,13 @@ class home extends Component {
     return (
       <Layout className="layout">
         <Header>
-          <div className="logo" />
-          <Menu theme="dark" mode="horizontal" style={{ lineHeight: "64px" }}>
+          <Typography.Title level={1} onClick={() => window.location.reload()}>VideoCutTool</Typography.Title>
+          <Menu theme="dark" mode="horizontal">
             {this.state.user ? (
-              <view>
+              <>
               <Button
                 primary
                 className="c-auth-buttons__signout"
-                style={{ float: "right" }}
                 onClick={this.onLogOut.bind(this)}
               >
                 Logout
@@ -703,22 +702,19 @@ class home extends Component {
               <Button
                 primary
                 className="c-auth-buttons__signout"
-                style={{ float: "right" }}
               >
                 {"Welcome : " + this.state.user.username}
               </Button>
-              </view>
+              </>
             ) : (
               <Button
                 primary
                 className="c-auth-buttons__signup"
-                style={{ float: "right" }}
                 onClick={this.onLogin.bind(this)}
               >
                 Register / Login with Wikipedia
               </Button>
             )}
-            <Typography.Title level={4} style={{ color: "White", float: "left" }}>VideoCutTool</Typography.Title>
           </Menu>
         </Header>
         <form onSubmit={this.onSubmit}>
