@@ -228,6 +228,18 @@ body{
   }
  }
 
-.videeoSettings .ant-btn {
-  width: 160px;
+.videoSettings > .step1 .ant-row > div {
+  padding: 0 10px;
+}
+
+@media (max-width: 1199px) {
+  .videoSettings > .step1 .ant-row > div:first-child button {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
+  .videoSettings > .step1 .ant-row > div:last-child button {
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+  }
 }
