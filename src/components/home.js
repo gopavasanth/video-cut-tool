@@ -933,110 +933,121 @@ class home extends Component {
               {this.state.displayVideoSettings &&
               this.state.validateVideoURL ? (
                 <Col span={8}>
-                  <div className="videeoSettings">
+                  <div className="videoSettings">
                     <h2 style={{ textAlign: "center" }}>Step1: Adjust Video Settings   </h2>
-                    <Col span={10}>
-                      <Button
-                        type="primary"
-                        disabled={this.state.disableAudio}
-                        onClick={e => {
-                          this.disableAudio();
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="sound" /> Remove Audio
-                      </Button>
-                    </Col>
-                    <Col span={12}>
-                      <Button
-                        disabled={!this.state.disableAudio}
-                        onClick={e => {
-                          this.UndodisableAudio();
-                          showNotificationWithIcon("info", RemoveFeatureMsg);
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="undo" /> Undo
-                      </Button>
-                    </Col>
-                    <br />
-                    <Col span={10}>
-                      <Button
-                        type="primary"
-                        onClick={e => {
-                          this.rotateVideo();
-                          this.RotateValue(this.state.RotateValue);
-                          this.displayRotate();
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="redo" /> Rotate Video
-                      </Button>
-                    </Col>
-                    <Col span={12}>
-                      <Button
-                        disabled={!this.state.rotateVideo}
-                        onClick={e => {
-                          this.setState({ rotateVideo: false });
-                          showNotificationWithIcon("info", RemoveFeatureMsg);
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="undo" /> Undo
-                      </Button>
-                    </Col>
-                    <br />
-                    <Col span={10}>
-                      <Button
-                        type="primary"
-                        disabled={this.state.trimVideo}
-                        onClick={e => {
-                          this.displayTrim();
-                          this.setState({
-                            trimVideo: true
-                          });
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="scissor" /> Trim Video
-                      </Button>
-                    </Col>
-                    <Col span={10}>
-                      <Button
-                        disabled={!this.state.trimVideo}
-                        onClick={e => {
-                          this.setState({ trimVideo: false, displayTrim: false });
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="undo" /> Undo
-                      </Button>
-                    </Col>
-                    <Col span={10}>
-                      <Button
-                        type="primary"
-                        disabled={this.state.cropVideo}
-                        onClick={e => {
-                          this.cropVideo();
-                          this.displayCrop();
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="radius-setting" /> Crop Video
-                      </Button>
-                    </Col>
-                    <Col span={10}>
-                      <Button
-                        disabled={!this.state.cropVideo}
-                        onClick={e => {
-                          this.setState({ cropVideo: false });
-                          showNotificationWithIcon("info", RemoveFeatureMsg);
-                        }}
-                        style={{ margin: "1rem", marginLeft: "2.25rem" }}
-                      >
-                        <Icon type="undo" /> Undo
-                      </Button>
-                    </Col>
+                    <div className="step1">
+                      <Row>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            type="primary"
+                            disabled={this.state.disableAudio}
+                            onClick={e => {
+                              this.disableAudio();
+                            }}
+                            block
+                          >
+                            <Icon type="sound" /> Remove Audio
+                          </Button>
+                        </Col>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            disabled={!this.state.disableAudio}
+                            onClick={e => {
+                              this.UndodisableAudio();
+                              showNotificationWithIcon("info", RemoveFeatureMsg);
+                            }}
+                            block
+                          >
+                            <Icon type="undo" /> Undo
+                          </Button>
+                        </Col>
+                      </Row>
+                      <br />
+                      <Row>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            type="primary"
+                            onClick={e => {
+                              this.rotateVideo();
+                              this.RotateValue(this.state.RotateValue);
+                              this.displayRotate();
+                            }}
+                            block
+                          >
+                            <Icon type="redo" /> Rotate Video
+                          </Button>
+                        </Col>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            disabled={!this.state.rotateVideo}
+                            onClick={e => {
+                              this.setState({ rotateVideo: false });
+                              showNotificationWithIcon("info", RemoveFeatureMsg);
+                            }}
+                            block
+                          >
+                            <Icon type="undo" /> Undo
+                          </Button>
+                        </Col>
+                      </Row>
+                      <br />
+                      <Row>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            type="primary"
+                            disabled={this.state.trimVideo}
+                            onClick={e => {
+                              this.displayTrim();
+                              this.setState({
+                                trimVideo: true
+                              });
+                            }}
+                            block
+                          >
+                            <Icon type="scissor" /> Trim Video
+                          </Button>
+                        </Col>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            disabled={!this.state.trimVideo}
+                            onClick={e => {
+                              this.setState({ trimVideo: false, displayTrim: false });
+                            }}
+                            block
+                          >
+                            <Icon type="undo" /> Undo
+                          </Button>
+                        </Col>
+                      </Row>
+                      <br/>
+                      <Row>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            type="primary"
+                            disabled={this.state.cropVideo}
+                            onClick={e => {
+                              this.cropVideo();
+                              this.displayCrop();
+                            }}
+                            block
+                          >
+                            <Icon type="radius-setting" /> Crop Video
+                          </Button>
+                        </Col>
+                        <Col xl={12} xs={24}>
+                          <Button
+                            disabled={!this.state.cropVideo}
+                            onClick={e => {
+                              this.setState({ cropVideo: false });
+                              showNotificationWithIcon("info", RemoveFeatureMsg);
+                            }}
+                            block
+                          >
+                            <Icon type="undo" /> Undo
+                          </Button>
+                        </Col>
+                      </Row>
+                    </div>
                     <Divider />
                     <h2 style={{ textAlign: "center" }}>Step2: Preview my changes</h2>
                     <Col span={16} style={{ textAlign: "centre" }}>
