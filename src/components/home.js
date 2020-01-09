@@ -224,7 +224,7 @@ class home extends Component {
   onLogOut() {
     localStorage.removeItem('user');
     this.setState({
-      user: NULL;
+      user: null
     });
     NotificationManager.success("Logged out successfully");
   }
