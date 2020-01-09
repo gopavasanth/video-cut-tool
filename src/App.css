@@ -19,6 +19,21 @@
   color: white;
 }
 
+header {
+  display: flex!important;
+  justify-content: space-between;
+}
+
+header h1.ant-typography {
+  color: #fff;
+  line-height: 64px;
+  margin-bottom: 0;
+}
+
+header ul.ant-menu {
+  line-height: 64px;
+}
+
 body{
  height:100%
 }
