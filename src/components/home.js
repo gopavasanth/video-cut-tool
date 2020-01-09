@@ -688,7 +688,7 @@ class home extends Component {
     return (
       <Layout className="layout">
         <Header>
-          <Typography.Title level={1}>VideoCutTool</Typography.Title>
+          <Typography.Title level={1} onClick={() => window.location.reload()}>VideoCutTool</Typography.Title>
           <Menu theme="dark" mode="horizontal">
             {this.state.user ? (
               <>
