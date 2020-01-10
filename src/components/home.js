@@ -15,10 +15,12 @@ import "antd/dist/antd.css";
 
 import "../../node_modules/video-react/dist/video-react.css"; // import css
 
+const ENV_SETTINGS = require("../env")();
+
 // These are the API URL's
 // const API_URL = 'https://video-cut-tool-back-end.herokuapp.com'
 // const API_URL = "http://localhost:4000"
-const API_URL = 'https://tools.wmflabs.org/video-cut-tool-back-end'
+const API_URL = ENV_SETTINGS.backend_url;
 
 const { Header, Content, Footer } = Layout;
 const { Step } = Steps;
