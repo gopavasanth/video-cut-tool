@@ -14,18 +14,12 @@ Installs the required dependencies for this tool
 
 ### Run VideoCutTool locally
 
-- Go to App.js https://github.com/gopavasanth/video-cut-tool/blob/master/src/App.js#L14
-  and change this line to the following to run locally.
-  `<Route exact path="/" component={home} />` 
-  
-- If your also using VideoCutTool back-end in your localsystem then change the var API_URL to "http://localhost:4000"
-  here: https://github.com/gopavasanth/video-cut-tool/blob/master/src/components/home.js#L21 
+VideoCutTool runs in development mode by default - to run VideoCutTool in a production environment, you need to set the NODE_ENV environment variable to `production`. You can do that with the command `export NODE_ENV=production`
 
-In the project directory, you can run:
+In the project directory, you need to use the following command to run the application.
 
 ### `npm start`
 
-Runs the app in the development mode.<br>
 Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
 The page will reload if you make edits.<br>
