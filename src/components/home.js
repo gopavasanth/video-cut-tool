@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Checkbox, InputNumber } from 'antd';
+import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
 
@@ -18,8 +18,6 @@ import "../../node_modules/video-react/dist/video-react.css"; // import css
 const ENV_SETTINGS = require("../env")();
 
 // These are the API URL's
-// const API_URL = 'https://video-cut-tool-back-end.herokuapp.com'
-// const API_URL = "http://localhost:4000"
 const API_URL = ENV_SETTINGS.backend_url;
 
 const { Header, Content, Footer } = Layout;
@@ -35,15 +33,6 @@ const showNotificationWithIcon = (type, desc) => {
     description: desc
   });
 };
-
-const showErrorNotification = (reason) => (
-    <Alert
-    message="Error Text"
-    description="Error Description Error Description Error Description Error Description Error Description Error Description"
-    type="error"
-    closable
-  />
-);
 
 // This is to display the time in Visual Trimming in hh:mm:ss formate
 function formatTime(seconds) {
@@ -96,8 +85,6 @@ class home extends Component {
     this.onLogOut = this.onLogOut.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
-    this.upload = this.upload.bind(this);
-    this.title = this.title.bind(this);
 
     this.rotateVideo = this.rotateVideo.bind(this);
     this.trimIntoMultipleVideos = this.trimIntoMultipleVideos.bind(this);
@@ -173,15 +160,6 @@ class home extends Component {
     }
   }
 
-  // On draggin the slider, values updates
-  onChangeSlider(value, e) {
-    let trims = this.state.trims;
-    const id = e.target.id;
-    const index = id.match(/\d+/g).map(Number)[0];
-    trims[index].from = value[0];
-    trims[index].from = value[1];
-  }
-
   enterLoading = () => {
     this.setState({
       loading: true,
@@ -237,17 +215,6 @@ class home extends Component {
       [e.target.id]: value
     });
   }
-
-  title() {
-    this.setState({
-      title: this.state.title
-    });
-  }
-
-  eventLogger = (e: MouseEvent, data: Object) => {
-    console.log("Event: ", e);
-    console.log("Data: ", data);
-  };
 
   // This updates the player src, and displays the player
   updatePlayerInfo() {
@@ -478,12 +445,6 @@ class home extends Component {
     });
   }
 
-  upload() {
-    this.setState({
-      upload: true
-    });
-  }
-
   onChangeCrop(e) {
     this.setState({
       [e.target.name]: e.target.value
@@ -497,7 +458,7 @@ class home extends Component {
   };
 
   // This is to add multiple "From" and "To" while trimming
-  add = () => {
+  add() {
     let trims = this.state.trims;
     trims.push({ from: "", to: "" });
     this.setState({
@@ -523,7 +484,7 @@ class home extends Component {
   // This validates the Video URL using Regeular Expression
   validateVideoURL(url) {
     if (url !== "") {
-      if ( url.match( /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:\/?#[\]@!\$%&'\(\)\*\+,;=.]+(?:mp4|webm|mov|flv|ogv)+$/g ) !== null ) {
+      if ( url.match( /^(?:https?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:\/?#[\]@!$%&'()*+,;=.]+(?:mp4|webm|mov|flv|ogv)+$/g ) !== null ) {
         console.log("Your are using right URL !");
         this.setState({ validateVideoURL: true });
         return true;
@@ -535,7 +496,7 @@ class home extends Component {
     }
   }
 
-  handleDrag(e, ui) {
+  handleDrag(ui) {
     const { x, y } = this.state.deltaPosition;
     this.setState({
       deltaPosition: {
@@ -561,13 +522,6 @@ class home extends Component {
       y_value: yPercentage,
       out_height: heightPercentage,
       out_width: widthPercentage
-    });
-  }
-
-  handleStateChange(state) {
-    // copy player state to this component's state
-    this.setState({
-      player: state
     });
   }
 
@@ -617,75 +571,12 @@ class home extends Component {
       this.setState({DisplayFailedNotification: true});
       this.leaveLoading();
     })
-
-    // this.setState({
-    //   from_location: '',
-    //   inputVideoUrl: '',
-    //   trims: [{from: '', to: ''}],
-    //   out_width: '',
-    //   out_height: '',
-    //   x_value: '',
-    //   y_value: '',
-    //   trimMode: '',
-    //   disableAudio: '',
-    //   value: '',
-    //   title: '',
-    //   trimIntoMultipleVideos: false,
-    //   trimIntoSingleVideo: false,
-    //   cropVideo: false,
-    //   rotateVideo: false
-    // })
   }
 
   render() {
-    const { deltaPosition } = this.state;
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const radioStyle = {
-      display: "block",
-      height: "30px",
-      lineHeight: "30px"
-    };
 
     console.log("URL: " + this.state.inputVideoUrl);
-    // console.log("============================");
-    // console.log("Rotate Video: " + this.state.rotateVideo);
-    // console.log("Trim in to Multiple videos: " + this.state.trimIntoMultipleVideos);
-    // console.log("Trim in to single videos: " + this.state.trimIntoSingleVideo);
-    // console.log("Crop Video: " + this.state.cropVideo);
-    // console.log("Trim Video: " + this.state.trimVideo);
-    // console.log("Diable Audio: " + this.state.disableAudio);
-    // console.log("Rotate Value: " + this.state.RotateValue);
-
-    const trims = this.state.trims.map((trim, i) => (
-      <Row gutter={10} key={i}>
-        <Col span={10}>
-          <Typography.Text strong style={{ paddingRight: "0.2rem" }}>
-            From
-          </Typography.Text>
-          <div className="form-group">
-            <Input
-              placeholder="hh:mm:ss"
-              id={`trim-${i}-from`}
-              value={trim.from}
-              onChange={this.onChange}
-            />
-          </div>
-        </Col>
-        <Col span={10}>
-          <Typography.Text strong style={{ paddingRight: "0.2rem" }}>
-            To
-          </Typography.Text>
-          <div className="form-group">
-            <Input
-              placeholder="hh:mm:ss"
-              id={`trim-${i}-to`}
-              value={trim.to}
-              onChange={this.onChange}
-            />
-          </div>
-        </Col>
-      </Row>
-    ));
 
     return (
       <Layout className="layout">
@@ -774,7 +665,7 @@ class home extends Component {
                           <Button
                             type="primary"
                             disabled={!this.state.inputVideoUrl}
-                            onClick={e => {
+                            onClick={() => {
                               if ( this.validateVideoURL(this.state.inputVideoUrl) ) {
                                 this.updatePlayerInfo();
                                 this.changeStep(1);
@@ -862,7 +753,7 @@ class home extends Component {
                               axis="both"
                               handle="#draggable-area"
                               onDrag={(e, ui) => {
-                                this.handleDrag(e, ui);
+                                this.handleDrag(ui);
                               }}
                               onStop={this.onDragStop}
                             >
@@ -942,9 +833,7 @@ class home extends Component {
                           <Button
                             type="primary"
                             disabled={this.state.disableAudio}
-                            onClick={e => {
-                              this.disableAudio();
-                            }}
+                            onClick={() => this.disableAudio()}
                             block
                           >
                             <Icon type="sound" /> Remove Audio
@@ -953,7 +842,7 @@ class home extends Component {
                         <Col xl={12} xs={24}>
                           <Button
                             disabled={!this.state.disableAudio}
-                            onClick={e => {
+                            onClick={() => {
                               this.UndodisableAudio();
                               showNotificationWithIcon("info", RemoveFeatureMsg);
                             }}
@@ -968,7 +857,7 @@ class home extends Component {
                         <Col xl={12} xs={24}>
                           <Button
                             type="primary"
-                            onClick={e => {
+                            onClick={() => {
                               this.rotateVideo();
                               this.RotateValue(this.state.RotateValue);
                               this.displayRotate();
@@ -981,7 +870,7 @@ class home extends Component {
                         <Col xl={12} xs={24}>
                           <Button
                             disabled={!this.state.rotateVideo}
-                            onClick={e => {
+                            onClick={() => {
                               this.setState({ rotateVideo: false });
                               showNotificationWithIcon("info", RemoveFeatureMsg);
                             }}
@@ -997,7 +886,7 @@ class home extends Component {
                           <Button
                             type="primary"
                             disabled={this.state.trimVideo}
-                            onClick={e => {
+                            onClick={() => {
                               this.displayTrim();
                               this.setState({
                                 trimVideo: true
@@ -1011,9 +900,7 @@ class home extends Component {
                         <Col xl={12} xs={24}>
                           <Button
                             disabled={!this.state.trimVideo}
-                            onClick={e => {
-                              this.setState({ trimVideo: false, displayTrim: false });
-                            }}
+                            onClick={() => this.setState({ trimVideo: false, displayTrim: false })}
                             block
                           >
                             <Icon type="undo" /> Undo
@@ -1026,7 +913,7 @@ class home extends Component {
                           <Button
                             type="primary"
                             disabled={this.state.cropVideo}
-                            onClick={e => {
+                            onClick={() => {
                               this.cropVideo();
                               this.displayCrop();
                             }}
@@ -1038,7 +925,7 @@ class home extends Component {
                         <Col xl={12} xs={24}>
                           <Button
                             disabled={!this.state.cropVideo}
-                            onClick={e => {
+                            onClick={() => {
                               this.setState({ cropVideo: false });
                               showNotificationWithIcon("info", RemoveFeatureMsg);
                             }}
@@ -1075,8 +962,7 @@ class home extends Component {
                     {console.log(this.state.player)}
                     {this.state.displayTrim ? (
                       <Col span={16}>
-                        <h2>VideoTrim Settings </h2>
-                        {/* {trims} */}
+                        <h2>VideoTrim Settings</h2>
                         {this.refs.player && this.state.trims.map((trim, i) => (
                           <React.Fragment>
                             <Slider
@@ -1143,7 +1029,7 @@ class home extends Component {
                         ))}
                         <Button
                           type="primary"
-                          onClick={(e)=>{
+                          onClick={() => {
                             this.add();
                             this.setState({AddedMore: true});
                           }}
@@ -1193,7 +1079,7 @@ class home extends Component {
                       <Col span="12">
                         <Button
                           type="primary"
-                          onClick={e => {
+                          onClick={() => {
                             this.setState({ displayUploadToCommons: true });
                           }}
                         >
@@ -1240,7 +1126,7 @@ class home extends Component {
                               >
                                 <Button
                                   type="primary"
-                                  onClick={e => {
+                                  onClick={() => {
                                     showNotificationWithIcon("info", WaitMsg);
                                   }}
                                   name="rotate"
