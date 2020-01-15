@@ -484,7 +484,7 @@ class home extends Component {
   // This validates the Video URL using Regeular Expression
   validateVideoURL(url) {
     if (url !== "") {
-      if ( url.match( /^(?:https?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:\/?#[\]@!$%&'()*+,;=.]+(?:mp4|webm|mov|flv|ogv)+$/g ) !== null ) {
+      if ( url.match( /^(?:https?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$%&'()*+,;=.]+(?:mp4|webm|mov|flv|ogv)+$/g ) !== null ) {
         console.log("Your are using right URL !");
         this.setState({ validateVideoURL: true });
         return true;

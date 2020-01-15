@@ -152,7 +152,7 @@ body {
   width: 100%;
 }
 
-.video-react div, 
+.video-react div,
 .video-react .video-react-big-play-button {
   z-index: 10;
 }
