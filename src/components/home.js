@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button } from 'antd';
+import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Upload } from 'antd';
 import { Player } from 'video-react';
 import { FormGroup } from 'reactstrap';
 
@@ -22,6 +22,7 @@ const API_URL = ENV_SETTINGS.backend_url;
 
 const { Header, Content, Footer } = Layout;
 const { Step } = Steps;
+const { Dragger } = Upload;
 
 // Notification Messages
 const RemoveFeatureMsg = "You turned off a feature";
@@ -139,7 +140,9 @@ class home extends Component {
       AddedMore: false,
       RotateValue: -1,
       displaynewVideoName: false,
-      DisplayFailedNotification: false
+      DisplayFailedNotification: false,
+
+      uploadedFile: null,
     };
   }
 
@@ -217,9 +220,9 @@ class home extends Component {
   }
 
   // This updates the player src, and displays the player
-  updatePlayerInfo() {
+  updatePlayerInfo(url) {
     this.setState({
-      playerSource: this.state.inputVideoUrl,
+      playerSource: url,
       display: true,
       displayPlayer: true,
       displayCrop: false,
@@ -525,6 +528,30 @@ class home extends Component {
     });
   }
 
+  previewCallback(res){
+    console.log(res);
+      //here var loading is for button loading
+      this.setState({
+        videos: res.data.videos,
+        displayRotate: false,
+        displayCrop: false,
+        loading: false,
+        displayPlayer: false,
+        displayLoadingMessage: false,
+        changeStep: 3,
+        displayVideoSettings: false
+      });
+      showNotificationWithIcon("success", "Sucessfully Completed :)");
+  }
+
+  previewCallbackError(err){
+    console.log(err);
+    const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
+    showNotificationWithIcon("error", reason);
+    this.setState({DisplayFailedNotification: true});
+    this.leaveLoading();
+  }
+
   // On Clicking the "Preview" button the values will submit to the back-end
   onSubmit(e) {
     e.preventDefault();
@@ -549,32 +576,42 @@ class home extends Component {
       RotateValue: this.state.RotateValue
     };
     this.setState({ videos: [] });
-    axios.post(`${API_URL}/video-cut-tool-back-end/send`, obj).then(res => {
-      console.log(res);
-      //here var loading is for button loading
-      this.setState({
-        videos: res.data.videos,
-        displayRotate: false,
-        displayCrop: false,
-        loading: false,
-        displayPlayer: false,
-        displayLoadingMessage: false,
-        changeStep: 3,
-        displayVideoSettings: false
-      });
-      showNotificationWithIcon("success", "Sucessfully Completed :)");
-    })
-    .catch((err) => {
-      console.log(err);
-      const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
-      showNotificationWithIcon("error", reason);
-      this.setState({DisplayFailedNotification: true});
-      this.leaveLoading();
-    })
-  }
+
+    if( this.state.uploadedFile !== null ){
+      let data = new FormData();
+      data.append('video',this.state.uploadedFile);
+      for ( let key in obj ) {
+        data.append(key, obj[key]);
+      }
+      axios.post(`${API_URL}/video-cut-tool-back-end/send/upload`, data, {
+        headers: { 
+          'Content-Type': 'multipart/form-data'
+        }
+      }).then(this.previewCallback).catch(this.previewCallbackError)
+    } else {
+      axios.post(`${API_URL}/video-cut-tool-back-end/send`, obj).then(this.previewCallback).catch(this.previewCallbackError);
+    }
+  } 
 
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
+    const { uploadedFile } = this.state;
+    const uploadProperties = {
+      multiple: false,
+      onRemove: file => {
+        this.setState({
+          uploadedFile: file
+        });
+      },
+      beforeUpload: file => {
+        console.log(file)
+        this.setState({
+          uploadedFile: file
+        });
+        return false;
+      },
+      uploadedFile,
+    };
 
     console.log("URL: " + this.state.inputVideoUrl);
 
@@ -660,27 +697,42 @@ class home extends Component {
                           onChange={this.handleValueChange}
                         />
                       </FormGroup>
+                      <Typography.Title level={4} style={{ color: "Black" }}>
+                        Or
+                      </Typography.Title>
+                      <Dragger {...uploadProperties}>
+                        <p className="ant-upload-drag-icon">
+                          <Icon type="inbox" />
+                        </p>
+                        <p className="ant-upload-text">Click or drag file to this area to upload</p>
+                      </Dragger>,
                       <div>
                         <FormGroup>
                           <Button
                             type="primary"
-                            disabled={!this.state.inputVideoUrl}
+                            disabled={!this.state.inputVideoUrl && this.state.uploadedFile === null}
                             onClick={() => {
-                              if ( this.validateVideoURL(this.state.inputVideoUrl) ) {
-                                this.updatePlayerInfo();
-                                this.changeStep(1);
+                              console.log(this.state);
+                              if ( this.state.uploadedFile !== null ) {
+                                this.updatePlayerInfo(URL.createObjectURL(this.state.uploadedFile))
                                 this.setState({
-                                  displayVideoSettings: true,
-                                  upload: false,
-                                  title: "",
-                                  trimVideo: false,
-                                  rotateVideo: false,
-                                  cropVideo: false,
-                                  trimIntoSingleVideo: true,
-                                  trimIntoMultipleVideos: false,
-                                  disableAudio: false
-                                });
+                                  validateVideoURL: true
+                                })
+                              } else if ( this.validateVideoURL(this.state.inputVideoUrl) ){
+                                this.updatePlayerInfo(this.state.inputVideoUrl)
                               }
+                              this.changeStep(1);
+                              this.setState({
+                                displayVideoSettings: true,
+                                upload: false,
+                                title: "",
+                                trimVideo: false,
+                                rotateVideo: false,
+                                cropVideo: false,
+                                trimIntoSingleVideo: true,
+                                trimIntoMultipleVideos: false,
+                                disableAudio: false
+                              });
                             }}
                             style={{ marginTop: "12px" }}
                           >
