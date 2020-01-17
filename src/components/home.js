@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button } from 'antd';
-import { Player } from 'video-react';
+import { Player, BigPlayButton } from 'video-react';
 import { FormGroup } from 'reactstrap';
 
 import PopupTools from 'popup-tools';
@@ -730,6 +730,7 @@ class home extends Component {
                           ref="player"
                           videoId="video-1"
                         >
+                          <BigPlayButton position="center" />
                           <source src={this.state.playerSource} />
                         </Player>
                       </div>
@@ -787,6 +788,7 @@ class home extends Component {
                                   width="300"
                                   videoId="video-1"
                                 >
+                                  <BigPlayButton position="center" />
                                   <source src={this.state.playerSource} />
                                 </Player>
                               </div>
@@ -798,6 +800,7 @@ class home extends Component {
                             {this.state.AfterOnTapCrop ? (
                               <div>
                                 <Player ref="player" videoId="video-1">
+                                  <BigPlayButton position="center" />
                                   <source src={this.state.playerSource} />
                                 </Player>
                               </div>
@@ -812,6 +815,7 @@ class home extends Component {
                       <div>
                         <div id={"RotatePlayerValue" + this.state.RotateValue} style={{marginTop: "8em"}} >
                               <Player ref="player" videoId="video-1" >
+                                <BigPlayButton position="center" />
                                 <source src={this.state.playerSource} />
                               </Player>
                         </div>
