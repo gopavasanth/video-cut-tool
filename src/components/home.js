@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Upload } from 'antd';
+import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Upload, Progress } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
 import { FormGroup } from 'reactstrap';
 
@@ -7,8 +7,8 @@ import PopupTools from 'popup-tools';
 import { NotificationManager } from 'react-notifications';
 
 import Draggable from "react-draggable";
-import { SyncLoader } from "react-spinners";
 import axios from "axios";
+import io from 'socket.io-client';
 
 import "../App.css";
 import "antd/dist/antd.css";
@@ -131,6 +131,8 @@ class home extends Component {
       //loading button
       loading: false,
       displayLoadingMessage: false,
+      progressPercentage: 0,
+      currentTask: 'prcessing',
       //Slider Values,
       changeStep: 0,
       duration: 0,
@@ -148,6 +150,16 @@ class home extends Component {
   }
 
   componentDidMount() {
+    const socket = io(API_URL);
+    socket.on('progress:update', data => {
+      const progressData = JSON.parse(data);
+      const { time, duration, currentTask } = progressData;
+      this.setState({
+        progressPercentage: Math.round((time * 100) / duration),
+        currentTask
+      });
+    })
+
     try {
       if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user'))) {
         this.setState({ user: JSON.parse(localStorage.getItem('user')) })
@@ -167,7 +179,9 @@ class home extends Component {
   enterLoading = () => {
     this.setState({
       loading: true,
-      displayLoadingMessage: true
+      displayLoadingMessage: true,
+      progressPercentage: 0,
+      currentTask: 'processing'
     });
   };
 
@@ -175,6 +189,8 @@ class home extends Component {
     this.setState({
       loading: false,
       displayLoadingMessage: false,
+      progressPercentage: 0,
+      currentTask: 'processing'
     })
   }
 
@@ -556,6 +572,7 @@ class home extends Component {
   // On Clicking the "Preview" button the values will submit to the back-end
   onSubmit(e) {
     e.preventDefault();
+    const self = this;
     const obj = {
       inputVideoUrl: this.state.inputVideoUrl,
       trims: this.state.trims,
@@ -582,13 +599,14 @@ class home extends Component {
       let data = new FormData();
       data.append('video',this.state.uploadedFile);
       data.append('data',JSON.stringify(obj))
+      this.setState({ currentTask: 'uploading' });
       axios.post(`${API_URL}/video-cut-tool-back-end/send/upload`, data, {
         headers: { 
           'Content-Type': 'multipart/form-data'
         },
         onUploadProgress: function(progressEvent) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          document.getElementById('loadingProgress').innerHTML = percentCompleted + "%";
+          self.setState({ progressPercentage: percentCompleted });
         }
       }).then(res => {
         this.previewCallback(res);
@@ -728,7 +746,7 @@ class home extends Component {
                           <Icon type="inbox" />
                         </p>
                         <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                      </Dragger>,
+                      </Dragger>
                       <div>
                         <FormGroup>
                           <Button
@@ -779,16 +797,10 @@ class home extends Component {
                     <br />
                     {this.state.displayLoadingMessage ? (
                           <div
-                            style={{ paddingLeft: "330px", align: "center" }}
+                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                           >
-                            <p>Your video is processing... <span id="loadingProgress"></span></p>
-                            <SyncLoader
-                              sizeUnit={"px"}
-                              size={"20"}
-                              color={"#001529"}
-                              id="loading"
-                              loading={this.state.loading}
-                            />
+                            <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
+                            <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />
                           </div>
                     ) : null}
                     {
@@ -1021,8 +1033,8 @@ class home extends Component {
                       <Button
                         type="primary"
                         onClick={e => {
-                          this.onSubmit(e);
                           this.enterLoading();
+                          this.onSubmit(e);
                           showNotificationWithIcon("info", WaitMsg);
                           this.changeStep(2);
                         }}
