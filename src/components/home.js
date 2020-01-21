@@ -32,16 +32,8 @@ const OverwriteBtnTooltipMsg = (state) => {
   if (state.uploadedFile) {
     return "You can't overwrite a video from a device";
   }
-  if (state.user) {
-    if (state.author !== state.user.username) {
-      return "You're not an author of this video";
-    }
-    else if (state.uploadedFile) {
-      return "You can't overwrite a video from a device";
-    }
-  }
   else {
-    return "You're not an author of this video";
+    return "File doesn't exist at Wikimedia Commons";
   }
 }
 
@@ -259,14 +251,47 @@ class home extends Component {
   }
 
   // This updates the player src, and displays the player
-  updatePlayerInfo(url) {
-    this.setState({
-      playerSource: url,
+  updatePlayerInfo(videoUrl) {
+    const splittedUrl = videoUrl.split('/');
+    const resultObj = {
+      playerSource: videoUrl,
       display: true,
       displayPlayer: true,
       displayCrop: false,
       displayRotate: false
-    });
+    };
+
+    if (splittedUrl.includes('commons.wikimedia.org')) {
+      axios.get(
+        `https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=videoinfo&titles=${splittedUrl[splittedUrl.length-1]}&viprop=user%7Curl%7Ccanonicaltitle%7Ccomment%7Curl&origin=*`
+      )
+        .then(response => {
+          const { pages } = response.data.query;
+          if (Object.keys(pages)[0] !== '-1') {
+            const { user, canonicaltitle, comment, url } = pages[Object.keys(pages)[0]].videoinfo[0];
+
+            let newTitle = canonicaltitle.split('.');
+            newTitle[0] = newTitle[0].concat(' (edited)');
+            newTitle = newTitle.join('.').slice(5);
+
+            resultObj.author = user;
+            resultObj.title = newTitle;
+            resultObj.comment = comment;
+            resultObj.playerSource = url;
+            resultObj.inputVideoUrl = url;
+
+            this.setState(resultObj);
+          }
+        });
+    }
+
+    else {
+      resultObj.title = this.state.uploadedFile
+        ? this.state.uploadedFile.name
+        : decodeURI(splittedUrl[splittedUrl.length-1]);
+      console.log((resultObj.title))
+      this.setState(resultObj);
+    }
   }
 
   rotateVideo() {
@@ -585,40 +610,11 @@ class home extends Component {
       displayVideoSettings: false
     };
 
-    let inputVideoUrlParsed = this.state.inputVideoUrl.split('/');
-
-    if (
-      !this.state.uploadedFile &&
-      inputVideoUrlParsed.includes('upload.wikimedia.org')
-      && inputVideoUrlParsed.includes('wikipedia')
-      && inputVideoUrlParsed.includes('commons')
-    ) {
-      inputVideoUrlParsed = inputVideoUrlParsed[inputVideoUrlParsed.length-1];
-      axios.get(
-        `https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=videoinfo&titles=File:${inputVideoUrlParsed}&viprop=user%7Curl%7Ccanonicaltitle%7Ccomment&origin=*`
-      )
-        .then(response => {
-          const { pages } = response.data.query;
-          if (Object.keys(pages)[0] !== '-1') {
-            const { user, canonicaltitle, comment } = pages[Object.keys(pages)[0]].videoinfo[0];
-
-            let newTitle = canonicaltitle.split('.');
-            newTitle[0] = newTitle[0].slice(5).concat(' (edited)');
-            newTitle = newTitle.join('.');
-            
-            previewCompleteState.author = user;
-            previewCompleteState.title = newTitle;
-            previewCompleteState.comment = comment;
-          }
-          return previewComplete();
-        });
-    }
-    else {
-      if (this.state.uploadedFile) {
-        previewCompleteState.title = this.state.uploadedFile.name;
-      }
+    if (this.state.uploadedFile) {
+      previewCompleteState.title = this.state.uploadedFile.name;
       return previewComplete();
     }
+    return previewComplete();
   }
 
   previewCallbackError(err){
@@ -788,7 +784,7 @@ class home extends Component {
                           </Button>
                         </Typography.Title>
                         <Input
-                          placeholder="https://upload.wikimedia.org/wikipedia/commons/video.webm"
+                          placeholder="https://commons.wikimedia.org/wiki/File:video.webm"
                           ref="inputVideoUrl"
                           name="inputVideoUrl"
                           id="inputVideoUrl"
@@ -1255,7 +1251,7 @@ class home extends Component {
                                   this.setState({ selectedOptionName: e.target.value });
                                 }}
                               >
-                                {!this.state.uploadedFile && this.state.user && this.state.user.username === this.state.author ? (
+                                {!this.state.uploadedFile ? (
                                   <Radio.Button value="overwrite">Overwrite</Radio.Button>
                                 ) : (
                                   <Tooltip title={OverwriteBtnTooltipMsg(this.state)}>
