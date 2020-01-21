@@ -28,6 +28,15 @@ const { Dragger } = Upload;
 const RemoveFeatureMsg = "You turned off a feature";
 const WaitMsg = "Your video is being processed, Please wait until the new video is generated";
 
+const OverwriteBtnTooltipMsg = (state) => {
+  if (state.uploadedFile) {
+    return "You can't overwrite a video from a device";
+  }
+  else {
+    return "File doesn't exist at Wikimedia Commons";
+  }
+}
+
 const showNotificationWithIcon = (type, desc) => {
   notification[type]({
     message: "Notification !",
@@ -123,6 +132,8 @@ class home extends Component {
       AfterOnTapCrop: false,
       upload: false,
       title: "",
+      comment: "",
+      author: "",
       trimVideo: false,
       rotateVideo: false,
       cropVideo: false,
@@ -143,6 +154,8 @@ class home extends Component {
       RotateValue: -1,
       displaynewVideoName: false,
       DisplayFailedNotification: false,
+      //Uploading to Commons
+      selectedOptionName: 'new-file', // can be 'overwrite' or 'new-file'
 
       uploadedFile: null,
       fileList: []
@@ -224,7 +237,8 @@ class home extends Component {
   onLogOut() {
     localStorage.removeItem('user');
     this.setState({
-      user: null
+      user: null,
+      selectedOptionName: 'new-file'
     });
     NotificationManager.success("Logged out successfully");
   }
@@ -237,14 +251,47 @@ class home extends Component {
   }
 
   // This updates the player src, and displays the player
-  updatePlayerInfo(url) {
-    this.setState({
-      playerSource: url,
+  updatePlayerInfo(videoUrl) {
+    const splittedUrl = videoUrl.split('/');
+    const resultObj = {
+      playerSource: videoUrl,
       display: true,
       displayPlayer: true,
       displayCrop: false,
       displayRotate: false
-    });
+    };
+
+    if (splittedUrl.includes('commons.wikimedia.org')) {
+      axios.get(
+        `https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=videoinfo&titles=${splittedUrl[splittedUrl.length-1]}&viprop=user%7Curl%7Ccanonicaltitle%7Ccomment%7Curl&origin=*`
+      )
+        .then(response => {
+          const { pages } = response.data.query;
+          if (Object.keys(pages)[0] !== '-1') {
+            const { user, canonicaltitle, comment, url } = pages[Object.keys(pages)[0]].videoinfo[0];
+
+            let newTitle = canonicaltitle.split('.');
+            newTitle[0] = newTitle[0].concat(' (edited)');
+            newTitle = newTitle.join('.').slice(5);
+
+            resultObj.author = user;
+            resultObj.title = newTitle;
+            resultObj.comment = comment;
+            resultObj.playerSource = url;
+            resultObj.inputVideoUrl = url;
+
+            this.setState(resultObj);
+          }
+        });
+    }
+
+    else {
+      resultObj.title = this.state.uploadedFile
+        ? this.state.uploadedFile.name
+        : decodeURI(splittedUrl[splittedUrl.length-1]);
+      console.log((resultObj.title))
+      this.setState(resultObj);
+    }
   }
 
   rotateVideo() {
@@ -546,19 +593,28 @@ class home extends Component {
   }
 
   previewCallback(res){
-    console.log(res);
-      //here var loading is for button loading
-      this.setState({
-        videos: res.data.videos,
-        displayRotate: false,
-        displayCrop: false,
-        loading: false,
-        displayPlayer: false,
-        displayLoadingMessage: false,
-        changeStep: 3,
-        displayVideoSettings: false
-      });
+    function previewComplete() {
+      self.setState(previewCompleteState);
       showNotificationWithIcon("success", "Sucessfully Completed :)");
+    }
+    
+    const self = this;
+    const previewCompleteState = {
+      videos: res.data.videos,
+      displayRotate: false,
+      displayCrop: false,
+      loading: false,
+      displayPlayer: false,
+      displayLoadingMessage: false,
+      changeStep: 3,
+      displayVideoSettings: false
+    };
+
+    if (this.state.uploadedFile) {
+      previewCompleteState.title = this.state.uploadedFile.name;
+      return previewComplete();
+    }
+    return previewComplete();
   }
 
   previewCallbackError(err){
@@ -586,6 +642,7 @@ class home extends Component {
       trimVideo: this.state.trimVideo,
       upload: this.state.upload,
       title: this.state.title,
+      comment: this.state.comment,
       rotateVideo: this.state.rotateVideo,
       cropVideo: this.state.cropVideo,
       disableAudio: this.state.disableAudio,
@@ -727,7 +784,7 @@ class home extends Component {
                           </Button>
                         </Typography.Title>
                         <Input
-                          placeholder="https://upload.wikimedia.org/wikipedia/commons/video.webm"
+                          placeholder="https://commons.wikimedia.org/wiki/File:video.webm"
                           ref="inputVideoUrl"
                           name="inputVideoUrl"
                           id="inputVideoUrl"
@@ -803,10 +860,13 @@ class home extends Component {
                             <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />
                           </div>
                     ) : null}
-                    {
-                      this.state.displaynewVideoName ?
-                      <p>Your New video URL will be here `https://commons.wikimedia.org/wiki/File:{this.state.title}` </p>: null
-                    }
+                    {this.state.displaynewVideoName ? (
+                      <p>
+                        Your New video will be here: <a href={`https://commons.wikimedia.org/wiki/File:${this.state.title}`} target="_blank" rel="noopener noreferrer">
+                          https://commons.wikimedia.org/wiki/File:{this.state.title}
+                        </a>
+                      </p>
+                    ) : null}
                     {this.state.displayPlayer ? (
                       <div className="player">
                         <br />
@@ -918,7 +978,7 @@ class home extends Component {
                 <Col span={8}>
                   <div className="videoSettings">
                     <h2 style={{ textAlign: "center" }}>Step1: Adjust Video Settings   </h2>
-                    <div className="step1">
+                    <div className="button-columns">
                       <Row>
                         <Col xl={12} xs={24}>
                           <Button
@@ -1161,76 +1221,102 @@ class home extends Component {
                 {this.state.videos &&
                   this.state.videos.map(video => (
                     <div>
-                      <h2 style={{ textAlign: "center" }}>Step3: Choose your choice </h2>
-                      <Col span="12">
-                        <Button type="primary">
-                          <a href={`${API_URL}/download/${video}`}>Download</a>
-                        </Button>
-                      </Col>
-                      <Col span="12">
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            this.setState({ displayUploadToCommons: true });
-                          }}
-                        >
-                          Upload to Commons
-                        </Button>
-                        <br />
+                      <h2 style={{ textAlign: "center" }}>Step3: Choose your choice</h2>
+                      <div className="button-columns row-on-mobile">
+                        <Row>
+                          <Col xl={12} xs={24}>
+                            <Button block type="primary">
+                              <a href={`${API_URL}/download/${video}`}>Download</a>
+                            </Button>
+                          </Col>
+                          <Col xl={12} xs={24}>
+                            <Button
+                              block
+                              type="primary"
+                              onClick={() => this.setState({ displayUploadToCommons: true })}
+                            >
+                              Upload to Commons
+                            </Button>
+                          </Col>
+                        </Row>
                         {this.state.displayUploadToCommons ? (
-                          <div className="displayUploadToCommons">
-                            <br />
-                            <h4> Enter the new video title </h4>
-                            <Input
-                              placeholder="myNewVideo.webm"
-                              ref="title"
-                              name="title"
-                              id="title"
-                              value={this.state.title}
-                              onChange={this.handleValueChange}
-                              style={{ padding: "10px" }}
-                              required="true"
-                            />
-                            <br />
-                            {this.state.user ? (
-                              <Button
-                                type="primary"
-                                onClick={e => {
-                                  this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true }, () => {
-                                    this.onSubmit(e);
-                                  });
-                                }}
-                                loading={this.state.loading}
-                                name="rotate"
-                                shape="round"
-                                style={{
-                                  margin: "1rem",
-                                  marginLeft: "2.25rem"
+                          <>
+                            <Divider style={{ margin: '15px 0' }} />
+                            <div className="displayUploadToCommons">
+                              <h4>Action for a file</h4>
+                              <Radio.Group
+                                defaultValue="new-file"
+                                value={this.state.selectedOptionName}
+                                onChange={e => {
+                                  this.setState({ selectedOptionName: e.target.value });
                                 }}
                               >
-                                <Icon type="upload" /> Upload to Commons
-                              </Button>
-                            ) : (
-                              <Tooltip
-                                placement="topLeft"
-                                title={"Login to Upload to Wikimedia Commons"}
-                              >
-                                <Button
-                                  type="primary"
-                                  onClick={() => {
-                                    showNotificationWithIcon("info", WaitMsg);
-                                  }}
-                                  name="rotate"
-                                  shape="round"
-                                  disabled
-                                >
-                                  <Icon type="upload" /> Upload to Commons
-                                </Button>
-                              </Tooltip>
-                            )}
-                          </div>
+                                {!this.state.uploadedFile ? (
+                                  <Radio.Button value="overwrite">Overwrite</Radio.Button>
+                                ) : (
+                                  <Tooltip title={OverwriteBtnTooltipMsg(this.state)}>
+                                    <Radio.Button value="overwrite" disabled>Overwrite</Radio.Button>
+                                  </Tooltip>
+                                )}
+                                <Radio.Button value="new-file">Upload as new file</Radio.Button>
+                              </Radio.Group>
+
+                              {this.state.selectedOptionName === 'new-file' && (
+                                <>
+                                  <h4 style={{ marginTop: 10 }}>Filename:</h4>
+                                  <Input
+                                    placeholder="myNewVideo.webm"
+                                    ref="title"
+                                    name="title"
+                                    id="title"
+                                    value={this.state.title}
+                                    onChange={this.handleValueChange}
+                                    required={true}
+                                  />
+                                </>
+                              )}
+
+                              <h4 style={{ marginTop: 10 }}>Upload comment:</h4>
+                              <Input.TextArea
+                                name="comment"
+                                id="comment"
+                                value={this.state.comment}
+                                onChange={this.handleValueChange} />
+
+                              <div className="upload-button" style={{ marginTop: 10 }}>
+                                {this.state.user && this.state.title.length ? (
+                                  <Button
+                                    type="primary"
+                                    onClick={e => {
+                                      this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true }, () => {
+                                        this.onSubmit(e);
+                                      });
+                                    }}
+                                    loading={this.state.loading}
+                                    block
+                                  >
+                                    <Icon type="upload" /> Upload to Commons
+                                  </Button>
+                                ) : (
+                                  <Tooltip
+                                    placement="topLeft"
+                                    title="Login to Upload to Wikimedia Commons"
+                                  >
+                                    <Button
+                                      type="primary"
+                                      onClick={() => showNotificationWithIcon("info", WaitMsg)}
+                                      disabled
+                                      block
+                                    >
+                                      <Icon type="upload" /> Upload to Commons
+                                    </Button>
+                                  </Tooltip>
+                                )}
+                              </div>
+                            </div>
+                          </>
                         ) : null}
-                      </Col>
+                      </div>
                     </div>
                   ))}
               </Col>

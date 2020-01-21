@@ -189,18 +189,22 @@ body {
   transform: rotate(360deg);
 }
 
-.videoSettings > .step1 .ant-row > div {
+.button-columns .ant-row > div.ant-col {
   padding: 0 10px;
 }
 
 @media (max-width: 1199px) {
-  .videoSettings > .step1 .ant-row > div:first-child button {
+  .button-columns:not(.row-on-mobile) .ant-row > div.ant-col:first-child > button {
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
   }
 
-  .videoSettings > .step1 .ant-row > div:last-child button {
+  .button-columns:not(.row-on-mobile) .ant-row > div.ant-col:last-child > button {
     border-top-left-radius: 0;
     border-top-right-radius: 0;
+  }
+
+  .button-columns.row-on-mobile .ant-row > div.ant-col:last-child > button {
+    margin-top: 10px;
   }
 }
