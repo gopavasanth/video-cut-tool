@@ -19,6 +19,7 @@ const ENV_SETTINGS = require("../env")();
 
 // These are the API URL's
 const API_URL = ENV_SETTINGS.backend_url;
+const SOCKET_IO_PATH = ENV_SETTINGS.socket_io_path;
 
 const { Header, Content, Footer } = Layout;
 const { Step } = Steps;
@@ -159,7 +160,7 @@ class home extends Component {
   }
 
   componentDidMount() {
-    const socket = io(API_URL);
+    const socket = io(API_URL, { path: SOCKET_IO_PATH });
     socket.on('progress:update', data => {
       const progressData = JSON.parse(data);
       const { time, duration, currentTask } = progressData;
