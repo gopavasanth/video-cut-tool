@@ -149,7 +149,6 @@ class home extends Component {
       //display VideoSettings
       displayVideoSettings: false,
       validateVideoURL: false,
-      AddedMore: false,
       RotateValue: -1,
       displaynewVideoName: false,
       DisplayFailedNotification: false,
@@ -268,7 +267,7 @@ class home extends Component {
             const { user, canonicaltitle, comment, url } = pages[Object.keys(pages)[0]].videoinfo[0];
 
             resultObj.author = user;
-            resultObj.title = canonicaltitle.slice(5);
+            resultObj.title = decodeURIComponent(canonicaltitle.slice(5));
             resultObj.comment = comment;
             resultObj.playerSource = url;
             resultObj.inputVideoUrl = url;
@@ -278,9 +277,6 @@ class home extends Component {
         });
     }
     else {
-      resultObj.title = this.state.uploadedFile
-        ? this.state.uploadedFile.name
-        : decodeURI(splittedUrl[splittedUrl.length-1]);
       this.setState(resultObj);
     }
   }
@@ -451,8 +447,10 @@ class home extends Component {
         }
 
         function stopResize() {
-          self.onDragStop();
-          window.removeEventListener('mousemove', resize);
+          if (self.refs.player !== undefined) {
+            self.onDragStop();
+            window.removeEventListener('mousemove', resize);
+          }
         }
       });
     });
@@ -588,9 +586,16 @@ class home extends Component {
       self.setState(previewCompleteState);
       showNotificationWithIcon("success", "Sucessfully Completed :)");
     }
+
+    if (this.state.title === "") {
+      const splittedUrl = this.state.playerSource.split('/');
+      this.setState({
+        title: decodeURIComponent(splittedUrl[splittedUrl.length-1])
+      });
+    }
     
     let videos = [];
-    if (res.data.videos.length > 1) {
+    if (res.data.videos.length > 0) {
       res.data.videos.map((item, index) => {
         let newVideoTitle = this.state.title.split('.');
         newVideoTitle[0] = newVideoTitle[0].concat(' (edited)');
@@ -1101,7 +1106,7 @@ class home extends Component {
                     </div>
                     <Divider />
                     <h2 style={{ textAlign: "center" }}>Step2: Preview my changes</h2>
-                    <Col span={16} style={{ textAlign: "centre" }}>
+                    <Col style={{ textAlign: "center" }}>
                       <Button
                         type="primary"
                         onClick={e => {
@@ -1112,8 +1117,7 @@ class home extends Component {
                         }}
                         name="rotate"
                         style={{
-                          height: "50px",
-                          float: "right"
+                          height: "50px"
                         }}
                         disabled={!this.state.cropVideo && !this.state.rotateVideo && !this.state.trimVideo && !this.state.disableAudio}
                         shape="round"
@@ -1122,9 +1126,8 @@ class home extends Component {
                         <Icon type="play-circle" /> Preview
                       </Button>
                     </Col>
-                    {console.log(this.state.player)}
                     {this.state.displayTrim ? (
-                      <Col span={16}>
+                      <Col>
                         <h2>VideoTrim Settings</h2>
                         {this.refs.player && this.state.trims.map((trim, i) => (
                           <React.Fragment>
@@ -1155,7 +1158,7 @@ class home extends Component {
                               }}
                             />
                             <Row gutter={12} key={i}>
-                              <Col span={12}>
+                              <Col span={i === 0 ? 12 : 10}>
                                 <Typography.Text
                                   strong
                                   style={{ paddingRight: "0.2rem" }}
@@ -1171,7 +1174,7 @@ class home extends Component {
                                   />
                                 </div>
                               </Col>
-                              <Col span={12}>
+                              <Col span={i === 0 ? 12 : 10}>
                                 <Typography.Text
                                   strong
                                   style={{ paddingRight: "0.2rem" }}
@@ -1187,6 +1190,17 @@ class home extends Component {
                                   />
                                 </div>
                               </Col>
+                              {i > 0 && (
+                                <Col span={4} style={{ height: 53 }}>
+                                  <Button style={{ height: '100%' }} block onClick={() => {
+                                    let newTrimsVar = this.state.trims.slice();
+                                    newTrimsVar.splice(i, 1);
+                                    this.setState({ trims: newTrimsVar });
+                                  }}>
+                                    <Icon type="close" />
+                                  </Button>
+                                </Col>
+                              )}
                             </Row>
                           </React.Fragment>
                         ))}
@@ -1194,36 +1208,32 @@ class home extends Component {
                           type="primary"
                           onClick={() => {
                             this.add();
-                            this.setState({AddedMore: true});
                           }}
-                          style={{ margin: "1rem", marginLeft: "2.25rem" }}
+                          style={{ width: "100%", margin: "1rem 0" }}
                         >
                           <Icon type="plus" /> Add More
                         </Button>
                         <br />
-                        {this.state.AddedMore ? (
-                        <div className="form-group">
-                        <div>
-                          <Col span={12}>
-                            <Radio
-                              checked={this.state.trimIntoSingleVideo}
-                              onClick={this.trimIntoSingleVideo}
-                            >
-                              Concatenate into single video
-                            </Radio>
-                          </Col>
-                          <Col Span={12}>
-                            <Radio
-                              checked={this.state.trimIntoMultipleVideos}
-                              onClick={this.trimIntoMultipleVideos}
-                            >
-                              As Multiple videos
-                            </Radio>
-                          </Col>
-                        </div>
-                      </div>
-                        ): null
-                        }
+                        {this.state.trims.length > 1 && (
+                          <Row>
+                            <Col xs={24} xxl={12} style={{ textAlign: 'center' }}>
+                              <Radio
+                                checked={this.state.trimIntoSingleVideo}
+                                onClick={this.trimIntoSingleVideo}
+                              >
+                                Concatenate into single video
+                              </Radio>
+                            </Col>
+                            <Col xs={24} xxl={12} style={{ textAlign: 'center' }}>
+                              <Radio
+                                checked={this.state.trimIntoMultipleVideos}
+                                onClick={this.trimIntoMultipleVideos}
+                              >
+                                As Multiple videos
+                              </Radio>
+                            </Col>
+                          </Row>
+                        )}
                       </Col>
                     ) : null}
                 </div>
