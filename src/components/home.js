@@ -131,9 +131,6 @@ class home extends Component {
       beforeOnTapCrop: true,
       AfterOnTapCrop: false,
       upload: false,
-      title: "",
-      comment: "",
-      author: "",
       trimVideo: false,
       rotateVideo: false,
       cropVideo: false,
@@ -267,17 +264,26 @@ class home extends Component {
           if (Object.keys(pages)[0] !== '-1') {
             const { user, canonicaltitle, comment, url } = pages[Object.keys(pages)[0]].videoinfo[0];
 
-            resultObj.author = user;
-            resultObj.title = decodeURIComponent(canonicaltitle.slice(5));
-            resultObj.comment = comment;
             resultObj.playerSource = url;
             resultObj.inputVideoUrl = url;
+            resultObj.videos = [{
+              author: user,
+              title: decodeURIComponent(canonicaltitle.slice(5)).replace(/\s/g, '_'),
+              comment,
+              text: ''
+            }];
 
             this.setState(resultObj);
           }
         });
     }
     else {
+      resultObj.videos = [{
+        author: this.state.user === null ? '' : this.state.user.username,
+        title: this.state.uploadedFile === null ? decodeURIComponent(splittedUrl[splittedUrl.length-1]).replace(/\s/g, '_') : this.state.uploadedFile.name.replace(/\s/g, '_'),
+        comment: '',
+        text: ''
+      }];
       this.setState(resultObj);
     }
   }
@@ -588,30 +594,7 @@ class home extends Component {
       showNotificationWithIcon("success", "Sucessfully Completed :)");
     }
 
-    if (this.state.title === "") {
-      const splittedUrl = this.state.playerSource.split('/');
-      this.setState({
-        title: decodeURIComponent(splittedUrl[splittedUrl.length-1])
-      });
-    }
-    
     let videos = [];
-    if (res.data.videos.length > 0) {
-      res.data.videos.map((item, index) => {
-        let newVideoTitle = this.state.title.split('.');
-        newVideoTitle[0] = newVideoTitle[0].concat(' (edited)');
-        if (index > 0) newVideoTitle[0] = newVideoTitle[0].concat(`(${index})`);
-        newVideoTitle = newVideoTitle.join('.');
-
-        return videos.push({
-          path: item,
-          title: newVideoTitle,
-          comment: this.state.comment,
-          selectedOptionName: 'new-file',
-          displayUploadToCommons: false
-        });
-      });
-    }
 
     const self = this;
     const previewCompleteState = {
@@ -619,16 +602,49 @@ class home extends Component {
       displayRotate: false,
       displayCrop: false,
       loading: false,
+      currentTask: 'processing',
       displayPlayer: false,
       displayLoadingMessage: false,
       changeStep: 3,
       displayVideoSettings: false
     };
 
-    if (this.state.uploadedFile) {
-      previewCompleteState.title = this.state.uploadedFile.name;
-      return previewComplete();
+    if (!this.state.upload) {
+      if (res.data.videos.length > 0) {
+        res.data.videos.map((item, index) => {
+          let newVideoTitle = this.state.videos[index].title.split('.');
+          newVideoTitle[0] = newVideoTitle[0].concat('_(edited)');
+          if (index > 0) newVideoTitle[0] = newVideoTitle[0].concat(`(${index})`);
+          newVideoTitle = newVideoTitle.join('.');
+
+          const currentDate = new Date();
+          const currentMonth = currentDate.getMonth()+1 < 10 ? `0${currentDate.getMonth()+1}` : currentDate.getMonth()+1;
+          const currentDay = currentDate.getDate() < 10 ? `0${currentDate.getDate()}` : currentDate.getDate();
+
+          const { author, comment } = this.state.videos[index];
+
+          return videos.push({
+            path: item,
+            title: newVideoTitle,
+            author: author,
+            comment: comment,
+            text: `=={{int:filedesc}}==
+{{Information${comment.length > 0 ? `\n|description=${comment}` : ''}
+|date=${`${currentDate.getFullYear()}-${currentMonth}-${currentDay}`}
+|source={{own}}${author.length > 0 ? `\n|author=[[User:${author}|${author}]]` : ''}
+}}\n
+=={{int:license-header}}==
+{{self|cc-by-sa-4.0}}`,
+            selectedOptionName: 'new-file',
+            displayUploadToCommons: false
+          });
+        });
+      }
     }
+    else {
+      videos = this.state.videos;
+    }
+    previewCompleteState.videos = videos;
     return previewComplete();
   }
 
@@ -656,22 +672,29 @@ class home extends Component {
       user: this.state.user,
       trimVideo: this.state.trimVideo,
       upload: this.state.upload,
-      title: this.state.title,
-      comment: this.state.comment,
       rotateVideo: this.state.rotateVideo,
       cropVideo: this.state.cropVideo,
       disableAudio: this.state.disableAudio,
       trimIntoMultipleVideos: this.state.trimIntoMultipleVideos,
       trimIntoSingleVideo: this.state.trimIntoSingleVideo,
       RotateValue: this.state.RotateValue,
-      videos: this.state.videos
+      videos: this.state.upload 
+        ? this.state.videos.filter(video => video.displayUploadToCommons)
+        : this.state.videos
     };
+
+    let newVideos = this.state.videos;
+    if (!this.state.upload && this.state.trims.length > 1) {
+      for (let i = 0; i <= this.state.trims.length; i++) {
+        newVideos.push(this.state.videos[0]);
+      }
+    }
 
     if( this.state.uploadedFile !== null ){
       let data = new FormData();
       data.append('video',this.state.uploadedFile);
       data.append('data',JSON.stringify(obj))
-      this.setState({ currentTask: 'uploading' });
+      this.setState({ currentTask: 'uploading', videos: newVideos });
       axios.post(`${API_URL}/video-cut-tool-back-end/send/upload`, data, {
         headers: { 
           'Content-Type': 'multipart/form-data'
@@ -703,8 +726,9 @@ class home extends Component {
   };
 
   checkVideoTitles() {
-    let checkedArr = this.state.videos.map(video => video.title.length > 0);
-    return !checkedArr.includes(false);
+    let videoList = this.state.videos;
+    return !videoList.map(video => video.title.length > 0).includes(false)
+      && videoList.filter(video => video.displayUploadToCommons).length > 0
   }
 
   render() {
@@ -825,67 +849,80 @@ class home extends Component {
                         <p className="ant-upload-text">Click or drag file to this area to upload</p>
                       </Dragger>
                       <div>
-                        <FormGroup>
-                          <Button
-                            type="primary"
-                            disabled={!this.state.inputVideoUrl && this.state.uploadedFile === null}
-                            onClick={() => {
-                              if ( this.state.uploadedFile !== null ) {
-                                this.updatePlayerInfo(URL.createObjectURL(this.state.uploadedFile))
-                                this.setState({
-                                  validateVideoURL: true
-                                })
-                              } else if ( this.validateVideoURL(this.state.inputVideoUrl) ){
-                                this.updatePlayerInfo(this.state.inputVideoUrl)
-                              }
-                              this.changeStep(1);
+                        <Button
+                          type="primary"
+                          disabled={!this.state.inputVideoUrl && this.state.uploadedFile === null}
+                          onClick={() => {
+                            if ( this.state.uploadedFile !== null ) {
+                              this.updatePlayerInfo(URL.createObjectURL(this.state.uploadedFile))
                               this.setState({
-                                displayVideoSettings: true,
-                                upload: false,
-                                title: "",
-                                trimVideo: false,
-                                rotateVideo: false,
-                                cropVideo: false,
-                                trimIntoSingleVideo: true,
-                                trimIntoMultipleVideos: false,
-                                disableAudio: false
-                              });
-                            }}
-                            style={{ marginTop: "12px" }}
-                          >
-                            Play Video
-                          </Button>
-                          <br />
-                          <br />
-                          {this.state.videos &&
-                            this.state.videos.map(video => (
-                              <video
-                                height="300px"
-                                width="450px"
-                                controls
-                                vjs-big-play-centered
-                                src={`${API_URL}/${video.path}`}
-                              />
-                            ))}
-                        </FormGroup>
+                                validateVideoURL: true
+                              })
+                            } else if ( this.validateVideoURL(this.state.inputVideoUrl) ){
+                              this.updatePlayerInfo(this.state.inputVideoUrl)
+                            }
+                            this.changeStep(1);
+                            this.setState({
+                              displayVideoSettings: true,
+                              upload: false,
+                              trimVideo: false,
+                              rotateVideo: false,
+                              cropVideo: false,
+                              trimIntoSingleVideo: true,
+                              trimIntoMultipleVideos: false,
+                              disableAudio: false
+                            });
+                          }}
+                          style={{ marginTop: "12px" }}
+                        >
+                          Play Video
+                        </Button>
                       </div>
                     </Form>
                     <br />
                     {this.state.displayLoadingMessage ? (
-                          <div
-                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-                          >
-                            <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
-                            <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />
-                          </div>
+                      <div
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                      >
+                        <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
+                        <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />
+                      </div>
                     ) : null}
-                    {this.state.displaynewVideoName ? (
-                      <p>
-                        Your New video will be here: <a href={`https://commons.wikimedia.org/wiki/File:${this.state.title}`} target="_blank" rel="noopener noreferrer">
-                          https://commons.wikimedia.org/wiki/File:{this.state.title}
-                        </a>
-                      </p>
-                    ) : null}
+                    {this.state.displaynewVideoName && (
+                      <div>
+                        {this.state.videos.length > 1 ? (
+                          <>
+                            <p style={{ margin: "5px 0" }}>Your New video{this.state.videos.length > 1 && 's'} will be here:</p>
+                            <ul>
+                              {this.state.videos.map(video => (
+                                <li>
+                                  <a href={`https://commons.wikimedia.org/wiki/File:${video.title}`} target="_blank" rel="noopener noreferrer">
+                                    https://commons.wikimedia.org/wiki/File:{video.title}
+                                  </a>
+                                </li>
+                              ))}
+                            </ul>
+                          </>
+                        ) : (
+                          <>
+                            <p style={{ margin: "5px 0" }}>
+                              Your New video will be here: <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
+                                https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
+                              </a>
+                            </p>
+                          </>
+                        )}
+                      </div>
+                    )}
+                    {this.state.changeStep === 3 && this.state.videos.map(video => (
+                      <video
+                        height="300px"
+                        width="450px"
+                        controls
+                        vjs-big-play-centered
+                        src={`${API_URL}/${video.path}`}
+                      />
+                    ))}
                     {this.state.displayPlayer ? (
                       <div className="player">
                         <br />
@@ -1290,13 +1327,35 @@ class home extends Component {
                                       }}
                                     >
                                       {!this.state.uploadedFile ? (
-                                        <Radio.Button value="overwrite">Overwrite</Radio.Button>
+                                        <Radio.Button value="overwrite" onChange={() => {
+                                          const newVideoList = videoArr;
+
+                                          let newTitle = newVideoList[index].title.split('.');
+                                          newTitle[0] = newTitle[0].split('_').slice(0, -1).join('_');
+                                          newTitle = newTitle.join('.');
+
+                                          newVideoList[index] = {
+                                            ...newVideoList[index],
+                                            title: newTitle
+                                          };
+                                        }}>Overwrite</Radio.Button>
                                       ) : (
                                         <Tooltip title={OverwriteBtnTooltipMsg(this.state)}>
                                           <Radio.Button value="overwrite" disabled>Overwrite</Radio.Button>
                                         </Tooltip>
                                       )}
-                                      <Radio.Button value="new-file">Upload as new file</Radio.Button>
+                                      <Radio.Button value="new-file" onChange={() => {
+                                        const newVideoList = videoArr;
+
+                                        let newTitle = newVideoList[index].title.split('.');
+                                        newTitle[0] = newTitle[0].concat(`_(edited)${index > 0 ? `(${index})` : ''}`);
+                                        newTitle = newTitle.join('.');
+
+                                        newVideoList[index] = {
+                                          ...newVideoList[index],
+                                          title: newTitle
+                                        };
+                                      }}>Upload as new file</Radio.Button>
                                     </Radio.Group>
 
                                     {videoArr[index].selectedOptionName === 'new-file' && (
@@ -1333,6 +1392,20 @@ class home extends Component {
                                         };
                                         this.setState({videos: newVideoList});
                                       }} />
+
+                                    <h4 style={{ marginTop: 10 }}>Text:</h4>
+                                    <Input.TextArea
+                                      name="text"
+                                      id="text"
+                                      value={videoArr[index].text}
+                                      onChange={e => {
+                                        const newVideoList = videoArr;
+                                        newVideoList[index] = {
+                                          ...newVideoList[index],
+                                          text: e.target.value
+                                        };
+                                        this.setState({videos: newVideoList});
+                                      }} />
                                   </div>
                                 </>
                               ) : null}
@@ -1341,36 +1414,38 @@ class home extends Component {
                           {(this.state.videos.length > 1 && index < this.state.videos.length-1) && <Divider />}
                         </>
                       ))}
-                      <div className="upload-button" style={{ marginTop: 10 }}>
-                        {this.state.user && this.checkVideoTitles() ? (
-                          <Button
-                            type="primary"
-                            onClick={e => {
-                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true }, () => {
-                                this.onSubmit(e);
-                              });
-                            }}
-                            loading={this.state.loading}
-                            block
-                          >
-                            <Icon type="upload" /> Upload to Commons
-                          </Button>
-                        ) : (
-                          <Tooltip
-                            placement="topLeft"
-                            title="Login to Upload to Wikimedia Commons"
-                          >
+                      {this.checkVideoTitles() && (
+                        <div className="upload-button" style={{ marginTop: 10 }}>
+                          {this.state.user ? (
                             <Button
                               type="primary"
-                              onClick={() => showNotificationWithIcon("info", WaitMsg)}
-                              disabled
+                              onClick={e => {
+                                this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: 'uploading to Wikimedia Commons', progressPercentage: 0 }, () => {
+                                  this.onSubmit(e);
+                                });
+                              }}
+                              loading={this.state.loading}
                               block
                             >
                               <Icon type="upload" /> Upload to Commons
                             </Button>
-                          </Tooltip>
-                        )}
-                      </div>
+                          ) : (
+                            <Tooltip
+                              placement="topLeft"
+                              title="Login to Upload to Wikimedia Commons"
+                            >
+                              <Button
+                                type="primary"
+                                onClick={() => showNotificationWithIcon("info", WaitMsg)}
+                                disabled
+                                block
+                              >
+                                <Icon type="upload" /> Upload to Commons
+                              </Button>
+                            </Tooltip>
+                          )}
+                        </div>
+                      )}
                     </>
                 </Col>
               )}
