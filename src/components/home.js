@@ -1143,27 +1143,6 @@ class home extends Component {
                       </Row>
                     </div>
                     <Divider />
-                    <h2 style={{ textAlign: "center" }}>Step2: Preview my changes</h2>
-                    <Col style={{ textAlign: "center" }}>
-                      <Button
-                        type="primary"
-                        onClick={e => {
-                          this.enterLoading();
-                          this.onSubmit(e);
-                          showNotificationWithIcon("info", WaitMsg);
-                          this.changeStep(2);
-                        }}
-                        name="rotate"
-                        style={{
-                          height: "50px"
-                        }}
-                        disabled={!this.state.cropVideo && !this.state.rotateVideo && !this.state.trimVideo && !this.state.disableAudio}
-                        shape="round"
-                        loading={this.state.loading}
-                      >
-                        <Icon type="play-circle" /> Preview
-                      </Button>
-                    </Col>
                     {this.state.displayTrim ? (
                       <Col>
                         <h2>VideoTrim Settings</h2>
@@ -1274,6 +1253,28 @@ class home extends Component {
                         )}
                       </Col>
                     ) : null}
+
+                    <h2 style={{ textAlign: "center" }}>Step2: Preview my changes</h2>
+                    <Col style={{ textAlign: "center" }}>
+                      <Button
+                        type="primary"
+                        onClick={e => {
+                          this.enterLoading();
+                          this.onSubmit(e);
+                          showNotificationWithIcon("info", WaitMsg);
+                          this.changeStep(2);
+                        }}
+                        name="rotate"
+                        style={{
+                          height: "50px"
+                        }}
+                        disabled={!this.state.cropVideo && !this.state.rotateVideo && !this.state.trimVideo && !this.state.disableAudio}
+                        shape="round"
+                        loading={this.state.loading}
+                      >
+                        <Icon type="play-circle" /> Preview
+                      </Button>
+                    </Col>
                 </div>
                 </Col>
               )}
