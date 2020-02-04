@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Upload, Progress } from 'antd';
+import { Menu, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Form, Row, Button, Upload, Progress, Spin } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
 import { FormGroup } from 'reactstrap';
 
@@ -884,8 +884,9 @@ class home extends Component {
                       <div
                         style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                       >
+                        {!this.state.upload && <Spin size="large" style={{ marginBottom: 2 }} />}
                         <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
-                        <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />
+                        {this.state.upload && <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />}
                       </div>
                     ) : null}
                     {this.state.displaynewVideoName && (
