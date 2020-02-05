@@ -19,7 +19,7 @@ body {
 }
 
 .Content {
-  height: 80vh;
+  min-height: 82.2vh!important;
 }
 
 #crop-area {
