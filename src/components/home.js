@@ -20,6 +20,7 @@ const ENV_SETTINGS = require("../env")();
 // These are the API URL's
 const API_URL = ENV_SETTINGS.backend_url;
 const SOCKET_IO_PATH = ENV_SETTINGS.socket_io_path;
+const logo = "https://upload.wikimedia.org/wikipedia/commons/5/57/JeremyNguyenGCI_-_Video_Cut_Tool_Logo.svg";
 
 const { Header, Content, Footer } = Layout;
 const { Step } = Steps;
@@ -757,7 +758,7 @@ class home extends Component {
     return (
       <Layout className="layout">
         <Header>
-          <Typography.Title level={1} onClick={() => window.location.reload()}>VideoCutTool</Typography.Title>
+          <Typography.Title level={1} onClick={() => window.location.reload()}> <img src={logo} alt="logo" position="relative" width="100" height="40"/> VideoCutTool</Typography.Title>
           <Menu theme="dark" mode="horizontal">
             {this.state.user ? (
               <>
