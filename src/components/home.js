@@ -1069,7 +1069,7 @@ class home extends Component {
                 <div className="col-sm-12 col-md-4 p-2" style={{position: "sticky"}}>
                   <br />
                   <div className="videoSettings">
-                    <h5 style={{ textAlign: "center" }}>Step1: Adjust Video Settings   </h5>
+                    <h5 style={{ textAlign: "center" }}>Step2: Adjust Video Settings   </h5>
                     <div className="button-columns">
                       <div className="row">
                         <div className="col-md-6">
@@ -1291,7 +1291,7 @@ class home extends Component {
                       </Col>
                     ) : null}
 
-                    <h5 style={{ textAlign: "center" }}>Step2: Preview my changes</h5>
+                    <h5 style={{ textAlign: "center" }}>Preview my changes</h5>
                     <Col style={{ textAlign: "center" }}>
                       <Button
                           type="primary"
@@ -1493,7 +1493,7 @@ class home extends Component {
           </Content>
         </form>
         <Footer style={{ textAlign: "center" }}>
-            © 2019
+            © 2019-20
             <a href="https://www.mediawiki.org/wiki/User:Gopavasanth">
                 <span> Gopa Vasanth </span>
             </a>
