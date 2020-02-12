@@ -26,7 +26,6 @@ const { Step } = Steps;
 const { Dragger } = Upload;
 
 // Notification Messages
-const RemoveFeatureMsg = "You turned off a feature";
 const WaitMsg = "Your video is being processed, Please wait until the new video is generated";
 
 const OverwriteBtnTooltipMsg = (state) => {
@@ -646,7 +645,8 @@ class home extends Component {
 |source={{own}}${author.length > 0 ? `\n|author=[[User:${author}|${author}]]` : ''}
 }}\n
 =={{int:license-header}}==
-{{self|cc-by-sa-4.0}}`,
+{{self|cc-by-sa-4.0}}\n
+{{Category: VideoCutTool}}`,
             selectedOptionName: 'new-file',
             displayUploadToCommons: false
           });
@@ -915,7 +915,7 @@ class home extends Component {
                                 }}
                                 style={{ marginTop: "12px" }}
                             >
-                              Play Video
+                              Edit Video
                             </Button>
                             <Button
                                 type="default"
@@ -1087,7 +1087,6 @@ class home extends Component {
                             disabled={!this.state.disableAudio}
                             onClick={() => {
                               this.UndodisableAudio();
-                              showNotificationWithIcon("info", RemoveFeatureMsg);
                             }}
                             block
                           >
@@ -1115,7 +1114,6 @@ class home extends Component {
                             disabled={!this.state.rotateVideo}
                             onClick={() => {
                               this.setState({ rotateVideo: false });
-                              showNotificationWithIcon("info", RemoveFeatureMsg);
                             }}
                             block
                           >
@@ -1170,7 +1168,6 @@ class home extends Component {
                             disabled={!this.state.cropVideo}
                             onClick={() => {
                               this.setState({ cropVideo: false });
-                              showNotificationWithIcon("info", RemoveFeatureMsg);
                             }}
                             block
                           >
