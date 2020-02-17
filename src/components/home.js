@@ -103,13 +103,16 @@ class home extends Component {
     this.onLogOut = this.onLogOut.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
+    this.checkTitleInUrl = this.checkTitleInUrl.bind(this);
+    this.checkFileExist = this.checkFileExist.bind(this);
+    this.goToNextStep = this.goToNextStep.bind(this);
+    this.getFileNameFromPath = this.getFileNameFromPath.bind(this);
 
     this.rotateVideo = this.rotateVideo.bind(this);
     this.trimIntoMultipleVideos = this.trimIntoMultipleVideos.bind(this);
     this.trimIntoSingleVideo = this.trimIntoSingleVideo.bind(this);
     this.cropVideo = this.cropVideo.bind(this);
     this.UndodisableAudio = this.UndodisableAudio.bind(this);
-    this.validateVideoURL = this.validateVideoURL.bind(this);
     this.RotateValue = this.RotateValue.bind(this);
 
     //Implementing steps
@@ -185,6 +188,8 @@ class home extends Component {
     } catch(e) {
       this.setState({ user: null });
     }
+    // Check if title passed as parameter into url
+    this.checkTitleInUrl();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -248,10 +253,75 @@ class home extends Component {
     NotificationManager.success("Logged out successfully");
   }
 
-  handleValueChange(e) {
-    var value = e.target.value;
+  // Check if title passed as parameter into url
+  checkTitleInUrl(){
+    const search = this.props.location.search;
+    const params = new URLSearchParams(search);
+    const title = params.get('title');
+    if (title){
+      var filePath = 'https://commons.wikimedia.org/wiki/File:' + title;
+      this.setState({
+        inputVideoUrl: filePath
+      }, () => this.checkFileExist(filePath));
+    }
+  }
+
+  getFileNameFromPath(filePath){
+    const splitPath = filePath.split('/');
+    const length = splitPath.length;
+    return splitPath[length-1];
+  }
+
+  // Check if given file exists
+  checkFileExist(filePath){
+    const fileName = this.getFileNameFromPath(filePath);
+    const baseUrl = "https://commons.wikimedia.org/w/api.php?";
+    const params = {
+      "action": "query",
+      "titles": fileName,
+      "format": "json",
+      "formatversion": 2,
+      "origin": "*"
+    }
+    axios.get(baseUrl, {
+      params: params
+    })
+    .then(response => {
+      const pageObj = response.data.query.pages[0];
+      if (pageObj.hasOwnProperty("missing")){
+        showNotificationWithIcon("error", "File Does Not Exist");
+      }
+      else{
+        this.goToNextStep();
+      }
+    })
+    .catch(error => {
+      showNotificationWithIcon("error", "File Does Not Exist");
+    })
+  }
+
+  // Go to step 2 directly
+  goToNextStep(){
+    this.updatePlayerInfo(this.state.inputVideoUrl);
+    this.changeStep(1);
     this.setState({
-      [e.target.id]: value
+      validateVideoURL: true,
+      displayVideoSettings: true,
+      upload: false,
+      trimVideo: false,
+      rotateVideo: false,
+      cropVideo: false,
+      trimIntoSingleVideo: true,
+      trimIntoMultipleVideos: false,
+      disableAudio: false,
+      displayURLBox: false,
+    });
+  }
+
+  handleValueChange(e) {
+    var filePath = e.target.value;
+    this.setState({
+      inputVideoUrl: filePath
     });
   }
 
@@ -274,7 +344,6 @@ class home extends Component {
           const { pages } = response.data.query;
           if (Object.keys(pages)[0] !== '-1') {
             const { user, canonicaltitle, comment, url } = pages[Object.keys(pages)[0]].videoinfo[0];
-
             resultObj.playerSource = url;
             resultObj.inputVideoUrl = url;
             resultObj.videos = [{
@@ -554,21 +623,6 @@ class home extends Component {
       trims: trims
     });
   };
-
-  // This validates the Video URL using Regeular Expression
-  validateVideoURL(url) {
-    if (url !== "") {
-      if ( url.match( /^(?:https?:\/\/)?[\w.-]+(?:\.[\w.-]+)+[\w\-._~:/?#[\]@!$%&'()*+,;=.]+(?:mp4|webm|mov|flv|ogv)+$/g ) !== null ) {
-        console.log("Your are using right URL !");
-        this.setState({ validateVideoURL: true });
-        return true;
-      } else {
-        showNotificationWithIcon("error", "Provide the right URL");
-        console.log("You are providing incorrect url");
-        return false;
-      }
-    }
-  }
 
   handleDrag(ui) {
     const { x, y } = this.state.deltaPosition;
@@ -897,21 +951,21 @@ class home extends Component {
                                     this.setState({
                                       validateVideoURL: true
                                     })
-                                  } else if ( this.validateVideoURL(this.state.inputVideoUrl) ){
-                                    this.updatePlayerInfo(this.state.inputVideoUrl)
+                                    this.changeStep(1);
+                                    this.setState({
+                                      displayVideoSettings: true,
+                                      upload: false,
+                                      trimVideo: false,
+                                      rotateVideo: false,
+                                      cropVideo: false,
+                                      trimIntoSingleVideo: true,
+                                      trimIntoMultipleVideos: false,
+                                      disableAudio: false,
+                                      displayURLBox: false,
+                                    });  
+                                  } else{
+                                    this.checkFileExist(this.state.inputVideoUrl);
                                   }
-                                  this.changeStep(1);
-                                  this.setState({
-                                    displayVideoSettings: true,
-                                    upload: false,
-                                    trimVideo: false,
-                                    rotateVideo: false,
-                                    cropVideo: false,
-                                    trimIntoSingleVideo: true,
-                                    trimIntoMultipleVideos: false,
-                                    disableAudio: false,
-                                    displayURLBox: false,
-                                  });
                                 }}
                                 style={{ marginTop: "12px" }}
                             >
