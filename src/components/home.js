@@ -646,7 +646,7 @@ class home extends Component {
 }}\n
 =={{int:license-header}}==
 {{self|cc-by-sa-4.0}}\n
-{{Category: VideoCutTool}}`,
+[[Category:VideoCutTool]]`,
             selectedOptionName: 'new-file',
             displayUploadToCommons: false
           });
