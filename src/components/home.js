@@ -626,6 +626,7 @@ class home extends Component {
           let newVideoTitle = this.state.videos[index].title.split('.');
           newVideoTitle[0] = newVideoTitle[0].concat('_(edited)');
           if (index > 0) newVideoTitle[0] = newVideoTitle[0].concat(`(${index})`);
+          newVideoTitle[1] = item.split('.')[1];
           newVideoTitle = newVideoTitle.join('.');
 
           const currentDate = new Date();
