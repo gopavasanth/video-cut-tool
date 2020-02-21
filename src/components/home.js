@@ -451,7 +451,26 @@ class home extends Component {
           window.addEventListener('mouseup', stopResize);
         });
 
+        resizer.addEventListener('touchstart', e => {
+          e.preventDefault();
+
+          original_width = getTruePropertyValue('width');
+          original_height = getTruePropertyValue('height');
+          transformValue = getTransformValue();
+
+          // taking the first touch event and
+          // ignoring touch events for other fingers
+          original_mouse_x = e.changedTouches[0].pageX;
+          original_mouse_y = e.changedTouches[0].pageY;
+
+          window.addEventListener('touchmove', resize);
+          window.addEventListener('touchend', stopResize);
+        });
+
         function resize(e) {
+          // check if it is a touch interface,
+          // else do everything the usual way
+          e = ( e.changedTouches && e.changedTouches[0] ) || e;
           switch (resizerPosition) {
             case 'top-center':
               top = e.pageY - original_mouse_y;
@@ -537,6 +556,7 @@ class home extends Component {
           if (self.refs.player !== undefined) {
             self.onDragStop();
             window.removeEventListener('mousemove', resize);
+            window.removeEventListener('touchmove', resize);
           }
         }
       });
@@ -1059,6 +1079,7 @@ class home extends Component {
                                 onHeightReady={height =>
                                   console.log("Height: " + height)
                                 }
+                                style={{ height: "95%", width: "95%" }}
                               >
                                 <div id="draggable-area"></div>
                                 <div className="resizers">
