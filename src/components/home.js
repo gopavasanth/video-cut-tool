@@ -13,6 +13,7 @@ import io from 'socket.io-client';
 import "../App.css";
 import "antd/dist/antd.css";
 import "video-react/dist/video-react.css";
+import UploadBox from './UploadBox';
 
 const ENV_SETTINGS = require("../env")();
 const { TabPane } = Tabs;
@@ -27,6 +28,7 @@ const { Dragger } = Upload;
 
 // Notification Messages
 const WaitMsg = "Your video is being processed, Please wait until the new video is generated";
+const socket = io(API_URL, { path: SOCKET_IO_PATH });
 
 const OverwriteBtnTooltipMsg = (state) => {
   if (state.uploadedFile) {
@@ -81,6 +83,54 @@ function formatTime(seconds) {
   return time.substr(0, 12);
 }
 
+const initalState = {
+  deltaPosition: {
+    x: 0,
+    y: 0
+  },
+  videos: [],
+  trimMode: "single",
+  inputVideoUrl: "",
+  trims: [{ from: 0, to: 5 }],
+  out_width: "",
+  out_height: "",
+  x_value: "",
+  y_value: "",
+  display: false,
+  displayCrop: false,
+  displayTrim: false,
+  displayRotate: false,
+  displayPlayer: false,
+  disableAudio: false,
+  user: null,
+  beforeOnTapCrop: true,
+  AfterOnTapCrop: false,
+  upload: false,
+  trimVideo: false,
+  rotateVideo: false,
+  cropVideo: false,
+  trimIntoSingleVideo: true,
+  trimIntoMultipleVideos: false,
+  //loading button
+  loading: false,
+  displayLoadingMessage: false,
+  progressPercentage: 0,
+  currentTask: 'prcessing',
+  //Slider Values,
+  changeStep: 0,
+  duration: 0,
+  //display VideoSettings
+  displayVideoSettings: false,
+  displayURLBox: true,
+  validateVideoURL: false,
+  RotateValue: -1,
+  displaynewVideoName: false,
+  DisplayFailedNotification: false,
+
+  uploadedFile: null,
+  fileList: []
+}
+
 class home extends Component {
   constructor(props) {
     super(props);
@@ -119,51 +169,7 @@ class home extends Component {
     this.changeStep = this.changeStep.bind(this);
 
     this.state = {
-      deltaPosition: {
-        x: 0,
-        y: 0
-      },
-      videos: [],
-      trimMode: "single",
-      inputVideoUrl: "",
-      trims: [{ from: 0, to: 5 }],
-      out_width: "",
-      out_height: "",
-      x_value: "",
-      y_value: "",
-      display: false,
-      displayCrop: false,
-      displayTrim: false,
-      displayRotate: false,
-      displayPlayer: false,
-      disableAudio: false,
-      user: null,
-      beforeOnTapCrop: true,
-      AfterOnTapCrop: false,
-      upload: false,
-      trimVideo: false,
-      rotateVideo: false,
-      cropVideo: false,
-      trimIntoSingleVideo: true,
-      trimIntoMultipleVideos: false,
-      //loading button
-      loading: false,
-      displayLoadingMessage: false,
-      progressPercentage: 0,
-      currentTask: 'prcessing',
-      //Slider Values,
-      changeStep: 0,
-      duration: 0,
-      //display VideoSettings
-      displayVideoSettings: false,
-      displayURLBox: true,
-      validateVideoURL: false,
-      RotateValue: -1,
-      displaynewVideoName: false,
-      DisplayFailedNotification: false,
-
-      uploadedFile: null,
-      fileList: []
+      ...initalState,
     };
   }
 
@@ -171,21 +177,27 @@ class home extends Component {
     this.setState({
       width: getWindowDimensions().width
     });
-    const socket = io(API_URL, { path: SOCKET_IO_PATH });
     socket.on('progress:update', data => {
-      const progressData = JSON.parse(data);
-      const { time, duration, currentTask } = progressData;
-      this.setState({
-        progressPercentage: Math.round((time * 100) / duration),
-        currentTask
-      });
+      console.log(data)
+      const progressData = data;
+      console.log('ON PROCESSS', progressData)
+      const { stage, status, ...rest } = progressData;
+      if (status === 'processing') {
+        this.setState({
+          progressPercentage: 50,
+          currentTask: stage,
+        });
+      } else if (status === 'done') {
+        this.previewCallback({ data: { videos: progressData.outputs } })
+      }
     });
 
     try {
       if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user'))) {
         this.setState({ user: JSON.parse(localStorage.getItem('user')) })
+        socket.emit('authenticate', JSON.parse(localStorage.getItem('user')));
       }
-    } catch(e) {
+    } catch (e) {
       this.setState({ user: null });
     }
     // Check if title passed as parameter into url
@@ -193,10 +205,14 @@ class home extends Component {
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (this.state.playerSource !== prevState.playerSource) {
+    if (this.state.playerSource !== prevState.playerSource && this.refs.player) {
       console.log("error: " + this.refs.player);
       this.refs.player.load();
     }
+  }
+
+  resetState = () => {
+    this.setState({ ...initalState });
   }
 
   enterLoading = () => {
@@ -217,8 +233,8 @@ class home extends Component {
     })
   }
 
-  RotateValue (RotateValue){
-    RotateValue=(RotateValue+1)%4;
+  RotateValue(RotateValue) {
+    RotateValue = (RotateValue + 1) % 4;
     this.setState({
       RotateValue: RotateValue
     })
@@ -235,9 +251,9 @@ class home extends Component {
     PopupTools.popup(
       `${API_URL}/video-cut-tool-back-end/login`, "Wiki Connect", { width: 1000, height: 600 }, (err, data) => {
         if (!err) {
-          console.log(" login response ", err, data);
           this.setState({ user: data.user });
           localStorage.setItem('user', JSON.stringify(data.user));
+          socket.emit('authenticate', data.user)
           NotificationManager.success("Logged in successfully");
         }
       }
@@ -254,11 +270,11 @@ class home extends Component {
   }
 
   // Check if title passed as parameter into url
-  checkTitleInUrl(){
+  checkTitleInUrl() {
     const search = this.props.location.search;
     const params = new URLSearchParams(search);
     const title = params.get('title');
-    if (title){
+    if (title) {
       var filePath = 'https://commons.wikimedia.org/wiki/File:' + title;
       this.setState({
         inputVideoUrl: filePath
@@ -266,14 +282,14 @@ class home extends Component {
     }
   }
 
-  getFileNameFromPath(filePath){
+  getFileNameFromPath(filePath) {
     const splitPath = filePath.split('/');
     const length = splitPath.length;
-    return splitPath[length-1];
+    return splitPath[length - 1];
   }
 
   // Check if given file exists
-  checkFileExist(filePath){
+  checkFileExist(filePath) {
     const fileName = this.getFileNameFromPath(filePath);
     const baseUrl = "https://commons.wikimedia.org/w/api.php?";
     const params = {
@@ -286,22 +302,22 @@ class home extends Component {
     axios.get(baseUrl, {
       params: params
     })
-    .then(response => {
-      const pageObj = response.data.query.pages[0];
-      if (pageObj.hasOwnProperty("missing")){
+      .then(response => {
+        const pageObj = response.data.query.pages[0];
+        if (pageObj.hasOwnProperty("missing")) {
+          showNotificationWithIcon("error", "File Does Not Exist");
+        }
+        else {
+          this.goToNextStep();
+        }
+      })
+      .catch(error => {
         showNotificationWithIcon("error", "File Does Not Exist");
-      }
-      else{
-        this.goToNextStep();
-      }
-    })
-    .catch(error => {
-      showNotificationWithIcon("error", "File Does Not Exist");
-    })
+      })
   }
 
   // Go to step 2 directly
-  goToNextStep(){
+  goToNextStep() {
     this.updatePlayerInfo(this.state.inputVideoUrl);
     this.changeStep(1);
     this.setState({
@@ -338,7 +354,7 @@ class home extends Component {
 
     if (splittedUrl.includes('commons.wikimedia.org')) {
       axios.get(
-        `https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=videoinfo&titles=${splittedUrl[splittedUrl.length-1]}&viprop=user%7Curl%7Ccanonicaltitle%7Ccomment%7Curl&origin=*`
+        `https://commons.wikimedia.org/w/api.php?action=query&format=json&prop=videoinfo&titles=${splittedUrl[splittedUrl.length - 1]}&viprop=user%7Curl%7Ccanonicaltitle%7Ccomment%7Curl&origin=*`
       )
         .then(response => {
           const { pages } = response.data.query;
@@ -360,7 +376,7 @@ class home extends Component {
     else {
       resultObj.videos = [{
         author: this.state.user === null ? '' : this.state.user.username,
-        title: this.state.uploadedFile === null ? decodeURIComponent(splittedUrl[splittedUrl.length-1]).replace(/\s/g, '_') : this.state.uploadedFile.name.replace(/\s/g, '_'),
+        title: this.state.uploadedFile === null ? decodeURIComponent(splittedUrl[splittedUrl.length - 1]).replace(/\s/g, '_') : this.state.uploadedFile.name.replace(/\s/g, '_'),
         comment: '',
         text: ''
       }];
@@ -409,6 +425,7 @@ class home extends Component {
     }, () => {
       const self = this;
       const resizerBlock = this.dragRef;
+      if (!resizerBlock) return;
       const resizers = resizerBlock.querySelectorAll('.resizer');
 
       const minSize = 100;
@@ -470,80 +487,80 @@ class home extends Component {
         function resize(e) {
           // check if it is a touch interface,
           // else do everything the usual way
-          e = ( e.changedTouches && e.changedTouches[0] ) || e;
+          e = (e.changedTouches && e.changedTouches[0]) || e;
           switch (resizerPosition) {
             case 'top-center':
               top = e.pageY - original_mouse_y;
               height = original_height - (e.pageY - original_mouse_y);
-              if (height > minSize && transformValue[1]+top >= 0) {
-                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1]+top}px)`;
+              if (height > minSize && transformValue[1] + top >= 0) {
+                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1] + top}px)`;
                 resizerBlock.style.height = `${height}px`;
               }
               break;
             case 'bottom-center':
               height = original_height + (e.pageY - original_mouse_y);
-              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
+              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
                 resizerBlock.style.height = `${height}px`;
               }
               break;
             case 'left-center':
               left = e.pageX - original_mouse_x;
               width = original_width - (e.pageX - original_mouse_x);
-              if (width > minSize && transformValue[0]+left >= 0) {
-                resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]}px)`;
+              if (width > minSize && transformValue[0] + left >= 0) {
+                resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1]}px)`;
                 resizerBlock.style.width = `${width}px`;
               }
               break;
             case 'right-center':
               width = original_width + (e.pageX - original_mouse_x);
-              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
+              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
                 resizerBlock.style.width = `${width}px`;
               }
               break;
             case 'top-left':
               width = original_width - (e.pageX - original_mouse_x);
               height = original_height - (e.pageY - original_mouse_y);
-              if (width > minSize && transformValue[0]+(e.pageX - original_mouse_x) >= 0) {
+              if (width > minSize && transformValue[0] + (e.pageX - original_mouse_x) >= 0) {
                 resizerBlock.style.width = `${width}px`;
                 left = e.pageX - original_mouse_x;
               }
-              if (height > minSize && transformValue[1]+(e.pageY - original_mouse_y) >= 0) {
+              if (height > minSize && transformValue[1] + (e.pageY - original_mouse_y) >= 0) {
                 resizerBlock.style.height = `${height}px`;
                 top = e.pageY - original_mouse_y;
               }
-              resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]+top}px)`;
+              resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1] + top}px)`;
               break;
             case 'top-right':
               width = original_width + (e.pageX - original_mouse_x);
               height = original_height - (e.pageY - original_mouse_y);
               top = e.pageY - original_mouse_y;
-              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
+              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
                 resizerBlock.style.width = `${width}px`;
               }
-              if (height > minSize && transformValue[1]+top >= 0) {
+              if (height > minSize && transformValue[1] + top >= 0) {
                 resizerBlock.style.height = `${height}px`;
-                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1]+top}px)`;
+                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1] + top}px)`;
               }
               break;
             case 'bottom-left':
               height = original_height + (e.pageY - original_mouse_y);
               width = original_width - (e.pageX - original_mouse_x);
               left = e.pageX - original_mouse_x;
-              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
+              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
                 resizerBlock.style.height = `${height}px`;
               }
-              if (width > minSize && transformValue[0]+left >= 0) {
+              if (width > minSize && transformValue[0] + left >= 0) {
                 resizerBlock.style.width = `${width}px`;
-                resizerBlock.style.transform = `translate(${transformValue[0]+left}px, ${transformValue[1]}px)`;
+                resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1]}px)`;
               }
               break;
             case 'bottom-right':
               width = original_width + (e.pageX - original_mouse_x);
               height = original_height + (e.pageY - original_mouse_y);
-              if (width > minSize && transformValue[0]+width <= parseFloat(getPlayerCoords().width)) {
+              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
                 resizerBlock.style.width = `${width}px`;
               }
-              if (height > minSize && transformValue[1]+height <= parseFloat(getPlayerCoords().height)) {
+              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
                 resizerBlock.style.height = `${height}px`;
               }
               break;
@@ -660,6 +677,7 @@ class home extends Component {
       duration: this.refs.player.video.video
         .duration
     });
+    if (!this.dragRef) return;
     const dragElBox = this.dragRef.getBoundingClientRect();
     const xPercentage = ((dragElBox.x - parentBox.x) / parentBox.width * 100);
     const yPercentage = ((dragElBox.y - parentBox.y) / parentBox.height * 100);
@@ -673,7 +691,7 @@ class home extends Component {
     });
   }
 
-  previewCallback(res){
+  previewCallback(res) {
     function previewComplete() {
       self.setState(previewCompleteState);
       showNotificationWithIcon("success", "Sucessfully Completed :)");
@@ -704,7 +722,7 @@ class home extends Component {
           newVideoTitle = newVideoTitle.join('.');
 
           const currentDate = new Date();
-          const currentMonth = currentDate.getMonth()+1 < 10 ? `0${currentDate.getMonth()+1}` : currentDate.getMonth()+1;
+          const currentMonth = currentDate.getMonth() + 1 < 10 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
           const currentDay = currentDate.getDate() < 10 ? `0${currentDate.getDate()}` : currentDate.getDate();
 
           const { author, comment } = this.state.videos[index];
@@ -735,11 +753,11 @@ class home extends Component {
     return previewComplete();
   }
 
-  previewCallbackError(err){
+  previewCallbackError(err) {
     console.log(err);
     const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
     showNotificationWithIcon("error", reason);
-    this.setState({DisplayFailedNotification: true});
+    this.setState({ DisplayFailedNotification: true });
     this.leaveLoading();
   }
 
@@ -765,7 +783,7 @@ class home extends Component {
       trimIntoMultipleVideos: this.state.trimIntoMultipleVideos,
       trimIntoSingleVideo: this.state.trimIntoSingleVideo,
       RotateValue: this.state.RotateValue,
-      videos: this.state.upload 
+      videos: this.state.upload
         ? this.state.videos.filter(video => video.displayUploadToCommons)
         : this.state.videos
     };
@@ -777,32 +795,33 @@ class home extends Component {
       }
     }
 
-    if( this.state.uploadedFile !== null ){
+    if (this.state.uploadedFile !== null) {
       let data = new FormData();
-      data.append('video',this.state.uploadedFile);
-      data.append('data',JSON.stringify(obj))
+      data.append('video', this.state.uploadedFile);
+      data.append('data', JSON.stringify(obj))
       this.setState({ currentTask: 'uploading', videos: newVideos });
       axios.post(`${API_URL}/video-cut-tool-back-end/send/upload`, data, {
-        headers: { 
+        headers: {
           'Content-Type': 'multipart/form-data'
         },
-        onUploadProgress: function(progressEvent) {
+        onUploadProgress: function (progressEvent) {
           const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
           self.setState({ progressPercentage: percentCompleted });
         }
       }).then(res => {
-        this.previewCallback(res);
+        this.setState({ loading: true })
+
       }).catch(err => {
         this.previewCallbackError(err);
       })
     } else {
       axios.post(`${API_URL}/video-cut-tool-back-end/send`, obj).then(res => {
-        this.previewCallback(res);
+        this.setState({ loading: true })
       }).catch(err => {
         this.previewCallbackError(err);
       })
     }
-  } 
+  }
 
   handleUploadChange = info => {
     let fileList = [...info.fileList];
@@ -818,10 +837,10 @@ class home extends Component {
       && videoList.filter(video => video.displayUploadToCommons).length > 0
   }
 
-  render() {
-    const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const { uploadedFile } = this.state;
-    const uploadProperties = {
+
+  getUploadProperties = () => {
+    const { uploadedFile, fileList } = this.state;
+    return {
       multiple: false,
       accept: ".mp4,.webm,.mov,.flv,.ogv",
       onChange: this.handleUploadChange,
@@ -837,66 +856,130 @@ class home extends Component {
         return false;
       },
       uploadedFile,
+      fileList,
     };
+  }
+  renderHeader = () => {
+    return (
+      <Header>
+        <span onClick={() => window.location.reload()}>
+          {this.state.width > 600 ?
+            <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900, cursor: "pointer" }}>
+              <img src={logo} alt="logo" position="relative" width="100" height="40" /> VideoCutTool
+                </span> :
+            <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900 }} className="pr-4">VideoCutTool</span>
+          }
+        </span>
+        <Menu theme="dark" mode="horizontal">
+          {this.state.user ? (
+            <>
+              <Button
+                primary
+                className="c-auth-buttons__signout"
+                onClick={this.onLogOut.bind(this)}
+              >
+                Logout
+                  </Button>
+              <Button
+                primary
+                className="c-auth-buttons__signout"
+              >
+                {"Welcome : " + this.state.user.username}
+              </Button>
+            </>
+          ) : (
+              <Button
+                primary
+                className="c-auth-buttons__signup"
+                onClick={this.onLogin.bind(this)}
+              >
+                Register / Login
+                </Button>
+            )}
+        </Menu>
+      </Header>
+    )
+  }
+
+  renderURLBox = () => {
+    if (!this.state.displayURLBox) return null;
+    const uploadProperties = this.getUploadProperties();
+
+    const inputProps = {
+      placeholder: "https://commons.wikimedia.org/wiki/File:video.webm",
+      ref: (ref) => this.inputVideoUrl = ref,
+      name: "inputVideoUrl",
+      id: "inputVideoUrl",
+      value: this.state.inputVideoUrl,
+      onChange: this.handleValueChange
+    }
+
+    const editButtonProps = {
+      type: "primary",
+      disabled: !this.state.inputVideoUrl && this.state.uploadedFile === null,
+      onClick: () => {
+        if (!this.state.user) return alert('Please log in to use the tool')
+        if (this.state.uploadedFile !== null) {
+          this.updatePlayerInfo(URL.createObjectURL(this.state.uploadedFile))
+          this.setState({
+            validateVideoURL: true
+          })
+          this.changeStep(1);
+          this.setState({
+            displayVideoSettings: true,
+            upload: false,
+            trimVideo: false,
+            rotateVideo: false,
+            cropVideo: false,
+            trimIntoSingleVideo: true,
+            trimIntoMultipleVideos: false,
+            disableAudio: false,
+            displayURLBox: false,
+          });
+        } else {
+          this.checkFileExist(this.state.inputVideoUrl);
+        }
+      },
+      style: { marginTop: "12px" },
+    }
+
+    return (
+      <div style={{ paddingTop: "2vh" }}>
+        <UploadBox
+          draggerProps={uploadProperties}
+          inputProps={inputProps}
+          editButtonProps={editButtonProps}
+        />
+      </div>)
+  }
+
+  render() {
+    const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
+    const { uploadedFile } = this.state;
+    const uploadProperties = this.getUploadProperties()
 
     console.log("URL: " + this.state.inputVideoUrl);
 
     return (
       <Layout className="layout">
-        <Header>
-          <span onClick={() => window.location.reload()}>
-            {this.state.width > 600 ?
-                <span style={{color: "white", fontSize: "3.4vh", fontWeight: 900, cursor: "pointer"}}>
-                  <img src={logo} alt="logo" position="relative" width="100" height="40"/> VideoCutTool
-                </span> :
-                <span style={{color: "white", fontSize: "3.4vh", fontWeight: 900}} className="pr-4">VideoCutTool</span>
-            }
-          </span>
-          <Menu theme="dark" mode="horizontal">
-            {this.state.user ? (
-                <>
-                  <Button
-                      primary
-                      className="c-auth-buttons__signout"
-                      onClick={this.onLogOut.bind(this)}
-                  >
-                    Logout
-                  </Button>
-                  <Button
-                      primary
-                      className="c-auth-buttons__signout"
-                  >
-                    {"Welcome : " + this.state.user.username}
-                  </Button>
-                </>
-            ) : (
-                <Button
-                    primary
-                    className="c-auth-buttons__signup"
-                    onClick={this.onLogin.bind(this)}
-                >
-                  Register / Login
-                </Button>
-            )}
-          </Menu>
-        </Header>
+        {this.renderHeader()}
         <form onSubmit={this.onSubmit}>
           <Content className="Content">
             <div className="row m-0">
               <div className="col-sm-12 col-md-8 p-4">
                 <div>
                   <div className="docs-example" style={{ height: "100%" }}>
-                  {
-                    this.state.DisplayFailedNotification ? (
-                      <div style={{paddingBottom: "2rem"}}>
-                        <Alert
-                        message="Something went wrong !"
-                        type="error"
-                        closable
-                      />
-                      </div>
-                    ) : null
-                  }
+                    {
+                      this.state.DisplayFailedNotification ? (
+                        <div style={{ paddingBottom: "2rem" }}>
+                          <Alert
+                            message="Something went wrong !"
+                            type="error"
+                            closable
+                          />
+                        </div>
+                      ) : null
+                    }
                     <div id="steps">
                       <div className="p-4">
                         <Steps current={this.state.changeStep}>
@@ -907,102 +990,15 @@ class home extends Component {
                       </div>
                     </div>
                     {this.state.displayLoadingMessage ? (
-                        <div
-                            style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
-                        >
-                          {!this.state.upload && <Spin size="large" style={{ marginBottom: 2 }} />}
-                          <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
-                          {this.state.upload && <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />}
-                        </div>
+                      <div
+                        style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
+                      >
+                        {!this.state.upload && <Spin size="large" style={{ marginBottom: 2 }} />}
+                        <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
+                        {this.state.upload && <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />}
+                      </div>
                     ) : null}
-                    {this.state.displayPlayer ? (
-                        <div className="row">
-                          <div className="col-sm-12 p-2">
-                            <div className="player">
-                              <br />
-                              <Player
-                                  refs={player => {
-                                    this.player = player;
-                                  }}
-                                  ref="player"
-                                  videoId="video-1"
-                              >
-                                <BigPlayButton position="center" />
-                                <source src={this.state.playerSource} />
-                              </Player>
-                            </div>
-                          </div>
-                        </div>
-                    ) : null}
-                    {this.state.displayURLBox ? (
-                      <div style={{paddingTop: "2vh" }}>
-                        <Card>
-                          <Tabs defaultActiveKey="1">
-                            <TabPane tab={<p><Icon type="link" />Video URL</p>} key="1">
-                              <FormGroup>
-                                <Typography.Title level={4} style={{ color: "Black" }}>
-
-                                </Typography.Title>
-                                <Input
-                                    placeholder="https://commons.wikimedia.org/wiki/File:video.webm"
-                                    ref="inputVideoUrl"
-                                    name="inputVideoUrl"
-                                    id="inputVideoUrl"
-                                    value={this.state.inputVideoUrl}
-                                    onChange={this.handleValueChange}
-                                />
-                              </FormGroup>
-                            </TabPane>
-                            <TabPane tab={<p><Icon type="upload" />Upload Video</p>} key="2">
-                              <Dragger {...uploadProperties} fileList={this.state.fileList}>
-                                <p className="ant-upload-drag-icon">
-                                  <Icon type="inbox" />
-                                </p>
-                                <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                              </Dragger>
-                            </TabPane>
-                          </Tabs>
-                          <div className="p-2">
-                            <Button
-                                type="primary"
-                                disabled={!this.state.inputVideoUrl && this.state.uploadedFile === null}
-                                onClick={() => {
-                                  if ( this.state.uploadedFile !== null ) {
-                                    this.updatePlayerInfo(URL.createObjectURL(this.state.uploadedFile))
-                                    this.setState({
-                                      validateVideoURL: true
-                                    })
-                                    this.changeStep(1);
-                                    this.setState({
-                                      displayVideoSettings: true,
-                                      upload: false,
-                                      trimVideo: false,
-                                      rotateVideo: false,
-                                      cropVideo: false,
-                                      trimIntoSingleVideo: true,
-                                      trimIntoMultipleVideos: false,
-                                      disableAudio: false,
-                                      displayURLBox: false,
-                                    });  
-                                  } else{
-                                    this.checkFileExist(this.state.inputVideoUrl);
-                                  }
-                                }}
-                                style={{ marginTop: "12px" }}
-                            >
-                              Edit Video
-                            </Button>
-                            <Button
-                                type="default"
-                                style={{ float: "right", marginTop: "12px"}}
-                            >
-                              <a href="https://commons.wikimedia.org/wiki/Commons:VideoCutTool">
-                                <Icon type="question-circle" />
-                              </a>
-                            </Button>
-                          </div>
-                        </Card>
-                      </div>): null}
+                    {this.renderURLBox()}
                     <br />
                     {this.state.displaynewVideoName && (
                       <div>
@@ -1020,37 +1016,38 @@ class home extends Component {
                             </ul>
                           </>
                         ) : (
-                          <>
-                            <p style={{ margin: "5px 0" }}>
-                              Your New video will be here: <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
-                                https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
-                              </a>
-                            </p>
-                          </>
-                        )}
+                            <>
+                              <p style={{ margin: "5px 0" }}>
+                                Your New video will be here: <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
+                                  https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
+                                </a>
+                              </p>
+                            </>
+                          )}
                       </div>
                     )}
                     {this.state.changeStep === 3 && this.state.videos.map(video => (
-                        <div className="row">
-                          <div className="col-sm-12 p-2">
-                            <div className="player">
-                              <br />
-                              <Player
-                                  refs={player => {
-                                    this.player = player;
-                                  }}
-                                  ref="player"
-                                  videoId="video-1"
-                              >
-                                <BigPlayButton position="center" />
-                                <source src={`${API_URL}/${video.path}`} />
-                              </Player>
-                            </div>
+                      <div className="row" key={'preview-video-' + video.path}>
+                        <div className="col-sm-12 p-2">
+                          <div className="player">
+                            <br />
+                            <Player
+                              refs={player => {
+                                this.player = player;
+                              }}
+                              ref="player"
+                              videoId="video-1"
+                            >
+                              <BigPlayButton position="center" />
+                              <source src={`${API_URL}/${video.path}`} />
+                            </Player>
                           </div>
                         </div>
+                      </div>
                     ))}
+
                     {/* Crop Video */}
-                    {this.state.displayCrop ? (
+                    {this.state.displayVideoSettings && !this.state.displayRotate ? (
                       <div>
                         <div
                           className="box"
@@ -1061,88 +1058,73 @@ class home extends Component {
                             overflow: "hidden"
                           }}
                         >
-                          <div style={{ height: "100%", width: "100%" }}>
-                            <Draggable
-                              bounds="parent"
-                              {...dragHandlers}
-                              axis="both"
-                              handle="#draggable-area"
-                              onDrag={(e, ui) => {
-                                this.handleDrag(ui);
-                              }}
-                              onStop={this.onDragStop}
-                            >
-                              <div
-                                ref={ref => (this.dragRef = ref)}
-                                className="box"
-                                id="crop-area"
-                                onHeightReady={height =>
-                                  console.log("Height: " + height)
-                                }
-                                style={{ height: "95%", width: "95%" }}
+                          {this.state.cropVideo && (
+                              <Draggable
+                                bounds="parent"
+                                {...dragHandlers}
+                                axis="both"
+                                handle="#draggable-area"
+                                onDrag={(e, ui) => {
+                                  this.handleDrag(ui);
+                                }}
+                                onStop={this.onDragStop}
                               >
-                                <div id="draggable-area"></div>
-                                <div className="resizers">
-                                  <div className="resizer top-left"></div>
-                                  <div className="resizer top-center"></div>
-                                  <div className="resizer top-right"></div>
-                                  <div className="resizer bottom-left"></div>
-                                  <div className="resizer bottom-center"></div>
-                                  <div className="resizer bottom-right"></div>
-                                  <div className="resizer left-center"></div>
-                                  <div className="resizer right-center"></div>
-                                </div>
-                                <div className="crosshair"></div>
-                              </div>
-                            </Draggable>
-                            {this.state.beforeOnTapCrop ? (
-                              <div>
-                                <Player
-                                  ref="player"
-                                  height="300"
-                                  width="300"
-                                  videoId="video-1"
+                                <div
+                                  ref={ref => (this.dragRef = ref)}
+                                  className="box"
+                                  id="crop-area"
+                                  onHeightReady={height =>
+                                    console.log("Height: " + height)
+                                  }
+                                  style={{ height: "95%", width: "95%" }}
                                 >
-                                  <BigPlayButton position="center" />
-                                  <source src={this.state.playerSource} />
-                                </Player>
-                              </div>
-                            ) : null}
+                                    <div id="draggable-area"></div>
+                                    <div className="resizers">
+                                      <div className="resizer top-left"></div>
+                                      <div className="resizer top-center"></div>
+                                      <div className="resizer top-right"></div>
+                                      <div className="resizer bottom-left"></div>
+                                      <div className="resizer bottom-center"></div>
+                                      <div className="resizer bottom-right"></div>
+                                      <div className="resizer left-center"></div>
+                                      <div className="resizer right-center"></div>
+                                    </div>
+                                    <div className="crosshair"></div>
+                                </div>
+                              </Draggable>
+                          )}
+
+                            <Player
+                              ref="player"
+                              height="300"
+                              width="300"
+                              videoId="video-1"
+                            >
+                              <BigPlayButton position="center" />
+                              <source src={this.state.playerSource} />
+                            </Player>
                           </div>
-                        </div>
-                        <div>
-                          <div className="box">
-                            {this.state.AfterOnTapCrop ? (
-                              <div>
-                                <Player ref="player" videoId="video-1">
-                                  <BigPlayButton position="center" />
-                                  <source src={this.state.playerSource} />
-                                </Player>
-                              </div>
-                            ) : null}
-                          </div>
-                        </div>
                       </div>
+
                     ) : null}
 
                     {/* Rotate Video */}
                     {this.state.displayRotate ? (
                       <div>
-                        <div id={"RotatePlayerValue" + this.state.RotateValue} style={{marginTop: "8em"}} >
-                              <Player ref="player" videoId="video-1" >
-                                <BigPlayButton position="center" />
-                                <source src={this.state.playerSource} />
-                              </Player>
+                        <div id={"RotatePlayerValue" + this.state.RotateValue} style={{ marginTop: "8em" }} >
+                          <Player ref="player" videoId="video-1" >
+                            <BigPlayButton position="center" />
+                            <source src={this.state.playerSource} />
+                          </Player>
                         </div>
                       </div>
                     ) : null}
                   </div>
                 </div>
               </div>
-
               {/* Video Settings */}
               {(this.state.displayVideoSettings && this.state.validateVideoURL) && (
-                <div className="col-sm-12 col-md-4 p-2" style={{position: "sticky"}}>
+                <div className="col-sm-12 col-md-4 p-2" style={{ position: "sticky" }}>
                   <br />
                   <div className="videoSettings">
                     <h5 style={{ textAlign: "center" }}>Step2: Adjust Video Settings   </h5>
@@ -1224,7 +1206,7 @@ class home extends Component {
                           </Button>
                         </div>
                       </div>
-                      <br/>
+                      <br />
                       <div className="row">
                         <div className="col-md-6">
                           <Button
@@ -1253,11 +1235,11 @@ class home extends Component {
                       </div>
                     </div>
                     <Divider />
-                    {this.state.displayTrim ? (
+                    {this.state.trimVideo ? (
                       <Col>
                         <h5>VideoTrim Settings</h5>
                         {this.refs.player && this.state.trims.map((trim, i) => (
-                          <React.Fragment>
+                          <React.Fragment key={'trim-' + i}>
                             <Slider
                               range
                               step={0.1}
@@ -1272,16 +1254,16 @@ class home extends Component {
                                 this.setState({
                                   trims: trims
                                 });
-                                if( this.unsubscribeToStateChanges ) {
+                                if (this.unsubscribeToStateChanges) {
                                   this.unsubscribeToStateChanges();
                                 }
                                 this.refs.player.seek(obj[0]);
                                 this.refs.player.play();
-                                this.unsubscribeToStateChanges = this.refs.player.subscribeToStateChange( ( state ) => {
-                                  if ( state.currentTime > obj[1]) {
+                                this.unsubscribeToStateChanges = this.refs.player.subscribeToStateChange((state) => {
+                                  if (state.currentTime > obj[1]) {
                                     this.refs.player.pause();
                                   }
-                                } );
+                                });
                               }}
                             />
                             <div className="row" key={i}>
@@ -1367,181 +1349,181 @@ class home extends Component {
                     <h5 style={{ textAlign: "center" }}>Preview my changes</h5>
                     <Col style={{ textAlign: "center" }}>
                       <Button
-                          type="primary"
-                          onClick={e => {
-                            this.enterLoading();
-                            this.onSubmit(e);
-                            showNotificationWithIcon("info", WaitMsg);
-                            this.changeStep(2);
-                          }}
-                          name="rotate"
-                          style={{
-                            height: "50px"
-                          }}
-                          disabled={!this.state.cropVideo && !this.state.rotateVideo && !this.state.trimVideo && !this.state.disableAudio}
-                          shape="round"
-                          loading={this.state.loading}
+                        type="primary"
+                        onClick={e => {
+                          this.enterLoading();
+                          this.onSubmit(e);
+                          showNotificationWithIcon("info", WaitMsg);
+                          this.changeStep(2);
+                        }}
+                        name="rotate"
+                        style={{
+                          height: "50px"
+                        }}
+                        disabled={!this.state.cropVideo && !this.state.rotateVideo && !this.state.trimVideo && !this.state.disableAudio}
+                        shape="round"
+                        loading={this.state.loading}
                       >
                         <Icon type="play-circle" /> Preview
                       </Button>
                     </Col>
-                </div>
+                  </div>
                 </div>
               )}
               {this.state.changeStep === 3 && (
                 <div className="col-sm-12 col-md-4">
-                    <>
-                      <h5 style={{ textAlign: "center" }}>Step3: Choose your choice</h5>
-                      {this.state.videos.map((video, index, videoArr) => (
-                        <>
-                          <div id={video.path.split('/').pop().split('.')[0]}>
-                            <h6 style={{ textAlign: 'center' }}>{video.title}</h6>
-                            <div className="button-columns row-on-mobile">
-                              <div className="row">
-                                <div className="col-sm-6 col-md-6 py-1">
-                                  <Button block type="primary">
-                                    <a href={`${API_URL}/download/${video.path}`}>Download</a>
-                                  </Button>
-                                </div>
-                                <div className="col-sm-6 col-md-6 py-1">
-                                  <Button
-                                    block
-                                    type="primary"
-                                    onClick={() => {
+                  <>
+                    <h5 style={{ textAlign: "center" }}>Step3: Choose your choice</h5>
+                    {this.state.videos.map((video, index, videoArr) => (
+                      <div key={'option-' + video.path}>
+                        <div id={video.path.split('/').pop().split('.')[0]}>
+                          <h6 style={{ textAlign: 'center' }}>{video.title}</h6>
+                          <div className="button-columns row-on-mobile">
+                            <div className="row">
+                              <div className="col-sm-6 col-md-6 py-1">
+                                <Button block type="primary">
+                                  <a href={`${API_URL}/download/${video.path}`}>Download</a>
+                                </Button>
+                              </div>
+                              <div className="col-sm-6 col-md-6 py-1">
+                                <Button
+                                  block
+                                  type="primary"
+                                  onClick={() => {
+                                    const newVideoList = videoArr;
+                                    newVideoList[index] = {
+                                      ...newVideoList[index],
+                                      displayUploadToCommons: !newVideoList[index].displayUploadToCommons
+                                    };
+                                    this.setState({ videos: newVideoList });
+                                  }}
+                                >
+                                  Upload to Commons <Icon type={videoArr[index].displayUploadToCommons ? "up" : "down"} />
+                                </Button>
+                              </div>
+                            </div>
+                            {videoArr[index].displayUploadToCommons ? (
+                              <>
+                                <Divider style={{ margin: '15px 0' }} />
+                                <div className="displayUploadToCommons">
+                                  <h6>Action for a file</h6>
+                                  <Radio.Group
+                                    defaultValue="new-file"
+                                    value={videoArr[index].selectedOptionName}
+                                    onChange={e => {
                                       const newVideoList = videoArr;
                                       newVideoList[index] = {
                                         ...newVideoList[index],
-                                        displayUploadToCommons: !newVideoList[index].displayUploadToCommons
+                                        selectedOptionName: e.target.value
                                       };
-                                      this.setState({videos: newVideoList});
+                                      this.setState({ videos: newVideoList });
                                     }}
                                   >
-                                    Upload to Commons <Icon type={videoArr[index].displayUploadToCommons ? "up" : "down"} />
-                                  </Button>
-                                </div>
-                              </div>
-                              {videoArr[index].displayUploadToCommons ? (
-                                <>
-                                  <Divider style={{ margin: '15px 0' }} />
-                                  <div className="displayUploadToCommons">
-                                    <h6>Action for a file</h6>
-                                    <Radio.Group
-                                      defaultValue="new-file"
-                                      value={videoArr[index].selectedOptionName}
-                                      onChange={e => {
-                                        const newVideoList = videoArr;
-                                        newVideoList[index] = {
-                                          ...newVideoList[index],
-                                          selectedOptionName: e.target.value
-                                        };
-                                        this.setState({videos: newVideoList});
-                                      }}
-                                    >
-                                      {!this.state.uploadedFile ? (
-                                        <Radio.Button value="overwrite" onChange={() => {
-                                          const newVideoList = videoArr;
-
-                                          let newTitle = newVideoList[index].title.split('.');
-                                          newTitle[0] = newTitle[0].split('_').slice(0, -1).join('_');
-                                          newTitle = newTitle.join('.');
-
-                                          newVideoList[index] = {
-                                            ...newVideoList[index],
-                                            title: newTitle
-                                          };
-                                        }}>Overwrite</Radio.Button>
-                                      ) : (
-                                        <Tooltip title={OverwriteBtnTooltipMsg(this.state)}>
-                                          <Radio.Button value="overwrite" disabled>Overwrite</Radio.Button>
-                                        </Tooltip>
-                                      )}
-                                      <Radio.Button value="new-file" onChange={() => {
+                                    {!this.state.uploadedFile ? (
+                                      <Radio.Button value="overwrite" onChange={() => {
                                         const newVideoList = videoArr;
 
                                         let newTitle = newVideoList[index].title.split('.');
-                                        newTitle[0] = newTitle[0].concat(`_(edited)${index > 0 ? `(${index})` : ''}`);
+                                        newTitle[0] = newTitle[0].split('_').slice(0, -1).join('_');
                                         newTitle = newTitle.join('.');
 
                                         newVideoList[index] = {
                                           ...newVideoList[index],
                                           title: newTitle
                                         };
-                                      }}>Upload as new file</Radio.Button>
-                                    </Radio.Group>
+                                      }}>Overwrite</Radio.Button>
+                                    ) : (
+                                        <Tooltip title={OverwriteBtnTooltipMsg(this.state)}>
+                                          <Radio.Button value="overwrite" disabled>Overwrite</Radio.Button>
+                                        </Tooltip>
+                                      )}
+                                    <Radio.Button value="new-file" onChange={() => {
+                                      const newVideoList = videoArr;
 
-                                    {videoArr[index].selectedOptionName === 'new-file' && (
-                                      <>
-                                        <h6 style={{ marginTop: 10 }}>Title:</h6>
-                                        <Input
-                                          placeholder="myNewVideo.webm"
-                                          ref="title"
-                                          name="title"
-                                          id="title"
-                                          value={videoArr[index].title}
-                                          onChange={e => {
-                                            const newVideoList = videoArr;
-                                            newVideoList[index] = {
-                                              ...newVideoList[index],
-                                              title: e.target.value
-                                            };
-                                            this.setState({videos: newVideoList});
-                                          }}
-                                          required={true} />
-                                      </>
-                                    )}
+                                      let newTitle = newVideoList[index].title.split('.');
+                                      newTitle[0] = newTitle[0].concat(`_(edited)${index > 0 ? `(${index})` : ''}`);
+                                      newTitle = newTitle.join('.');
 
-                                    <h6 style={{ marginTop: 10 }}>Upload comment:</h6>
-                                    <Input.TextArea
-                                      name="comment"
-                                      id="comment"
-                                      value={videoArr[index].comment}
-                                      onChange={e => {
-                                        const newVideoList = videoArr;
-                                        newVideoList[index] = {
-                                          ...newVideoList[index],
-                                          comment: e.target.value
-                                        };
-                                        this.setState({videos: newVideoList});
-                                      }} />
+                                      newVideoList[index] = {
+                                        ...newVideoList[index],
+                                        title: newTitle
+                                      };
+                                    }}>Upload as new file</Radio.Button>
+                                  </Radio.Group>
 
-                                    <h6 style={{ marginTop: 10 }}>Text:</h6>
-                                    <Input.TextArea
-                                      style={{height: "150px"}}
-                                      name="text"
-                                      id="text"
-                                      value={videoArr[index].text}
-                                      onChange={e => {
-                                        const newVideoList = videoArr;
-                                        newVideoList[index] = {
-                                          ...newVideoList[index],
-                                          text: e.target.value
-                                        };
-                                        this.setState({videos: newVideoList});
-                                      }} />
-                                  </div>
-                                </>
-                              ) : null}
-                            </div>
+                                  {videoArr[index].selectedOptionName === 'new-file' && (
+                                    <>
+                                      <h6 style={{ marginTop: 10 }}>Title:</h6>
+                                      <Input
+                                        placeholder="myNewVideo.webm"
+                                        ref="title"
+                                        name="title"
+                                        id="title"
+                                        value={videoArr[index].title}
+                                        onChange={e => {
+                                          const newVideoList = videoArr;
+                                          newVideoList[index] = {
+                                            ...newVideoList[index],
+                                            title: e.target.value
+                                          };
+                                          this.setState({ videos: newVideoList });
+                                        }}
+                                        required={true} />
+                                    </>
+                                  )}
+
+                                  <h6 style={{ marginTop: 10 }}>Upload comment:</h6>
+                                  <Input.TextArea
+                                    name="comment"
+                                    id="comment"
+                                    value={videoArr[index].comment}
+                                    onChange={e => {
+                                      const newVideoList = videoArr;
+                                      newVideoList[index] = {
+                                        ...newVideoList[index],
+                                        comment: e.target.value
+                                      };
+                                      this.setState({ videos: newVideoList });
+                                    }} />
+
+                                  <h6 style={{ marginTop: 10 }}>Text:</h6>
+                                  <Input.TextArea
+                                    style={{ height: "150px" }}
+                                    name="text"
+                                    id="text"
+                                    value={videoArr[index].text}
+                                    onChange={e => {
+                                      const newVideoList = videoArr;
+                                      newVideoList[index] = {
+                                        ...newVideoList[index],
+                                        text: e.target.value
+                                      };
+                                      this.setState({ videos: newVideoList });
+                                    }} />
+                                </div>
+                              </>
+                            ) : null}
                           </div>
-                          {(this.state.videos.length > 1 && index < this.state.videos.length-1) && <Divider />}
-                        </>
-                      ))}
-                      {this.checkVideoTitles() && (
-                        <div className="upload-button" style={{ marginTop: 10 }}>
-                          {this.state.user ? (
-                            <Button
-                              type="primary"
-                              onClick={e => {
-                                this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: 'uploading to Wikimedia Commons', progressPercentage: 0 }, () => {
-                                  this.onSubmit(e);
-                                });
-                              }}
-                              loading={this.state.loading}
-                              block
-                            >
-                              <Icon type="upload" /> Upload to Commons
+                        </div>
+                        {(this.state.videos.length > 1 && index < this.state.videos.length - 1) && <Divider />}
+                      </div>
+                    ))}
+                    {this.checkVideoTitles() && (
+                      <div className="upload-button" style={{ marginTop: 10 }}>
+                        {this.state.user ? (
+                          <Button
+                            type="primary"
+                            onClick={e => {
+                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: 'uploading to Wikimedia Commons', progressPercentage: 0 }, () => {
+                                this.onSubmit(e);
+                              });
+                            }}
+                            loading={this.state.loading}
+                            block
+                          >
+                            <Icon type="upload" /> Upload to Commons
                             </Button>
-                          ) : (
+                        ) : (
                             <Tooltip
                               placement="topLeft"
                               title="Login to Upload to Wikimedia Commons"
@@ -1556,31 +1538,31 @@ class home extends Component {
                               </Button>
                             </Tooltip>
                           )}
-                        </div>
-                      )}
-                    </>
+                      </div>
+                    )}
+                  </>
                 </div>
               )}
             </div>
             <br />
           </Content>
         </form>
-        <Footer style={{ textAlign: "center" }}>
-            © 2019-20
+      <Footer style={{ textAlign: "center" }}>
+        © 2019-20
             <a href="https://www.mediawiki.org/wiki/User:Gopavasanth">
-                <span> Gopa Vasanth </span>
-            </a>
-            and <b>Hassan Amin</b> &hearts; |
+          <span> Gopa Vasanth </span>
+        </a>
+        and <b>Hassan Amin</b> &hearts; |
             <a href="https://github.com/gopavasanth/video-cut-tool">
-                <span> Github </span>
-            </a>
-            |
+          <span> Github </span>
+        </a>
+        |
             <a href="https://www.gnu.org/licenses/gpl-3.0.txt">
-                <span> GNU Licence </span>
-            </a>
-        </Footer>
-      </Layout>
-    );
+          <span> GNU Licence </span>
+        </a>
+      </Footer>
+      </Layout >
+        );
   }
 }
 
