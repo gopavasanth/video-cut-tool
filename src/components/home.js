@@ -81,6 +81,18 @@ function formatTime(seconds) {
   return time.substr(0, 12);
 }
 
+function decodeTime( time ) {
+  let timeregex = new RegExp ( '([0-9]*):([0-9]*):([0-9]*.[0-9]*)' );
+  if ( timeregex.test( time ) ) {
+    let regexOutput = timeregex.exec( time );
+    let second = 3600 * parseInt( regexOutput[1] )
+    + 60 * parseInt( regexOutput[2] )
+    + parseFloat( regexOutput[3] );
+    return second;
+  } else {
+    return null;
+  }
+}
 class home extends Component {
   constructor(props) {
     super(props);
@@ -161,9 +173,9 @@ class home extends Component {
       RotateValue: -1,
       displaynewVideoName: false,
       DisplayFailedNotification: false,
-
       uploadedFile: null,
-      fileList: []
+      fileList: [],
+      temporaryTrimValue: [{ from: null, to: null }]
     };
   }
 
@@ -624,8 +636,11 @@ class home extends Component {
   add() {
     let trims = this.state.trims;
     trims.push({ from: 0, to: 5 });
+    let temporaryTrimValue = this.state.temporaryTrimValue;
+    temporaryTrimValue.push({ from: null, to: null });
     this.setState({
-      trims: trims
+      trims: trims,
+      temporaryTrimValue: temporaryTrimValue
     });
   };
 
@@ -1296,8 +1311,37 @@ class home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-from`}
-
-                                    value={formatTime(trim.from)}
+                                    value={this.state.temporaryTrimValue[i].from||formatTime(trim.from)}
+                                    onChange={ obj => {
+                                      let temporaryTrimValue = this.state.temporaryTrimValue;
+                                      temporaryTrimValue[i].from = obj.target.value;
+                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
+                                        this.setState({
+                                          temporaryTrimValue: temporaryTrimValue
+                                        });
+                                      }
+                                      if ( this.timeout ) {
+                                        clearTimeout( this.timeout );
+                                      }
+                                      this.timeout = setTimeout(() =>{
+                                        let trims = this.state.trims;
+                                        let temporaryTrimValue = this.state.temporaryTrimValue;
+                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].from );
+                                        if ( decodedTime !== null ) {
+                                          if ( decodedTime <= trims[i].to ){
+                                            trims[i].from = decodedTime;
+                                          } else {
+                                            trims[i].from = trims[i].to;
+                                            trims[i].to = decodedTime;
+                                            temporaryTrimValue[i].to = null;
+                                          }
+                                          temporaryTrimValue[i].from = null;
+                                        }
+                                        this.setState({
+                                          trims: trims
+                                        });
+                                      }, 1000);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -1312,8 +1356,37 @@ class home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-to`}
-
-                                    value={formatTime(trim.to)}
+                                    value={this.state.temporaryTrimValue[i].to||formatTime(trim.to)}
+                                    onChange={ obj => {
+                                      let temporaryTrimValue = this.state.temporaryTrimValue;
+                                      temporaryTrimValue[i].to = obj.target.value;
+                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
+                                        this.setState({
+                                          temporaryTrimValue: temporaryTrimValue
+                                        });
+                                      }
+                                      if ( this.timeout ) {
+                                        clearTimeout( this.timeout );
+                                      }
+                                      this.timeout = setTimeout(() => {
+                                        let trims = this.state.trims;
+                                        let temporaryTrimValue = this.state.temporaryTrimValue;
+                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].to );
+                                        if ( decodedTime !== null ) {
+                                          if ( decodedTime >= trims[i].from ){
+                                            trims[i].to = decodedTime;
+                                          } else {
+                                            trims[i].to = trims[i].from;
+                                            trims[i].from = decodedTime;
+                                            temporaryTrimValue[i].from = null;
+                                          }
+                                          temporaryTrimValue[i].to = null;
+                                        }
+                                        this.setState({
+                                          trims: trims
+                                        });
+                                      }, 1000);
+                                    }}
                                   />
                                 </div>
                               </div>
