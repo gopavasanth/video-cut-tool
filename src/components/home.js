@@ -569,6 +569,8 @@ class home extends Component {
             self.onDragStop();
             window.removeEventListener('mousemove', resize);
             window.removeEventListener('touchmove', resize);
+            window.removeEventListener('mouseup', stopResize);
+            window.removeEventListener('touchend', stopResize);
           }
         }
       });
