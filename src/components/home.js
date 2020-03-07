@@ -128,7 +128,21 @@ const initalState = {
   DisplayFailedNotification: false,
 
   uploadedFile: null,
-  fileList: []
+  fileList: [],
+  temporaryTrimValue: [{ from: null, to: null }]
+}
+
+function decodeTime( time ) {
+  let timeregex = new RegExp ( '([0-9]*):([0-9]*):([0-9]*.[0-9]*)' );
+  if ( timeregex.test( time ) ) {
+    let regexOutput = timeregex.exec( time );
+    let second = 3600 * parseInt( regexOutput[1] )
+    + 60 * parseInt( regexOutput[2] )
+    + parseFloat( regexOutput[3] );
+    return second;
+  } else {
+    return null;
+  }
 }
 
 class home extends Component {
@@ -574,6 +588,8 @@ class home extends Component {
             self.onDragStop();
             window.removeEventListener('mousemove', resize);
             window.removeEventListener('touchmove', resize);
+            window.removeEventListener('mouseup', stopResize);
+            window.removeEventListener('touchend', stopResize);
           }
         }
       });
@@ -641,8 +657,11 @@ class home extends Component {
   add() {
     let trims = this.state.trims;
     trims.push({ from: 0, to: 5 });
+    let temporaryTrimValue = this.state.temporaryTrimValue;
+    temporaryTrimValue.push({ from: null, to: null });
     this.setState({
-      trims: trims
+      trims: trims,
+      temporaryTrimValue: temporaryTrimValue
     });
   };
 
@@ -880,6 +899,7 @@ class home extends Component {
               >
                 Logout
                   </Button>
+
               <Button
                 primary
                 className="c-auth-buttons__signout"
@@ -1278,8 +1298,37 @@ class home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-from`}
-
-                                    value={formatTime(trim.from)}
+                                    value={this.state.temporaryTrimValue[i].from||formatTime(trim.from)}
+                                    onChange={ obj => {
+                                      let temporaryTrimValue = this.state.temporaryTrimValue;
+                                      temporaryTrimValue[i].from = obj.target.value;
+                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
+                                        this.setState({
+                                          temporaryTrimValue: temporaryTrimValue
+                                        });
+                                      }
+                                      if ( this.timeout ) {
+                                        clearTimeout( this.timeout );
+                                      }
+                                      this.timeout = setTimeout(() =>{
+                                        let trims = this.state.trims;
+                                        let temporaryTrimValue = this.state.temporaryTrimValue;
+                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].from );
+                                        if ( decodedTime !== null ) {
+                                          if ( decodedTime <= trims[i].to ){
+                                            trims[i].from = decodedTime;
+                                          } else {
+                                            trims[i].from = trims[i].to;
+                                            trims[i].to = decodedTime;
+                                            temporaryTrimValue[i].to = null;
+                                          }
+                                          temporaryTrimValue[i].from = null;
+                                        }
+                                        this.setState({
+                                          trims: trims
+                                        });
+                                      }, 1000);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -1294,8 +1343,37 @@ class home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-to`}
-
-                                    value={formatTime(trim.to)}
+                                    value={this.state.temporaryTrimValue[i].to||formatTime(trim.to)}
+                                    onChange={ obj => {
+                                      let temporaryTrimValue = this.state.temporaryTrimValue;
+                                      temporaryTrimValue[i].to = obj.target.value;
+                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
+                                        this.setState({
+                                          temporaryTrimValue: temporaryTrimValue
+                                        });
+                                      }
+                                      if ( this.timeout ) {
+                                        clearTimeout( this.timeout );
+                                      }
+                                      this.timeout = setTimeout(() => {
+                                        let trims = this.state.trims;
+                                        let temporaryTrimValue = this.state.temporaryTrimValue;
+                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].to );
+                                        if ( decodedTime !== null ) {
+                                          if ( decodedTime >= trims[i].from ){
+                                            trims[i].to = decodedTime;
+                                          } else {
+                                            trims[i].to = trims[i].from;
+                                            trims[i].from = decodedTime;
+                                            temporaryTrimValue[i].from = null;
+                                          }
+                                          temporaryTrimValue[i].to = null;
+                                        }
+                                        this.setState({
+                                          trims: trims
+                                        });
+                                      }, 1000);
+                                    }}
                                   />
                                 </div>
                               </div>
@@ -1557,8 +1635,8 @@ class home extends Component {
           <span> Github </span>
         </a>
         |
-            <a href="https://www.gnu.org/licenses/gpl-3.0.txt">
-          <span> GNU Licence </span>
+            <a href="https://creativecommons.org/licenses/by/4.0/">
+          <span> CC BY SA 4.0 </span>
         </a>
       </Footer>
       </Layout >
