@@ -1439,10 +1439,15 @@ class home extends Component {
                       <Button
                         type="primary"
                         onClick={e => {
-                          this.enterLoading();
-                          this.onSubmit(e);
-                          showNotificationWithIcon("info", WaitMsg);
-                          this.changeStep(2);
+                          if (this.state.user) {
+
+                            this.enterLoading();
+                            this.onSubmit(e);
+                            showNotificationWithIcon("info", WaitMsg);
+                            this.changeStep(2);
+                          } else {
+                            alert('You need to be logged in to preview and upload to Commons')
+                          }
                         }}
                         name="rotate"
                         style={{
