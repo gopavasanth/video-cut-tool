@@ -7,7 +7,7 @@ module.exports = function(){
                 not_found_path:"/",
                 backend_url: "https://videocuttool.wmflabs.org/video-cut-tool-back-end",
                 socket_io_path: "/socket.io",
-                socketio_url: 'https://videocuttool.wmflabs.org'
+                socket_io_url: 'https://videocuttool.wmflabs.org'
             }
 
         default:

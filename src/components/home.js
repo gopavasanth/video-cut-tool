@@ -19,6 +19,7 @@ const ENV_SETTINGS = require("../env")();
 const { TabPane } = Tabs;
 // These are the API URL's
 const API_URL = ENV_SETTINGS.backend_url;
+const SOCKETIO_URL = ENV_SETTINGS.socket_io_url
 const SOCKET_IO_PATH = ENV_SETTINGS.socket_io_path;
 const logo = "https://upload.wikimedia.org/wikipedia/commons/5/57/JeremyNguyenGCI_-_Video_Cut_Tool_Logo.svg";
 
@@ -28,7 +29,7 @@ const { Dragger } = Upload;
 
 // Notification Messages
 const WaitMsg = "Your video is being processed, Please wait until the new video is generated";
-const socket = io(API_URL, { path: SOCKET_IO_PATH });
+const socket = io(SOCKETIO_URL, { path: SOCKET_IO_PATH });
 
 const OverwriteBtnTooltipMsg = (state) => {
   if (state.uploadedFile) {
