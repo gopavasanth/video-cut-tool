@@ -23,7 +23,7 @@
     "socket.io-client": "^2.3.0",
     "video-react": "^0.13.6"
   },
-  "homepage": "/video-cut-tool",
+  "homepage": "https://videocuttool.wmflabs.org",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
