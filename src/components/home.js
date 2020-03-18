@@ -189,6 +189,15 @@ class home extends Component {
   }
 
   componentDidMount() {
+    socket.on('reconnect', (attemptNumber) => {
+      // ...
+      try {
+        if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user'))) {
+          socket.emit('authenticate', JSON.parse(localStorage.getItem('user')));
+        }
+      } catch (e) {
+      }
+    });
     this.setState({
       width: getWindowDimensions().width
     });
