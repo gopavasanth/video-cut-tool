@@ -2,10 +2,10 @@ module.exports = function(){
     switch(process.env.NODE_ENV){
         case "production":
             return {
-                path: "/video-cut-tool/",
-                home_page:"https://tools.wmflabs.org/video-cut-tool",
+                path: "/",
+                home_page:"https://videocuttool.wmflabs.org",
                 not_found_path:"/",
-                backend_url: "https://tools.wmflabs.org/video-cut-tool-back-end",
+                backend_url: "https://videocuttool.wmflabs.org/video-cut-tool-back-end",
                 socket_io_path: "/video-cut-tool-back-end/socket.io"
             }
 
