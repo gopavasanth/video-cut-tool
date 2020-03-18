@@ -6,7 +6,8 @@ module.exports = function(){
                 home_page:"https://videocuttool.wmflabs.org",
                 not_found_path:"/",
                 backend_url: "https://videocuttool.wmflabs.org/video-cut-tool-back-end",
-                socket_io_path: "/video-cut-tool-back-end/socket.io"
+                socket_io_path: "/socket.io",
+                socketio_url: 'https://videocuttool.wmflabs.org'
             }
 
         default:
@@ -15,7 +16,7 @@ module.exports = function(){
                 home_page:"/",
                 not_found_path:"/",
                 backend_url: "http://localhost:4000",
-                socket_io_path: "/video-cut-tool-back-end/socket.io"
+                socket_io_path: "/socket.io"
             }
     }
 }
