@@ -745,10 +745,17 @@ class home extends Component {
       if (res.data.videos.length > 0) {
         res.data.videos.map((item, index) => {
           let newVideoTitle = this.state.videos[index].title.split('.');
+          let oldVideoTitle = this.state.videos[index].title.split('.');
+          
           newVideoTitle[0] = newVideoTitle[0].concat('_(edited)');
+
           if (index > 0) newVideoTitle[0] = newVideoTitle[0].concat(`(${index})`);
           newVideoTitle[1] = item.split('.')[1];
           newVideoTitle = newVideoTitle.join('.');
+          
+          if (index > 0) oldVideoTitle[0] = oldVideoTitle[0].concat(`(${index})`);
+          oldVideoTitle[1] = item.split('.')[1];
+          oldVideoTitle = oldVideoTitle.join('.');
 
           const currentDate = new Date();
           const currentMonth = currentDate.getMonth() + 1 < 10 ? `0${currentDate.getMonth() + 1}` : currentDate.getMonth() + 1;
@@ -768,7 +775,8 @@ class home extends Component {
 }}\n
 =={{int:license-header}}==
 {{self|cc-by-sa-4.0}}\n
-[[Category:VideoCutTool]]`,
+[[Category:VideoCutTool]]\n
+{{Extracted from|File:${oldVideoTitle} }}`,
             selectedOptionName: 'new-file',
             displayUploadToCommons: false
           });
