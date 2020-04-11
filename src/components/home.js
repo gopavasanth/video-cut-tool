@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Tabs, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Button, Upload, Progress, Card, Spin, Menu } from 'antd';
+import { Tabs, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Button, Upload, Progress, Spin, Menu } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
-import { FormGroup } from 'reactstrap';
 
 import PopupTools from 'popup-tools';
 import { NotificationManager } from 'react-notifications';
@@ -910,20 +909,16 @@ class home extends Component {
         <Menu theme="dark" mode="horizontal">
           {this.state.user ? (
             <>
-              <Button
-                primary
-                className="c-auth-buttons__signout"
-                onClick={this.onLogOut.bind(this)}
-              >
-                Logout
-                  </Button>
-
-              <Button
-                primary
-                className="c-auth-buttons__signout"
-              >
-                {"Welcome : " + this.state.user.username}
-              </Button>
+              <div className="align-middle float-right">
+                <span style={{ color: "white" }}>Welcome, <strong>{this.state.user.username} </strong></span>
+                <Button
+                  type="link"
+                  className="c-auth-buttons__signout"
+                  onClick={this.onLogOut.bind(this)}
+                >
+                  Logout
+                </Button>
+              </div>
             </>
           ) : (
               <Button
@@ -1618,7 +1613,9 @@ class home extends Component {
                               this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: 'uploading to Wikimedia Commons', progressPercentage: 0 }, () => {
                                 this.onSubmit(e);
                               });
+                              setTimeout(() => this.setState({currentTask: 'Uploaded to Wikimedia Commons', loading: false,  displayLoadingMessage: false  }), 10000);
                             }}
+                            
                             loading={this.state.loading}
                             block
                           >
