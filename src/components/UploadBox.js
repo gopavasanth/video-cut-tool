@@ -27,12 +27,14 @@ export default class UploadBox extends React.Component {
                         </FormGroup>
                     </TabPane>
                     <TabPane tab={<p><Icon type="upload" />Upload Video</p>} key="2">
-                        <Dragger {...draggerProps}>
-                            <p className="ant-upload-drag-icon">
-                                <Icon type="inbox" />
-                            </p>
-                            <p className="ant-upload-text">Click or drag file to this area to upload</p>
-                        </Dragger>
+                        <div className="container-fluid">
+                            <div className="pt-4">
+                                <Dragger {...draggerProps}>
+                                    <p className="ant-upload-drag-icon"></p>
+                                    <p className="ant-upload-text">Click or drag video to this area to upload</p>
+                                </Dragger>
+                            </div>
+                        </div>
                     </TabPane>
                 </Tabs>
                 <div className="p-2">
