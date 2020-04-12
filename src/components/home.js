@@ -910,7 +910,7 @@ class home extends Component {
           {this.state.user ? (
             <>
               <div className="align-middle float-right">
-                <span style={{ color: "white" }}>Welcome, <strong>{this.state.user.username} </strong></span>
+                <span style={{ color: "white" }}>Welcome, <strong> < a style={{ color: "white" }} href={`https://commons.wikimedia.org/wiki/user:${this.state.user.username}` }>{this.state.user.username} </a></strong></span>
                 <Button
                   type="link"
                   className="c-auth-buttons__signout"
