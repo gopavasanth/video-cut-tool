@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import { Tabs, Alert, Tooltip, Steps, Divider, Input, notification, Slider, Typography, Layout, Icon, Col, Radio, Button, Upload, Progress, Spin, Menu } from 'antd';
+import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
-
-import PopupTools from 'popup-tools';
-import { NotificationManager } from 'react-notifications';
 
 import Draggable from "react-draggable";
 import axios from "axios";
@@ -13,38 +10,22 @@ import "../App.css";
 import "antd/dist/antd.css";
 import "video-react/dist/video-react.css";
 import UploadBox from './UploadBox';
+import Footer from './Footer';
+import Header from './Header';
+import VideoSettings from './VideoSettings';
+import NotifUtils from "./notificationsUtils";
 
+const { WaitMsg, OverwriteBtnTooltipMsg, showNotificationWithIcon } = NotifUtils;
 const ENV_SETTINGS = require("../env")();
-const { TabPane } = Tabs;
 // These are the API URL's
 const API_URL = ENV_SETTINGS.backend_url;
 const SOCKETIO_URL = ENV_SETTINGS.socket_io_url
 const SOCKET_IO_PATH = ENV_SETTINGS.socket_io_path;
-const logo = "https://upload.wikimedia.org/wikipedia/commons/5/57/JeremyNguyenGCI_-_Video_Cut_Tool_Logo.svg";
 
-const { Content, Footer, Header } = Layout;
+const { Content } = Layout;
 const { Step } = Steps;
-const { Dragger } = Upload;
 
-// Notification Messages
-const WaitMsg = "Your video is being processed, Please wait until the new video is generated";
 const socket = io(SOCKETIO_URL, { path: SOCKET_IO_PATH });
-
-const OverwriteBtnTooltipMsg = (state) => {
-  if (state.uploadedFile) {
-    return "You can't overwrite a video from a device";
-  }
-  else {
-    return "File doesn't exist at Wikimedia Commons";
-  }
-}
-
-const showNotificationWithIcon = (type, desc) => {
-  notification[type]({
-    message: "Notification !",
-    description: desc
-  });
-};
 
 function getWindowDimensions() {
   const { innerWidth: width, innerHeight: height } = window;
@@ -163,8 +144,6 @@ class home extends Component {
 
     this.handleDrag = this.handleDrag.bind(this);
     this.onDragStop = this.onDragStop.bind(this);
-    this.onLogin = this.onLogin.bind(this);
-    this.onLogOut = this.onLogOut.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
     this.checkTitleInUrl = this.checkTitleInUrl.bind(this);
@@ -215,14 +194,6 @@ class home extends Component {
       }
     });
 
-    try {
-      if (localStorage.getItem('user') && JSON.parse(localStorage.getItem('user'))) {
-        this.setState({ user: JSON.parse(localStorage.getItem('user')) })
-        socket.emit('authenticate', JSON.parse(localStorage.getItem('user')));
-      }
-    } catch (e) {
-      this.setState({ user: null });
-    }
     // Check if title passed as parameter into url
     this.checkTitleInUrl();
   }
@@ -268,29 +239,6 @@ class home extends Component {
       changeStep: num
     });
   };
-
-  // Login redirect URL to the back-end server
-  onLogin() {
-    PopupTools.popup(
-      `${API_URL}/video-cut-tool-back-end/login`, "Wiki Connect", { width: 1000, height: 600 }, (err, data) => {
-        if (!err) {
-          this.setState({ user: data.user });
-          localStorage.setItem('user', JSON.stringify(data.user));
-          socket.emit('authenticate', data.user)
-          NotificationManager.success("Logged in successfully");
-        }
-      }
-    );
-  }
-
-  onLogOut() {
-    localStorage.removeItem('user');
-    this.setState({
-      user: null,
-      selectedOptionName: 'new-file'
-    });
-    NotificationManager.success("Logged out successfully");
-  }
 
   // Check if title passed as parameter into url
   checkTitleInUrl() {
@@ -873,6 +821,59 @@ class home extends Component {
       && videoList.filter(video => video.displayUploadToCommons).length > 0
   }
 
+  getSettings() {
+    return [
+      {
+        icon: "sound",
+        property: this.state.disableAudio,
+        undoProperty: !this.state.disableAudio,
+        click: () => this.disableAudio(),
+        undoClick: () => this.UndodisableAudio(),
+        text: "Remove Audio"
+      },
+      {
+        icon:"redo",
+        property: false,
+        undoProperty: !this.state.rotateVideo,
+        click: () => {
+          this.rotateVideo();
+          this.RotateValue(this.state.RotateValue);
+          this.displayRotate();
+        },
+        undoClick: () => {
+          this.setState({ rotateVideo: false });
+        },
+        text: "Rotate Video"
+      },
+      {
+        icon:"scissor",
+        property: this.state.trimVideo,
+        undoProperty: !this.state.trimVideo,
+        click: () => {
+          this.displayTrim();
+          this.setState({
+            trimVideo: true
+          });
+        },
+        undoClick: () => this.setState({ trimVideo: false, displayTrim: false }),
+        text: "Trim Video"
+      },
+      {
+        icon: "radius-setting",
+        property: this.state.cropVideo,
+        undoProperty: !this.state.cropVideo,
+        click: () => {
+          this.cropVideo();
+          this.displayCrop();
+        },
+        undoClick: () => {
+          this.setState({ cropVideo: false });
+        },
+        text: "Crop Video"
+      }
+    ]
+  }
+
 
   getUploadProperties = () => {
     const { uploadedFile, fileList } = this.state;
@@ -894,44 +895,6 @@ class home extends Component {
       uploadedFile,
       fileList,
     };
-  }
-  renderHeader = () => {
-    return (
-      <Header>
-        <span onClick={() => window.location.reload()}>
-          {this.state.width > 600 ?
-            <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900, cursor: "pointer" }}>
-              <img src={logo} alt="logo" position="relative" width="100" height="40" /> VideoCutTool
-                </span> :
-            <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900 }} className="pr-4">VideoCutTool</span>
-          }
-        </span>
-        <Menu theme="dark" mode="horizontal">
-          {this.state.user ? (
-            <>
-              <div className="align-middle float-right">
-                <span style={{ color: "white" }}>Welcome, <strong> < a style={{ color: "white" }} href={`https://commons.wikimedia.org/wiki/user:${this.state.user.username}` }>{this.state.user.username} </a></strong></span>
-                <Button
-                  type="link"
-                  className="c-auth-buttons__signout"
-                  onClick={this.onLogOut.bind(this)}
-                >
-                  Logout
-                </Button>
-              </div>
-            </>
-          ) : (
-              <Button
-                primary
-                className="c-auth-buttons__signup"
-                onClick={this.onLogin.bind(this)}
-              >
-                Register / Login
-                </Button>
-            )}
-        </Menu>
-      </Header>
-    )
   }
 
   renderURLBox = () => {
@@ -989,13 +952,16 @@ class home extends Component {
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
     const { uploadedFile } = this.state;
-    const uploadProperties = this.getUploadProperties()
+    const uploadProperties = this.getUploadProperties();
 
     console.log("URL: " + this.state.inputVideoUrl);
 
     return (
       <Layout className="layout">
-        {this.renderHeader()}
+        <Header
+          parentUserUpdateCallback={(user) => { this.setState({user: user}); }}
+          socket={socket} width={this.state.width}
+          api_url={API_URL} />
         <form onSubmit={this.onSubmit}>
           <Content className="Content">
             <div className="row m-0">
@@ -1161,112 +1127,7 @@ class home extends Component {
                   <br />
                   <div className="videoSettings">
                     <h5 style={{ textAlign: "center" }}>Step2: Adjust Video Settings   </h5>
-                    <div className="button-columns">
-                      <div className="row">
-                        <div className="col-md-6">
-                          <Button
-                            type="primary"
-                            disabled={this.state.disableAudio}
-                            onClick={() => this.disableAudio()}
-                            block
-                          >
-                            <Icon type="sound" /> Remove Audio
-                          </Button>
-                        </div>
-                        <div className="col-md-6">
-                          <Button
-                            disabled={!this.state.disableAudio}
-                            onClick={() => {
-                              this.UndodisableAudio();
-                            }}
-                            block
-                          >
-                            <Icon type="undo" /> Undo
-                          </Button>
-                        </div>
-                      </div>
-                      <br />
-                      <div className="row">
-                        <div className="col-md-6">
-                          <Button
-                            type="primary"
-                            onClick={() => {
-                              this.rotateVideo();
-                              this.RotateValue(this.state.RotateValue);
-                              this.displayRotate();
-                            }}
-                            block
-                          >
-                            <Icon type="redo" /> Rotate Video
-                          </Button>
-                        </div>
-                        <div className="col-md-6">
-                          <Button
-                            disabled={!this.state.rotateVideo}
-                            onClick={() => {
-                              this.setState({ rotateVideo: false });
-                            }}
-                            block
-                          >
-                            <Icon type="undo" /> Undo
-                          </Button>
-                        </div>
-                      </div>
-                      <br />
-                      <div className="row">
-                        <div className="col-md-6">
-                          <Button
-                            type="primary"
-                            disabled={this.state.trimVideo}
-                            onClick={() => {
-                              this.displayTrim();
-                              this.setState({
-                                trimVideo: true
-                              });
-                            }}
-                            block
-                          >
-                            <Icon type="scissor" /> Trim Video
-                          </Button>
-                        </div>
-                        <div className="col-md-6">
-                          <Button
-                            disabled={!this.state.trimVideo}
-                            onClick={() => this.setState({ trimVideo: false, displayTrim: false })}
-                            block
-                          >
-                            <Icon type="undo" /> Undo
-                          </Button>
-                        </div>
-                      </div>
-                      <br />
-                      <div className="row">
-                        <div className="col-md-6">
-                          <Button
-                            type="primary"
-                            disabled={this.state.cropVideo}
-                            onClick={() => {
-                              this.cropVideo();
-                              this.displayCrop();
-                            }}
-                            block
-                          >
-                            <Icon type="radius-setting" /> Crop Video
-                          </Button>
-                        </div>
-                        <div className="col-md-6">
-                          <Button
-                            disabled={!this.state.cropVideo}
-                            onClick={() => {
-                              this.setState({ cropVideo: false });
-                            }}
-                            block
-                          >
-                            <Icon type="undo" /> Undo
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
+                    <VideoSettings settings={this.getSettings()} />
                     <Divider />
                     {this.state.trimVideo ? (
                       <Col>
@@ -1645,20 +1506,7 @@ class home extends Component {
             <br />
           </Content>
         </form>
-      <Footer style={{ textAlign: "center" }}>
-        © 2019-20
-            <a href="https://www.mediawiki.org/wiki/User:Gopavasanth">
-          <span> Gopa Vasanth </span>
-        </a>
-        and <b>Hassan Amin</b> &hearts; |
-            <a href="https://github.com/gopavasanth/video-cut-tool">
-          <span> Github </span>
-        </a>
-        |
-            <a href="https://creativecommons.org/licenses/by/4.0/">
-          <span> CC BY SA 4.0 </span>
-        </a>
-      </Footer>
+     <Footer />
       </Layout >
         );
   }
