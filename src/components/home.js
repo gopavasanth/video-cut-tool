@@ -1584,7 +1584,7 @@ class home extends Component {
 
                                   <h6 style={{ marginTop: 10 }}>Text:</h6>
                                   <Input.TextArea
-                                    style={{ height: "150px" }}
+                                    style={{ height: "350px" }}
                                     name="text"
                                     id="text"
                                     value={videoArr[index].text}
