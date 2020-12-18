@@ -1,6 +1,6 @@
 import React from "react";
 import "antd/dist/antd.css";
-import { Layout, Button, Menu } from 'antd';
+import { Layout, Button, Menu, Popconfirm } from 'antd';
 import PopupTools from 'popup-tools';
 import { NotificationManager } from 'react-notifications';
 
@@ -67,13 +67,20 @@ class VideoCutToolHeader extends React.Component {
                   <>
                     <div className="align-middle float-right">
                       <span style={{ color: "white" }}>Welcome, <strong> < a style={{ color: "white" }} href={`https://commons.wikimedia.org/wiki/user:${this.state.user.username}` }>{this.state.user.username} </a></strong></span>
-                      <Button
-                        type="link"
-                        className="c-auth-buttons__signout"
-                        onClick={this.onLogOut.bind(this)}
+                      <Popconfirm
+                        placement="bottom"
+                        title="Are you sure?"
+                        okText="Yes"
+                        cancelText="No"
+                        onConfirm={this.onLogOut.bind(this)}
                       >
-                        Logout
-                      </Button>
+                        <Button
+                          type="link"
+                          className="c-auth-buttons__signout"
+                        >
+                          Logout
+                        </Button>
+                      </Popconfirm>
                     </div>
                   </>
                 ) : (
