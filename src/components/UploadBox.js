@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Tabs, Input, Typography, Icon, Button, Upload, Card } from 'antd';
 import { FormGroup } from 'reactstrap';
+import { Message } from '@wikimedia/react.i18n';
 
 const { TabPane } = Tabs;
 const { Dragger } = Upload;
@@ -16,7 +17,7 @@ export default class UploadBox extends React.Component {
         return (
             <Card>
                 <Tabs defaultActiveKey="1">
-                    <TabPane tab={<p><Icon type="link" />Video URL</p>} key="1">
+                    <TabPane tab={<p><Icon type="link" /><Message id="upload-tab-video-url" /></p>} key="1">
                         <FormGroup>
                             <Typography.Title level={4} style={{ color: "Black" }}>
 
@@ -26,12 +27,12 @@ export default class UploadBox extends React.Component {
                             />
                         </FormGroup>
                     </TabPane>
-                    <TabPane tab={<p><Icon type="upload" />Upload Video</p>} key="2">
+                    <TabPane tab={<p><Icon type="upload" /><Message id="upload-tab-upload-video" /></p>} key="2">
                         <div className="container-fluid">
                             <div className="pt-4">
                                 <Dragger {...draggerProps}>
                                     <p className="ant-upload-drag-icon"></p>
-                                    <p className="ant-upload-text">Click or drag video to this area to upload</p>
+                                    <p className="ant-upload-text"><Message id="upload-upload-text" /></p>
                                 </Dragger>
                             </div>
                         </div>
@@ -41,7 +42,7 @@ export default class UploadBox extends React.Component {
                     <Button
                         {...editButtonProps}
                     >
-                        Edit Video
+                        <Message id="upload-edit-button" />
                         </Button>
                     <Button
                         type="default"

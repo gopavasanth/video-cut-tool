@@ -1,13 +1,14 @@
 import React from "react";
 import "antd/dist/antd.css";
-import { Layout, Button, Menu, Popconfirm } from 'antd';
+import { Layout, Button, Menu, Popconfirm, Dropdown, Select } from 'antd';
 import PopupTools from 'popup-tools';
 import { NotificationManager } from 'react-notifications';
 
-const logo = "https://upload.wikimedia.org/wikipedia/commons/5/57/JeremyNguyenGCI_-_Video_Cut_Tool_Logo.svg";
-const Header = Layout.Header;
+import { Message } from '@wikimedia/react.i18n';
 
-class VideoCutToolHeader extends React.Component {
+const logo = "https://upload.wikimedia.org/wikipedia/commons/5/57/JeremyNguyenGCI_-_Video_Cut_Tool_Logo.svg";
+
+class Header extends React.Component {
     constructor(props) {
         super(props);
         this.onLogOut = this.onLogOut.bind(this);
@@ -53,7 +54,7 @@ class VideoCutToolHeader extends React.Component {
   }
     render() {
         return (
-            <Header>
+            <Layout.Header>
               <span onClick={() => window.location.reload()}>
                 {this.props.width > 600 ?
                   <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900, cursor: "pointer" }}>
@@ -65,20 +66,20 @@ class VideoCutToolHeader extends React.Component {
               <Menu theme="dark" mode="horizontal">
                 {this.state.user ? (
                   <>
-                    <div className="align-middle float-right">
+                    <div className="align-middle float-left">
                       <span style={{ color: "white" }}>Welcome, <strong> < a style={{ color: "white" }} href={`https://commons.wikimedia.org/wiki/user:${this.state.user.username}` }>{this.state.user.username} </a></strong></span>
                       <Popconfirm
                         placement="bottom"
-                        title="Are you sure?"
-                        okText="Yes"
-                        cancelText="No"
+                        title={<Message id="logout-confirm-text" />}
+                        okText={<Message id="logout-confirm-yes" />}
+                        cancelText={<Message id="logout-confirm-no" />}
                         onConfirm={this.onLogOut.bind(this)}
                       >
                         <Button
                           type="link"
                           className="c-auth-buttons__signout"
                         >
-                          Logout
+                          <Message id="logout" />
                         </Button>
                       </Popconfirm>
                     </div>
@@ -89,13 +90,31 @@ class VideoCutToolHeader extends React.Component {
                       className="c-auth-buttons__signup"
                       onClick={this.onLogin.bind(this)}
                     >
-                      Register / Login
-                      </Button>
+                      <Message id="login" />
+                    </Button>
                   )}
+                <Select
+                  defaultValue={localStorage.getItem('locale') || !localStorage.getItem('locale' && 'en-US')}
+                  style={{width: 150, paddingTop: 15}}
+                  className="float-right"
+                  onChange={this.props.parentLanguageUpdateCallback}
+                >
+                  <Select.OptGroup label={<Message id="languages" />}>
+                    <Select.Option value="de-DE">
+                      Deutsch
+                    </Select.Option>
+                    <Select.Option value="en-US">
+                      English
+                    </Select.Option>
+                    <Select.Option value="fr-FR">
+                      Français
+                    </Select.Option>
+                  </Select.OptGroup>
+                </Select>
               </Menu>
-            </Header>
+            </Layout.Header>
           )
     }
 }
 
-export default VideoCutToolHeader;
+export default Header;
