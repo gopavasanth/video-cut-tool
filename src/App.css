@@ -208,3 +208,7 @@ body {
     margin-top: 10px;
   }
 }
+
+.anticon {
+  vertical-align: 1px!important; 
+}
