@@ -2,26 +2,23 @@
 // Notification Messages
 import { notification } from "antd";
 
-const WaitMsg = "Your video is being processed, Please wait until the new video is generated";
-
-const OverwriteBtnTooltipMsg = (state) => {
+const OverwriteBtnTooltipMsg = (state, banana) => {
     if (state.uploadedFile) {
-      return "You can't overwrite a video from a device";
+      return banana.i18n('notifications-not-overwritable');
     }
     else {
-      return "File doesn't exist at Wikimedia Commons";
+      return banana.i18n('notifications-not-existing');
     }
   }
 
-const showNotificationWithIcon = (type, desc) => {
+const showNotificationWithIcon = (type, desc, banana) => {
     notification[type]({
-      message: "Notification !",
+      message: banana.i18n('notifications-title'),
       description: desc
     });
 };
 
 const NotifUtils = {
-    WaitMsg: WaitMsg,
     OverwriteBtnTooltipMsg: OverwriteBtnTooltipMsg,
     showNotificationWithIcon: showNotificationWithIcon
 }

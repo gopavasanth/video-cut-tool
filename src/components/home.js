@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useContext } from 'react';
 import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
 
@@ -14,8 +14,10 @@ import Footer from './Footer';
 import Header from './Header';
 import VideoSettings from './VideoSettings';
 import NotifUtils from "./notificationsUtils";
+import withBananaContext from './withBananaContext';
+import { Message } from '@wikimedia/react.i18n';
 
-const { WaitMsg, OverwriteBtnTooltipMsg, showNotificationWithIcon } = NotifUtils;
+const { OverwriteBtnTooltipMsg, showNotificationWithIcon } = NotifUtils;
 const ENV_SETTINGS = require("../env")();
 // These are the API URL's
 const API_URL = ENV_SETTINGS.backend_url;
@@ -64,55 +66,6 @@ function formatTime(seconds) {
   return time.substr(0, 12);
 }
 
-const initalState = {
-  deltaPosition: {
-    x: 0,
-    y: 0
-  },
-  videos: [],
-  trimMode: "single",
-  inputVideoUrl: "",
-  trims: [{ from: 0, to: 5 }],
-  out_width: "",
-  out_height: "",
-  x_value: "",
-  y_value: "",
-  display: false,
-  displayCrop: false,
-  displayTrim: false,
-  displayRotate: false,
-  displayPlayer: false,
-  disableAudio: false,
-  user: null,
-  beforeOnTapCrop: true,
-  AfterOnTapCrop: false,
-  upload: false,
-  trimVideo: false,
-  rotateVideo: false,
-  cropVideo: false,
-  trimIntoSingleVideo: true,
-  trimIntoMultipleVideos: false,
-  //loading button
-  loading: false,
-  displayLoadingMessage: false,
-  progressPercentage: 0,
-  currentTask: 'prcessing',
-  //Slider Values,
-  changeStep: 0,
-  duration: 0,
-  //display VideoSettings
-  displayVideoSettings: false,
-  displayURLBox: true,
-  validateVideoURL: false,
-  RotateValue: -1,
-  displaynewVideoName: false,
-  DisplayFailedNotification: false,
-
-  uploadedFile: null,
-  fileList: [],
-  temporaryTrimValue: [{ from: null, to: null }]
-}
-
 function decodeTime( time ) {
   let timeregex = new RegExp ( '([0-9]*):([0-9]*):([0-9]*.[0-9]*)' );
   if ( timeregex.test( time ) ) {
@@ -126,7 +79,7 @@ function decodeTime( time ) {
   }
 }
 
-class home extends Component {
+class Home extends Component {
   constructor(props) {
     super(props);
 
@@ -162,8 +115,60 @@ class home extends Component {
     this.changeStep = this.changeStep.bind(this);
 
     this.state = {
-      ...initalState,
-    };
+      ...this.initalState(),
+    }
+
+  }
+
+  initalState() {
+    return {
+      deltaPosition: {
+        x: 0,
+        y: 0
+      },
+      videos: [],
+      trimMode: "single",
+      inputVideoUrl: "",
+      trims: [{ from: 0, to: 5 }],
+      out_width: "",
+      out_height: "",
+      x_value: "",
+      y_value: "",
+      display: false,
+      displayCrop: false,
+      displayTrim: false,
+      displayRotate: false,
+      displayPlayer: false,
+      disableAudio: false,
+      user: null,
+      beforeOnTapCrop: true,
+      AfterOnTapCrop: false,
+      upload: false,
+      trimVideo: false,
+      rotateVideo: false,
+      cropVideo: false,
+      trimIntoSingleVideo: true,
+      trimIntoMultipleVideos: false,
+      //loading button
+      loading: false,
+      displayLoadingMessage: false,
+      progressPercentage: 0,
+      currentTask: this.props.banana.i18n('task-processing'),
+      //Slider Values,
+      changeStep: 0,
+      duration: 0,
+      //display VideoSettings
+      displayVideoSettings: false,
+      displayURLBox: true,
+      validateVideoURL: false,
+      RotateValue: -1,
+      displaynewVideoName: false,
+      DisplayFailedNotification: false,
+    
+      uploadedFile: null,
+      fileList: [],
+      temporaryTrimValue: [{ from: null, to: null }]
+    }
   }
 
   componentDidMount() {
@@ -187,7 +192,7 @@ class home extends Component {
       if (status === 'processing') {
         this.setState({
           progressPercentage: 50,
-          currentTask: stage,
+          currentTask: this.props.banana.i18n(`task-stage-${stage.replace(' ', '_')}`),
         });
       } else if (status === 'done') {
         this.previewCallback({ data: { videos: progressData.outputs } })
@@ -206,7 +211,7 @@ class home extends Component {
   }
 
   resetState = () => {
-    this.setState({ ...initalState });
+    this.setState({ ...this.initalState() });
   }
 
   enterLoading = () => {
@@ -214,7 +219,7 @@ class home extends Component {
       loading: true,
       displayLoadingMessage: true,
       progressPercentage: 0,
-      currentTask: 'processing'
+      currentTask: this.props.banana.i18n('task-processing'),
     });
   };
 
@@ -223,7 +228,7 @@ class home extends Component {
       loading: false,
       displayLoadingMessage: false,
       progressPercentage: 0,
-      currentTask: 'processing'
+      currentTask: this.props.banana.i18n('task-processing'),
     })
   }
 
@@ -242,7 +247,7 @@ class home extends Component {
 
   // Check if title passed as parameter into url
   checkTitleInUrl() {
-    const search = this.props.location.search;
+    const search = window.location.search;
     const params = new URLSearchParams(search);
     const title = params.get('title');
     if (title) {
@@ -276,14 +281,14 @@ class home extends Component {
       .then(response => {
         const pageObj = response.data.query.pages[0];
         if (pageObj.hasOwnProperty("missing")) {
-          showNotificationWithIcon("error", "File Does Not Exist");
+          showNotificationWithIcon("error", this.props.banana.i18n('file-not-existing'), this.props.banana);
         }
         else {
           this.goToNextStep();
         }
       })
       .catch(error => {
-        showNotificationWithIcon("error", "File Does Not Exist");
+        showNotificationWithIcon("error", this.props.banana.i18n('file-not-existing'), this.props.banana);
       })
   }
 
@@ -668,9 +673,9 @@ class home extends Component {
   }
 
   previewCallback(res) {
-    function previewComplete() {
+    function previewComplete(banana) {
       self.setState(previewCompleteState);
-      showNotificationWithIcon("success", "Sucessfully Completed :)");
+      showNotificationWithIcon("success", banana.i18n('success'), banana);
     }
 
     let videos = [];
@@ -681,7 +686,7 @@ class home extends Component {
       displayRotate: false,
       displayCrop: false,
       loading: false,
-      currentTask: 'processing',
+      currentTask: this.props.banana.i18n('task-processing'),
       displayPlayer: false,
       displayLoadingMessage: false,
       changeStep: 3,
@@ -734,13 +739,13 @@ class home extends Component {
       videos = this.state.videos;
     }
     previewCompleteState.videos = videos;
-    return previewComplete();
+    return previewComplete(this.props.banana);
   }
 
   previewCallbackError(err) {
     console.log(err);
-    const reason = err.response && err.response.text ? err.response.text : 'Something went wrong';
-    showNotificationWithIcon("error", reason);
+    const reason = err.response && err.response.text ? err.response.text : this.props.banana.i18n('error');
+    showNotificationWithIcon("error", reason, this.props.banana);
     this.setState({ DisplayFailedNotification: true });
     this.leaveLoading();
   }
@@ -783,7 +788,7 @@ class home extends Component {
       let data = new FormData();
       data.append('video', this.state.uploadedFile);
       data.append('data', JSON.stringify(obj))
-      this.setState({ currentTask: 'uploading', videos: newVideos });
+      this.setState({ currentTask: this.props.banana.i18n('task-uploading'), videos: newVideos });
       axios.post(`${API_URL}/video-cut-tool-back-end/send/upload`, data, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -829,7 +834,7 @@ class home extends Component {
         undoProperty: !this.state.disableAudio,
         click: () => this.disableAudio(),
         undoClick: () => this.UndodisableAudio(),
-        text: "Remove Audio"
+        text: this.props.banana.i18n('setting-audio'),
       },
       {
         icon:"redo",
@@ -843,7 +848,7 @@ class home extends Component {
         undoClick: () => {
           this.setState({ rotateVideo: false });
         },
-        text: "Rotate Video"
+        text: this.props.banana.i18n('setting-rotate'),
       },
       {
         icon:"scissor",
@@ -856,7 +861,7 @@ class home extends Component {
           });
         },
         undoClick: () => this.setState({ trimVideo: false, displayTrim: false }),
-        text: "Trim Video"
+        text: this.props.banana.i18n('setting-trim'),
       },
       {
         icon: "radius-setting",
@@ -869,7 +874,7 @@ class home extends Component {
         undoClick: () => {
           this.setState({ cropVideo: false });
         },
-        text: "Crop Video"
+        text: this.props.banana.i18n('setting-crop'),
       }
     ]
   }
@@ -914,7 +919,7 @@ class home extends Component {
       type: "primary",
       disabled: !this.state.inputVideoUrl && this.state.uploadedFile === null,
       onClick: () => {
-        if (!this.state.user) return alert('Please log in to use the tool')
+        if (!this.state.user) return alert(this.props.banana.i18n('login-alert'));
         if (this.state.uploadedFile !== null) {
           this.updatePlayerInfo(URL.createObjectURL(this.state.uploadedFile))
           this.setState({
@@ -960,6 +965,7 @@ class home extends Component {
       <Layout className="layout">
         <Header
           parentUserUpdateCallback={(user) => { this.setState({user: user}); }}
+          parentLanguageUpdateCallback={this.props.parentLanguageUpdateCallback}
           socket={socket} width={this.state.width}
           api_url={API_URL} />
         <form onSubmit={this.onSubmit}>
@@ -972,7 +978,7 @@ class home extends Component {
                       this.state.DisplayFailedNotification ? (
                         <div style={{ paddingBottom: "2rem" }}>
                           <Alert
-                            message="Something went wrong !"
+                            message={<Message id="error" />}
                             type="error"
                             closable
                           />
@@ -982,9 +988,9 @@ class home extends Component {
                     <div id="steps">
                       <div className="p-4">
                         <Steps current={this.state.changeStep}>
-                          <Step title="Video URL" />
-                          <Step title="Video Settings" />
-                          <Step title="Result" />
+                          <Step title={<Message id="step-video-url" />} />
+                          <Step title={<Message id="step-video-settings" />} />
+                          <Step title={<Message id="step-result" />} />
                         </Steps>
                       </div>
                     </div>
@@ -993,7 +999,10 @@ class home extends Component {
                         style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                       >
                         {!this.state.upload && <Spin size="large" style={{ marginBottom: 2 }} />}
-                        <p style={{ marginBottom: 0 }}>Your video is {this.state.currentTask}...</p>
+                        {/*Modify*/}
+                        <p style={{ marginBottom: 0 }}>
+                          <Message id="task-current" placeholders={[this.state.currentTask]} />
+                        </p>
                         {this.state.upload && <Progress percent={this.state.progressPercentage} status="active" style={{ marginBottom: 10, padding: '0 5%' }} />}
                       </div>
                     ) : null}
@@ -1003,7 +1012,9 @@ class home extends Component {
                       <div>
                         {this.state.videos.length > 1 ? (
                           <>
-                            <p style={{ margin: "5px 0" }}>Your New video{this.state.videos.length > 1 && 's'} will be here:</p>
+                            <p style={{ margin: "5px 0" }}>
+                              <Message id="new-video" placeholders={this.state.videos} />
+                            </p>
                             <ul>
                               {this.state.videos.map(video => (
                                 <li>
@@ -1017,7 +1028,7 @@ class home extends Component {
                         ) : (
                             <>
                               <p style={{ margin: "5px 0" }}>
-                                Your New video will be here: <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
+                                <Message id="new-video" /> <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
                                   https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
                                 </a>
                               </p>
@@ -1126,12 +1137,16 @@ class home extends Component {
                 <div className="col-sm-12 col-md-4 p-2" style={{ position: "sticky" }}>
                   <br />
                   <div className="videoSettings">
-                    <h5 style={{ textAlign: "center" }}>Step2: Adjust Video Settings   </h5>
+                    <h5 style={{ textAlign: "center" }}>
+                      <Message id="step-video-settings-title" />
+                    </h5>
                     <VideoSettings settings={this.getSettings()} />
                     <Divider />
                     {this.state.trimVideo ? (
                       <Col>
-                        <h5>VideoTrim Settings</h5>
+                        <h5>
+                          <Message id="video-trim-title" />
+                        </h5>
                         {this.refs.player && this.state.trims.map((trim, i) => (
                           <React.Fragment key={'trim-' + i}>
                             <Slider
@@ -1166,7 +1181,7 @@ class home extends Component {
                                   strong
                                   style={{ paddingRight: "0.2rem" }}
                                 >
-                                  From
+                                  <Message id="video-trim-from" />
                                 </Typography.Text>
                                 <div className="form-group">
                                   <Input
@@ -1211,7 +1226,7 @@ class home extends Component {
                                   strong
                                   style={{ paddingRight: "0.2rem" }}
                                 >
-                                  To
+                                  <Message id="video-trim-to" />
                                 </Typography.Text>
                                 <div className="form-group">
                                   <Input
@@ -1272,7 +1287,7 @@ class home extends Component {
                           }}
                           style={{ width: "100%", margin: "1rem 0" }}
                         >
-                          <Icon type="plus" /> Add More
+                          <Icon type="plus" /> <Message id="video-trim-more" />
                         </Button>
                         <br />
                         {this.state.trims.length > 1 && (
@@ -1282,7 +1297,7 @@ class home extends Component {
                                 checked={this.state.trimIntoSingleVideo}
                                 onClick={this.trimIntoSingleVideo}
                               >
-                                Concatenate into single video
+                                <Message id="video-trim-more-concatenate" />
                               </Radio>
                             </div>
                             <div className="col-sm-6">
@@ -1290,7 +1305,7 @@ class home extends Component {
                                 checked={this.state.trimIntoMultipleVideos}
                                 onClick={this.trimIntoMultipleVideos}
                               >
-                                As Multiple videos
+                                <Message id="video-trim-more-multiple" />
                               </Radio>
                             </div>
                           </div>
@@ -1298,7 +1313,9 @@ class home extends Component {
                       </Col>
                     ) : null}
 
-                    <h5 style={{ textAlign: "center" }}>Preview my changes</h5>
+                    <h5 style={{ textAlign: "center" }}>
+                      <Message id="preview-title" />
+                    </h5>
                     <Col style={{ textAlign: "center" }}>
                       <Button
                         type="primary"
@@ -1307,10 +1324,10 @@ class home extends Component {
 
                             this.enterLoading();
                             this.onSubmit(e);
-                            showNotificationWithIcon("info", WaitMsg);
+                            showNotificationWithIcon("info", this.props.banana.i18n('notifications-wait'), this.props.banana);
                             this.changeStep(2);
                           } else {
-                            alert('You need to be logged in to preview and upload to Commons')
+                            alert(this.props.banana.i18n('login-alert-preview'));
                           }
                         }}
                         name="rotate"
@@ -1321,7 +1338,7 @@ class home extends Component {
                         shape="round"
                         loading={this.state.loading}
                       >
-                        <Icon type="play-circle" /> Preview
+                        <Icon type="play-circle" /> <Message id="preview-text" />
                       </Button>
                     </Col>
                   </div>
@@ -1330,7 +1347,9 @@ class home extends Component {
               {this.state.changeStep === 3 && (
                 <div className="col-sm-12 col-md-4">
                   <>
-                    <h5 style={{ textAlign: "center" }}>Step3: Choose your choice</h5>
+                    <h5 style={{ textAlign: "center" }}>
+                      <Message id="step-result-title" />
+                    </h5>
                     {this.state.videos.map((video, index, videoArr) => (
                       <div key={'option-' + video.path}>
                         <div id={video.path.split('/').pop().split('.')[0]}>
@@ -1339,7 +1358,9 @@ class home extends Component {
                             <div className="row">
                               <div className="col-sm-6 col-md-6 py-1">
                                 <Button block type="primary">
-                                  <a href={`${API_URL}/download/${video.path}`}>Download</a>
+                                  <a href={`${API_URL}/download/${video.path}`}>
+                                    <Message id="step-result-choice-download" />
+                                  </a>
                                 </Button>
                               </div>
                               <div className="col-sm-6 col-md-6 py-1">
@@ -1355,7 +1376,7 @@ class home extends Component {
                                     this.setState({ videos: newVideoList });
                                   }}
                                 >
-                                  Upload to Commons <Icon type={videoArr[index].displayUploadToCommons ? "up" : "down"} />
+                                  <Message id="step-result-choice-upload" /> <Icon type={videoArr[index].displayUploadToCommons ? "up" : "down"} />
                                 </Button>
                               </div>
                             </div>
@@ -1363,7 +1384,9 @@ class home extends Component {
                               <>
                                 <Divider style={{ margin: '15px 0' }} />
                                 <div className="displayUploadToCommons">
-                                  <h6>Action for a file</h6>
+                                  <h6>
+                                    <Message id="upload-action-title" />
+                                  </h6>
                                   <Radio.Group
                                     defaultValue="new-file"
                                     value={videoArr[index].selectedOptionName}
@@ -1388,10 +1411,14 @@ class home extends Component {
                                           ...newVideoList[index],
                                           title: newTitle
                                         };
-                                      }}>Overwrite</Radio.Button>
+                                      }}>
+                                        <Message id="upload-action-overwrite" />
+                                      </Radio.Button>
                                     ) : (
-                                        <Tooltip title={OverwriteBtnTooltipMsg(this.state)}>
-                                          <Radio.Button value="overwrite" disabled>Overwrite</Radio.Button>
+                                        <Tooltip title={OverwriteBtnTooltipMsg(this.state, this.props.banana)}>
+                                          <Radio.Button value="overwrite" disabled>
+                                            <Message id="upload-action-overwrite" />
+                                          </Radio.Button>
                                         </Tooltip>
                                       )}
                                     <Radio.Button value="new-file" onChange={() => {
@@ -1405,12 +1432,16 @@ class home extends Component {
                                         ...newVideoList[index],
                                         title: newTitle
                                       };
-                                    }}>Upload as new file</Radio.Button>
+                                    }}>
+                                      <Message id="upload-action-new-file" />
+                                    </Radio.Button>
                                   </Radio.Group>
 
                                   {videoArr[index].selectedOptionName === 'new-file' && (
                                     <>
-                                      <h6 style={{ marginTop: 10 }}>Title:</h6>
+                                      <h6 style={{ marginTop: 10 }}>
+                                        <Message id="upload-action-new-file-title" />
+                                      </h6>
                                       <Input
                                         placeholder="myNewVideo.webm"
                                         ref="title"
@@ -1429,7 +1460,9 @@ class home extends Component {
                                     </>
                                   )}
 
-                                  <h6 style={{ marginTop: 10 }}>Upload comment:</h6>
+                                  <h6 style={{ marginTop: 10 }}>
+                                    <Message id="upload-comment" />
+                                  </h6>
                                   <Input.TextArea
                                     name="comment"
                                     id="comment"
@@ -1443,7 +1476,9 @@ class home extends Component {
                                       this.setState({ videos: newVideoList });
                                     }} />
 
-                                  <h6 style={{ marginTop: 10 }}>Text:</h6>
+                                  <h6 style={{ marginTop: 10 }}>
+                                    <Message id="upload-text" />
+                                  </h6>
                                   <Input.TextArea
                                     style={{ height: "350px" }}
                                     name="text"
@@ -1471,29 +1506,29 @@ class home extends Component {
                           <Button
                             type="primary"
                             onClick={e => {
-                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: 'uploading to Wikimedia Commons', progressPercentage: 0 }, () => {
+                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: this.context('task-uploading-wikimedia-commons'), progressPercentage: 0 }, () => {
                                 this.onSubmit(e);
                               });
-                              setTimeout(() => this.setState({currentTask: 'Uploaded to Wikimedia Commons', loading: false,  displayLoadingMessage: false  }), 10000);
+                              setTimeout(() => this.setState({currentTask: this.props.banana.i18n('task-uploaded-wikimedia-commons'), loading: false,  displayLoadingMessage: false  }), 10000);
                             }}
                             
                             loading={this.state.loading}
                             block
                           >
-                            <Icon type="upload" /> Upload to Commons
+                            <Icon type="upload" /> <Message id="upload-button" />
                             </Button>
                         ) : (
                             <Tooltip
                               placement="topLeft"
-                              title="Login to Upload to Wikimedia Commons"
+                              title={<Message id="login-alert-upload" />}
                             >
                               <Button
                                 type="primary"
-                                onClick={() => showNotificationWithIcon("info", WaitMsg)}
+                                onClick={() => showNotificationWithIcon("info", this.props.banana.i18n('notifications-wait'), this.props.banana)}
                                 disabled
                                 block
                               >
-                                <Icon type="upload" /> Upload to Commons
+                                <Icon type="upload" /> <Message id="upload-button" />
                               </Button>
                             </Tooltip>
                           )}
@@ -1512,4 +1547,4 @@ class home extends Component {
   }
 }
 
-export default home;
+export default withBananaContext(Home);

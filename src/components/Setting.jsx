@@ -1,5 +1,6 @@
 import React from "react";
 import { Button, Icon } from "antd";
+import { Message } from '@wikimedia/react.i18n';
 
 class Setting extends React.Component {
     render () {
@@ -20,7 +21,7 @@ class Setting extends React.Component {
                         onClick={this.props.undoClick}
                         block
                     >
-                        <Icon type="undo" /> Undo
+                        <Icon type="undo" /> <Message id="undo" />
                     </Button>
                  </div>
             </div>);

@@ -7,6 +7,7 @@
     "npm": "6.2.0"
   },
   "dependencies": {
+    "@wikimedia/react.i18n": "^2.0.3",
     "antd": "^3.26.7",
     "axios": "^0.19.1",
     "bootstrap": "^4.4.1",
