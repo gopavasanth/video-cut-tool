@@ -1,0 +1,37 @@
+{
+	"@metadata": {
+		"authors": [
+			"Nike"
+		]
+	},
+	"404-go-back": "Mene etusivulle",
+	"404-image-description": "404 Sivua ei löydy",
+	"error": "Jotain meni vikaan",
+	"file-not-existing": "Tiedostoa ei ole olemassa",
+	"footer-authors": "$1 ja $2",
+	"languages": "Kielet",
+	"login": "Rekisteröidy / kirjaudu",
+	"login-alert": "Aloita käyttö kirjautumalla sisään",
+	"login-alert-preview": "Sinun pitää olla kirjautunut sisään, jotta voisit esikatsella ja tallentaa Commonsiin",
+	"login-alert-upload": "Kirjaudu sisään tallentaaksesi Wikimedia Commonsiin",
+	"logout": "Kirjaudu ulos",
+	"logout-confirm-no": "Ei",
+	"logout-confirm-text": "Oletko varma?",
+	"logout-confirm-yes": "Kyllä",
+	"new-video": "{{PLURAL:$1|Uusi|Uudet}} videosi tulevat olemaan täällä:",
+	"notifications-not-existing": "Tiedostoa ei ole Wikimedia Commonsissa",
+	"notifications-not-overwritable": "Et voi ylikirjoittaa tiedosta laitteelta",
+	"notifications-title": "Ilmoitus!",
+	"preview-text": "Esikatsele",
+	"preview-title": "Esikatsele muutokset",
+	"setting-audio": "Poista ääni",
+	"setting-crop": "Rajaa video",
+	"setting-rotate": "Käännä video",
+	"step-result": "Tulos",
+	"step-result-choice-download": "Lataa koneellesi",
+	"step-result-choice-upload": "Tallenna Commonsiin",
+	"step-result-title": "Vaihe 3: Valitse valintasi",
+	"step-video-settings": "Videoasetukset",
+	"step-video-settings-title": "Vaihe 2: Määrittele videoasetukset",
+	"undo": "Kumoa"
+}
