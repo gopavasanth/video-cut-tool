@@ -667,6 +667,8 @@ class Home extends Component {
           this.displayRotate();
         },
         undoClick: () => {
+          this.RotateValue(2);
+          this.displayRotate();
           this.setState({ rotateVideo: false });
         },
         text: this.props.banana.i18n('setting-rotate') + this.state.rotateDegress,
