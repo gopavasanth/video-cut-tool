@@ -1,0 +1,42 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kareyac",
+			"Okras"
+		]
+	},
+	"404-go-back": "Перейти на Главную страницу",
+	"404-image-description": "404 Страница не найдена",
+	"error": "Что-то пошло не так",
+	"file-not-existing": "Файл не существует",
+	"footer-authors": "$1 и $2",
+	"languages": "Языки",
+	"login": "Зарегистрироваться / Войти",
+	"login-alert": "Войдите, чтобы использовать этот инструмент",
+	"logout": "Выйти",
+	"logout-confirm-no": "Нет",
+	"logout-confirm-text": "Вы уверены?",
+	"logout-confirm-yes": "Да",
+	"notifications-title": "Уведомление !",
+	"preview-text": "Предпросмотр",
+	"setting-audio": "Удалить аудио",
+	"setting-crop": "Откадрировать видео",
+	"setting-rotate": "Повернуть видео",
+	"setting-trim": "Обрезать видео",
+	"step-result": "Результат",
+	"step-result-choice-download": "Скачать",
+	"step-result-choice-upload": "Загрузить на Викисклад",
+	"step-video-settings": "Настройки видео",
+	"step-video-url": "URL-адрес видео",
+	"task-processing": "обработка",
+	"undo": "Отменить",
+	"upload-action-overwrite": "Перезаписать",
+	"upload-comment": "Комментарий загрузки:",
+	"upload-tab-upload-video": "Загрузить видео",
+	"upload-tab-video-url": "URL-адрес видео",
+	"upload-text": "Текст:",
+	"upload-upload-text": "Щелкните или перетащите видео в эту область, чтобы загрузить его",
+	"video-trim-more": "Добавить ещё",
+	"video-trim-more-concatenate": "Объединить в одно видео",
+	"welcome": "Добро пожаловать, $1"
+}
