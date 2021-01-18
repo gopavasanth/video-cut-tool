@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Kareyac",
-			"Okras"
+			"Okras",
+			"Wileyfoxyx"
 		]
 	},
 	"404-go-back": "Перейти на Главную страницу",
@@ -13,6 +14,7 @@
 	"languages": "Языки",
 	"login": "Зарегистрироваться / Войти",
 	"login-alert": "Войдите, чтобы использовать этот инструмент",
+	"login-alert-upload": "Войдите, чтобы загрузить файл в Викисклад",
 	"logout": "Выйти",
 	"logout-confirm-no": "Нет",
 	"logout-confirm-text": "Вы уверены?",
@@ -28,15 +30,23 @@
 	"step-result-choice-upload": "Загрузить на Викисклад",
 	"step-video-settings": "Настройки видео",
 	"step-video-url": "URL-адрес видео",
+	"task-current": "Ваше видео $1",
 	"task-processing": "обработка",
+	"task-uploaded-wikimedia-commons": "Загружено на Викисклад",
+	"task-uploading": "загружается",
+	"task-uploading-wikimedia-commons": "загружается на Викисклад",
 	"undo": "Отменить",
+	"upload-action-new-file": "Загрузить как новый файл",
 	"upload-action-overwrite": "Перезаписать",
+	"upload-button": "Загрузить на Викисклад",
 	"upload-comment": "Комментарий загрузки:",
 	"upload-tab-upload-video": "Загрузить видео",
 	"upload-tab-video-url": "URL-адрес видео",
 	"upload-text": "Текст:",
 	"upload-upload-text": "Щелкните или перетащите видео в эту область, чтобы загрузить его",
+	"video-trim-from": "С",
 	"video-trim-more": "Добавить ещё",
 	"video-trim-more-concatenate": "Объединить в одно видео",
+	"video-trim-to": "До",
 	"welcome": "Добро пожаловать, $1"
 }
