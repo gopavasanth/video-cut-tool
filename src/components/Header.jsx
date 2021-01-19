@@ -100,14 +100,53 @@ class Header extends React.Component {
                   onChange={this.props.parentLanguageUpdateCallback}
                 >
                   <Select.OptGroup label={<Message id="languages" />}>
+                    <Select.Option value="da-DA">
+                      Danish
+                    </Select.Option>
                     <Select.Option value="de-DE">
                       Deutsch
                     </Select.Option>
                     <Select.Option value="en-US">
                       English
                     </Select.Option>
+                    <Select.Option value="es-ES">
+                      español
+                    </Select.Option>
+                    <Select.Option value="fi-FI">
+                      suomi
+                    </Select.Option>                    
                     <Select.Option value="fr-FR">
                       Français
+                    </Select.Option>
+                    <Select.Option value="ko-KO">
+                      한국어
+                    </Select.Option>
+                    <Select.Option value="kulatn-KU">
+                      kurdî
+                    </Select.Option>
+      	            <Select.Option value="lb-LB">
+                      Lëtzebuergesch
+                    </Select.Option>
+      	            <Select.Option value="mk-MK">
+                      македонски
+                    </Select.Option>
+                    <Select.Option value="ptbr-PT">
+                      português do Brasil
+                    </Select.Option>
+      	            <Select.Option value="ru-RU">
+                      русский
+                    </Select.Option>
+      	            <Select.Option value="sv-SV">
+                      svenska
+                    </Select.Option>
+      	            <Select.Option value="tr-TR">
+                      Türkçe
+                    </Select.Option>
+                    <Select.Option value="zhhant-ZH">
+                      Chinese Traditional
+                    </Select.Option>
+      	            <Select.Option value="zhhans-ZH">
+                      Chinese Simplified
                     </Select.Option>
                   </Select.OptGroup>
                 </Select>
