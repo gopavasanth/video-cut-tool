@@ -1,0 +1,24 @@
+{
+	"@metadata": {
+		"authors": [
+			"Tofeiku"
+		]
+	},
+	"404-go-back": "Pergi ke Laman Utama",
+	"languages": "Bahasa",
+	"logout": "Log keluar",
+	"logout-confirm-no": "Tidak",
+	"logout-confirm-text": "Adakah anda pasti?",
+	"notifications-title": "Pemberitahuan !",
+	"preview-text": "Pralihat",
+	"step-result-choice-download": "Muat turun",
+	"step-result-choice-upload": "Muat naik ke Commons",
+	"step-video-settings": "Tetapan Video",
+	"step-video-url": "URL Video",
+	"task-uploaded-wikimedia-commons": "Dimuat naik ke Wikimedia Commons",
+	"upload-action-new-file-title": "Tajuk",
+	"upload-button": "Muat naik ke Commons",
+	"upload-tab-upload-video": "Muat naik video",
+	"upload-text": "Teks:",
+	"welcome": "Selamat datang, $1"
+}

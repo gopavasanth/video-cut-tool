@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Շահէն"
+		]
+	},
+	"error": "Սխալ մը տեղի ունեցաւ...",
+	"footer-authors": "$1 եւ $2",
+	"languages": "Լեզուներ",
+	"login": "Արձանագրուիլ/մուտք գործել",
+	"logout": "Դուրս գալ",
+	"logout-confirm-no": "Ոչ",
+	"logout-confirm-text": "Վստա՞հ ես",
+	"logout-confirm-yes": "Այո",
+	"preview-text": "Կանխաստուգել",
+	"step-result-choice-download": "Ներբեռնել",
+	"success": "Յաջողութեամբ կատարուեցաւ :)",
+	"task-uploading": "կը վերբեռնուի",
+	"undo": "Յետարկել",
+	"upload-action-new-file-title": "Վերնագիր",
+	"upload-edit-button": "Խմբագրել վիտէոն",
+	"upload-tab-upload-video": "Վերբեռնել վիտէո",
+	"upload-text": "Բնաբան՝",
+	"welcome": "Բարի գալո՜ւստ, $1"
+}
