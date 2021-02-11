@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"1917 Ekim Devrimi"
+			"1917 Ekim Devrimi",
+			"Mirzali"
 		]
 	},
 	"404-go-back": "Şo Pera seri",
@@ -40,7 +41,7 @@
 	"task-current": "Videoy şıma $1",
 	"task-processing": "Domneno",
 	"task-stage-concating": "Mabêniyeno",
-	"task-stage-converting_video_format": "Tadiyeno formatê videoy",
+	"task-stage-converting_video_format": "raçarnayena formatê vidyoyi",
 	"task-stage-cropping": "qesniyeno",
 	"task-stage-losing_audio": "Vınibiyayışê vengi",
 	"task-stage-rotating": "tadeyeno",
