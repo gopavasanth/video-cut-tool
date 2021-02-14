@@ -14,6 +14,28 @@ header ul.ant-menu {
   line-height: 64px;
 }
 
+header .dark-theme-switch {
+  margin: 20px 15px 15px 15px;
+  height: 20px;
+  width: 20px;
+  float: right;
+  border-radius: 50%;
+  border: 3px solid white;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
+header .dark-theme-switch .theme-switch-inner {
+  height: 100%;
+  width: 50%;
+  background-color: white;
+  position: relative;
+  left: 50%;
+  border-radius: 0 100% 100% 0;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+}
+
 body {
  height:100%
 }

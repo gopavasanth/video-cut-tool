@@ -7,6 +7,7 @@ import axios from "axios";
 import io from 'socket.io-client';
 
 import "../App.css";
+import '../style/dark-theme.css';
 import "antd/dist/antd.css";
 import "video-react/dist/video-react.css";
 import UploadBox from './UploadBox';

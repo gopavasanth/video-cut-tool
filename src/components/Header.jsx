@@ -27,6 +27,20 @@ class Header extends React.Component {
       } catch (e) {
         this.setState({ user: null });
       }
+
+       // Set theme (dark or light) on load
+       const theme = localStorage.getItem('theme') || 'light';
+       document.body.setAttribute('theme', theme);
+    }
+    /**
+     * Handle theme toggle between dark and light mode
+     */
+    onThemeSwitch(){
+      const currentTheme = document.body.getAttribute('theme');
+      const newTheme = (currentTheme === 'light') ? 'dark' : 'light';
+
+      document.body.setAttribute('theme', newTheme);
+      localStorage.setItem('theme', newTheme);
     }
     // Login redirect URL to the back-end server
     onLogin() {
@@ -93,6 +107,12 @@ class Header extends React.Component {
                       <Message id="login" />
                     </Button>
                   )}
+                  <div 
+                    class='dark-theme-switch float-right'
+                    onClick={this.onThemeSwitch.bind(this)}
+                  >
+                    <div class='theme-switch-inner'></div>
+                  </div>
                 <Select
                   defaultValue={localStorage.getItem('locale') || !localStorage.getItem('locale' && 'en-US')}
                   style={{width: 150, paddingTop: 15}}
