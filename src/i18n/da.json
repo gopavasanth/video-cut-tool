@@ -1,0 +1,25 @@
+{
+	"@metadata": {
+		"authors": [
+			"Saederup92"
+		]
+	},
+	"404-go-back": "Gå til forsiden",
+	"404-image-description": "404 Siden blev ikke fundet",
+	"file-not-existing": "Filen findes ikke",
+	"footer-authors": "$1 og $2",
+	"languages": "Sprog",
+	"logout-confirm-no": "Nej",
+	"logout-confirm-text": "Er du sikker?",
+	"logout-confirm-yes": "Ja",
+	"setting-audio": "Fjern lyd",
+	"step-result": "Resultat",
+	"undo": "Fortryd",
+	"upload-action-new-file-title": "Titel",
+	"upload-action-overwrite": "Overskriv",
+	"upload-edit-button": "Rediger video",
+	"upload-text": "Tekst:",
+	"video-trim-from": "Fra",
+	"video-trim-to": "Til",
+	"welcome": "Velkommen, $1"
+}

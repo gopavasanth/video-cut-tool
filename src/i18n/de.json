@@ -1,0 +1,41 @@
+{
+	"@metadata": {
+		"authors": [
+			"DraconicDark",
+			"ManuelFranz"
+		]
+	},
+	"404-go-back": "Zur Hauptseite gehen",
+	"404-image-description": "404 Seite nicht gefunden",
+	"error": "Etwas ist schief gelaufen",
+	"file-not-existing": "Datei ist nicht vorhanden",
+	"footer-authors": "$1 und $2",
+	"languages": "Sprachen",
+	"login": "Registrieren / Anmelden",
+	"login-alert": "Bitte melde dich an, um das Werkzeug zu nutzen",
+	"login-alert-preview": "Du musst eingeloggt sein, um eine Vorschau zu sehen und auf Commons hochzuladen",
+	"login-alert-upload": "Anmelden zum Hochladen auf Wikimedia Commons",
+	"logout": "Abmelden",
+	"logout-confirm-no": "Nein",
+	"logout-confirm-text": "Bist du sicher?",
+	"logout-confirm-yes": "Ja",
+	"notifications-not-existing": "Die Datei existiert nicht auf Wikimedia Commons",
+	"notifications-title": "Benachrichtigung !",
+	"preview-text": "Vorschau",
+	"setting-audio": "Audio entfernen",
+	"setting-rotate": "Video drehen",
+	"step-result": "Ergebnis",
+	"step-result-choice-download": "Download",
+	"step-result-choice-upload": "Auf Commons hochladen",
+	"step-video-url": "Video URL",
+	"task-current": "Ihr Video ist $1",
+	"upload-action-new-file": "Als neue Datei hochladen",
+	"upload-action-new-file-title": "Titel",
+	"upload-action-overwrite": "Überschreiben",
+	"upload-edit-button": "Video bearbeiten",
+	"upload-tab-upload-video": "Video hochladen",
+	"upload-tab-video-url": "Video URL",
+	"upload-text": "Text:",
+	"video-trim-from": "Von",
+	"welcome": "Willkommen,$1"
+}

@@ -1,0 +1,43 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robby"
+		]
+	},
+	"404-go-back": "Gitt op d'Haaptsäit",
+	"404-image-description": "404 Säit net fonnt",
+	"error": "Et ass eppes schif gaangen",
+	"file-not-existing": "Fichier gëtt et net",
+	"languages": "Sproochen",
+	"login": "Umellen / Aloggen",
+	"logout": "Ausloggen",
+	"logout-confirm-no": "Neen",
+	"logout-confirm-text": "Sidd Dir sécher?",
+	"logout-confirm-yes": "Jo",
+	"notifications-not-existing": "Fichier gëtt et net op Wikimedia Commons",
+	"notifications-title": "Notifikatioun!",
+	"preview-title": "Meng Ännerunge kucken ouni ze späicheren",
+	"setting-audio": "Audio ewechhuelen",
+	"setting-rotate": "Video rotéieren",
+	"step-result": "Resultat",
+	"step-result-choice-download": "Eroflueden",
+	"step-result-choice-upload": "Op Commons eroplueden",
+	"step-video-settings": "Video-Astellungen",
+	"step-video-url": "URL vum Video",
+	"task-current": "Äre Video ass $1",
+	"task-processing": "verschaffen",
+	"task-uploaded-wikimedia-commons": "Eropgelueden op Wikimedia Commons",
+	"task-uploading": "eroplueden",
+	"undo": "Réckgängeg maachen",
+	"upload-action-new-file": "Als en neie Fichier eroplueden",
+	"upload-action-new-file-title": "Titel",
+	"upload-action-overwrite": "Iwwerschreiwen",
+	"upload-button": "Op Commons eroplueden",
+	"upload-comment": "Bemierkung eroplueden:",
+	"upload-edit-button": "Video änneren",
+	"upload-tab-upload-video": "Video eroplueden",
+	"upload-text": "Text:",
+	"video-trim-from": "Vum",
+	"video-trim-more": "Méi derbäisetzen",
+	"welcome": "Wëllkomm, $1"
+}

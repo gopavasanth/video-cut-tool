@@ -1,0 +1,38 @@
+{
+	"@metadata": {
+		"authors": [
+			"Fitoschido",
+			"MarleneR329"
+		]
+	},
+	"404-go-back": "Ir a la página principal",
+	"404-image-description": "404, página no encontrada",
+	"error": "Algo salió mal",
+	"file-not-existing": "El archivo no existe",
+	"footer-authors": "$1 y $2",
+	"languages": "Idiomas",
+	"logout": "Salir",
+	"logout-confirm-no": "No",
+	"logout-confirm-text": "¿Seguro?",
+	"logout-confirm-yes": "Sí",
+	"notifications-not-existing": "El archivo no existe en Wikimedia Commons",
+	"preview-text": "Previsualizar",
+	"preview-title": "Previsualizar mis cambios",
+	"step-result": "Resultado",
+	"step-result-choice-download": "Descargar",
+	"step-video-settings": "Ajustes de video",
+	"step-video-url": "URL del vídeo",
+	"task-processing": "procesando",
+	"undo": "Deshacer",
+	"upload-action-new-file": "Carga como archivo nuevo",
+	"upload-action-new-file-title": "Título",
+	"upload-action-overwrite": "Sobrescribir",
+	"upload-button": "Cargar en Commons",
+	"upload-tab-upload-video": "Cargar vídeo",
+	"upload-tab-video-url": "URL del vídeo",
+	"upload-text": "Texto:",
+	"video-trim-more": "Añadir más",
+	"video-trim-more-multiple": "Como Varios videos",
+	"video-trim-to": "Para",
+	"welcome": "Hola, $1"
+}

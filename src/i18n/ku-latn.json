@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Guherto"
+		]
+	},
+	"404-go-back": "Here rûpela destpêkê",
+	"404-image-description": "404 Rûpel nehate dîtin",
+	"error": "Tiştekî xelet bû",
+	"footer-authors": "$1 û $2",
+	"logout": "Derkeve",
+	"logout-confirm-no": "Na",
+	"logout-confirm-text": "Tu piştrast î?",
+	"logout-confirm-yes": "Erê",
+	"notifications-not-existing": "Fayl li Wikimedia Commonsê nîne",
+	"notifications-title": "Agahdarî !",
+	"setting-audio": "Deng jê bibe",
+	"step-video-settings": "Eyarên vîdyoyê",
+	"step-video-url": "URLa vîdyoyê",
+	"task-current": "Vîdyoya te $1",
+	"task-processing": "tê xwendin",
+	"task-stage-losing_audio": "ji deng tê xilaskirin",
+	"task-stage-rotating": "tê zîvirandin",
+	"task-stage-trimming": "tê qusandin",
+	"undo": "Betal bike",
+	"upload-tab-video-url": "URLa vîdyoyê"
+}
