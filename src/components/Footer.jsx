@@ -6,7 +6,7 @@ const Footer = Layout.Footer;
 
 class VideoCutToolFooter extends React.Component {
     render () {
-      return <Footer style={{ textAlign: "center" }}>
+      return <Footer style={{ textAlign: "center", marginTop: "auto" }}>
         © 2019-20&nbsp;
         <Message id="footer-authors" placeholders={[
           <a href="https://www.mediawiki.org/wiki/User:Gopavasanth">

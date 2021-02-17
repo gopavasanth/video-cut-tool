@@ -40,6 +40,12 @@ body {
  height:100%
 }
 
+section.layout{
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 .Content {
   min-height: 82.2vh!important;
 }
