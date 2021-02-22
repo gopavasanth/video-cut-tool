@@ -68,19 +68,20 @@ class Header extends React.Component {
   }
     render() {
         return (
-            <Layout.Header>
-              <span onClick={() => window.location.reload()}>
-                {this.props.width > 600 ?
-                  <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900, cursor: "pointer" }}>
-                    <img src={logo} alt="logo" position="relative" width="100" height="40" /> VideoCutTool
-                      </span> :
-                  <span style={{ color: "white", fontSize: "3.4vh", fontWeight: 900 }} className="pr-4">VideoCutTool</span>
-                }
-              </span>
-              <Menu theme="dark" mode="horizontal">
+          <header>
+            <nav className="w-100 ant-menu-dark py-2 d-flex position-relative">
+                <h1 onClick={() => window.location.reload()} className="d-flex align-items-center my-1 mr-auto">
+                  <img src={logo} alt="logo" position="relative" width="100" height="40" /> VideoCutTool
+                </h1>
+              <label className="navbar-toggler d-md-none px-3 my-0" type="button" data-toggle="collapse" for="header-options-toggle" aria-controls="header-options" aria-expanded="false" aria-label="Toggle navigation">
+              ⋮
+              </label>
+              <input type="checkbox" id="header-options-toggle"></input>
+
+              <ul className="d-md-flex flex-column flex-md-row align-items-center my-md-1 my-0 px-4 px-0" id="header-options">
                 {this.state.user ? (
                   <>
-                    <div className="align-middle float-left">
+                    <div className="d-flex flex-column flex-md-row align-items-center my-1 w-100">
                       <span style={{ color: "white" }}>Welcome, <strong> < a style={{ color: "white" }} href={`https://commons.wikimedia.org/wiki/user:${this.state.user.username}` }>{this.state.user.username} </a></strong></span>
                       <Popconfirm
                         placement="bottom"
@@ -91,7 +92,7 @@ class Header extends React.Component {
                       >
                         <Button
                           type="link"
-                          className="c-auth-buttons__signout"
+                          className="c-auth-buttons__signout mx-md-3 my-md-0 my-3"
                         >
                           <Message id="logout" />
                         </Button>
@@ -101,22 +102,21 @@ class Header extends React.Component {
                 ) : (
                     <Button
                       primary
-                      className="c-auth-buttons__signup"
+                      className="c-auth-buttons__signup mx-md-3 my-md-0 my-3"
                       onClick={this.onLogin.bind(this)}
                     >
                       <Message id="login" />
                     </Button>
                   )}
                   <div 
-                    class='dark-theme-switch float-right'
+                    className='dark-theme-switch order-12 mx-md-3 my-md-0 my-3'
                     onClick={this.onThemeSwitch.bind(this)}
                   >
-                    <div class='theme-switch-inner'></div>
+                    <div className='theme-switch-inner'></div>
                   </div>
                 <Select
                   defaultValue={localStorage.getItem('locale') || !localStorage.getItem('locale' && 'en-US')}
-                  style={{width: 150, paddingTop: 15}}
-                  className="float-right"
+                  style={{width: 150}}
                   onChange={this.props.parentLanguageUpdateCallback}
                 >
                   <Select.OptGroup label={<Message id="languages" />}>
@@ -170,8 +170,9 @@ class Header extends React.Component {
                     </Select.Option>
                   </Select.OptGroup>
                 </Select>
-              </Menu>
-            </Layout.Header>
+              </ul>
+            </nav>
+            </header>
           )
     }
 }

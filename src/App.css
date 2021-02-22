@@ -15,7 +15,6 @@ header ul.ant-menu {
 }
 
 header .dark-theme-switch {
-  margin: 20px 15px 15px 15px;
   height: 20px;
   width: 20px;
   float: right;
@@ -36,6 +35,21 @@ header .dark-theme-switch .theme-switch-inner {
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
 }
 
+header input[type='checkbox']{
+  display: none;
+}
+
+header input[type='checkbox']:checked + #header-options{
+  display: flex;
+  width: auto;
+}
+
+header h1 {
+  color: white !important;
+  font-size: 3.4vh;
+  font-weight: 900;
+  cursor: pointer;
+}
 body {
  height:100%
 }
@@ -239,4 +253,28 @@ section.layout{
 
 .anticon {
   vertical-align: 1px!important; 
+}
+@media (max-width: 768px) { 
+  #header-options{
+    position: absolute;
+    top: 100%;
+    right: 0;
+    z-index: 2;
+    padding: 1em;
+    background: #001529;
+    display: none;
+  }
+
+  #header-options .ant-btn{
+     width: 100%;   
+  }
+
+  header h1 {
+    font-size: 2vh;
+  }
+
+  header img{
+    height: 30px;
+    width: 60px;
+  }
 }
