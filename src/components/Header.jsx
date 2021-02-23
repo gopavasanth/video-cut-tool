@@ -115,7 +115,7 @@ class Header extends React.Component {
                     <div className='theme-switch-inner'></div>
                   </div>
                 <Select
-                  defaultValue={localStorage.getItem('locale') || !localStorage.getItem('locale' && 'en-US')}
+                  defaultValue={localStorage.getItem('locale') || 'en-US'}
                   style={{width: 150}}
                   onChange={this.props.parentLanguageUpdateCallback}
                 >
