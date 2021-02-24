@@ -1466,7 +1466,7 @@ class Home extends Component {
                           <Button
                             type="primary"
                             onClick={e => {
-                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: this.context('task-uploading-wikimedia-commons'), progressPercentage: 0 }, () => {
+                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: this.props.banana.i18n('task-uploading-wikimedia-commons'), progressPercentage: 0 }, () => {
                                 this.onSubmit(e);
                               });
                               setTimeout(() => this.setState({currentTask: this.props.banana.i18n('task-uploaded-wikimedia-commons'), loading: false,  displayLoadingMessage: false  }), 10000);
