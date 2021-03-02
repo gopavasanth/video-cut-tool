@@ -1,6 +1,7 @@
 {
   "name": "video-cut-tool",
-  "version": "0.1.0",
+  "version": "0.4.0",
+  "description": "A tool to edit videos",
   "private": true,
   "engines": {
     "node": "7.10.1",
@@ -23,6 +24,15 @@
     "reactstrap": "^8.3.1",
     "socket.io-client": "^2.3.0",
     "video-react": "^0.13.6"
+  },
+  "keywords": ["VideoCutTool", "Video Editing", "Video Trimmer", "Video Cropper"],
+  "author": {
+    "name": "Gopa Vasanth",
+    "email": "gopavasanth1999@gmail.com"
+  },
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://phabricator.wikimedia.org/tag/videocuttool/"
   },
   "homepage": "https://videocuttool.wmflabs.org",
   "scripts": {
