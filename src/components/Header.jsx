@@ -6,7 +6,7 @@ import { NotificationManager } from 'react-notifications';
 
 import { Message } from '@wikimedia/react.i18n';
 
-const logo = "https://upload.wikimedia.org/wikipedia/commons/5/57/JeremyNguyenGCI_-_Video_Cut_Tool_Logo.svg";
+import logo from '../logo.svg';
 
 class Header extends React.Component {
     constructor(props) {
