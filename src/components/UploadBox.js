@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React  from 'react';
 import { Tabs, Input, Typography, Icon, Button, Upload, Card } from 'antd';
 import { FormGroup } from 'reactstrap';
 import { Message } from '@wikimedia/react.i18n';

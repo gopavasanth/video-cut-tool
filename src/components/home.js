@@ -1,4 +1,4 @@
-import React, { Component, useContext } from 'react';
+import React, { Component } from 'react';
 import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
 
@@ -148,7 +148,7 @@ class Home extends Component {
       console.log(data)
       const progressData = data;
       console.log('ON PROCESSS', progressData)
-      const { stage, status, ...rest } = progressData;
+      const { stage, status } = progressData;
       if (status === 'processing') {
         this.setState({
           progressPercentage: 50,
@@ -916,9 +916,7 @@ class Home extends Component {
 
   render() {
     const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const { uploadedFile } = this.state;
-    const uploadProperties = this.getUploadProperties();
-
+  
     console.log("URL: " + this.state.inputVideoUrl);
 
     return (

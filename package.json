@@ -1,6 +1,6 @@
 {
   "name": "video-cut-tool",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A tool to edit videos",
   "private": true,
   "engines": {
@@ -17,15 +17,18 @@
     "react-dom": "^16.8.4",
     "react-draggable": "^3.3.0",
     "react-notifications": "^1.4.3",
-    "react-router": "^5.0.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.3.0",
-    "react-spinners": "^0.5.13",
     "reactstrap": "^8.3.1",
     "socket.io-client": "^2.3.0",
     "video-react": "^0.13.6"
   },
-  "keywords": ["VideoCutTool", "Video Editing", "Video Trimmer", "Video Cropper"],
+  "keywords": [
+    "VideoCutTool",
+    "Video Editing",
+    "Video Trimmer",
+    "Video Cropper"
+  ],
   "author": {
     "name": "Gopa Vasanth",
     "email": "gopavasanth1999@gmail.com"

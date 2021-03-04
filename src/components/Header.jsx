@@ -1,12 +1,12 @@
 import React from "react";
-import "antd/dist/antd.css";
-import { Layout, Button, Menu, Popconfirm, Dropdown, Select } from 'antd';
-import PopupTools from 'popup-tools';
-import { NotificationManager } from 'react-notifications';
 
+import { Button, Popconfirm, Select } from 'antd';
+import { NotificationManager } from 'react-notifications';
 import { Message } from '@wikimedia/react.i18n';
+import PopupTools from 'popup-tools';
 
 import logo from '../logo.svg';
+import "antd/dist/antd.css";
 
 class Header extends React.Component {
     constructor(props) {
