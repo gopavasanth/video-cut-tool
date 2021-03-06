@@ -1,4 +1,3 @@
-//notificationsUtils.js
 // Notification Messages
 import { notification } from "antd";
 
