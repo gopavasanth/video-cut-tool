@@ -1317,7 +1317,7 @@ class Home extends Component {
                               <div className="col-sm-6 col-md-6 py-1">
                                 <Button block type="primary">
                                   <a href={`${API_URL}/download/${video.path}`}>
-                                    <Message id="step-result-choice-download" />
+                                    <Icon type="DownloadOutlined"/><Message id="step-result-choice-download" />
                                   </a>
                                 </Button>
                               </div>
