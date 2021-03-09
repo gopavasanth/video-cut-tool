@@ -1,6 +1,5 @@
 import React  from 'react';
-import { Tabs, Input, Typography, Icon, Button, Upload, Card } from 'antd';
-import { FormGroup } from 'reactstrap';
+import { Tabs, Input, Typography, Icon, Button, Upload, Card, Form } from 'antd';
 import { Message } from '@wikimedia/react.i18n';
 
 const { TabPane } = Tabs;
@@ -18,14 +17,14 @@ export default class UploadBox extends React.Component {
             <Card>
                 <Tabs defaultActiveKey="1">
                     <TabPane tab={<p><Icon type="link" /><Message id="upload-tab-video-url" /></p>} key="1">
-                        <FormGroup>
+                        <Form>
                             <Typography.Title level={4} style={{ color: "Black" }}>
 
                             </Typography.Title>
                             <Input
                                 {...inputProps}
                             />
-                        </FormGroup>
+                        </Form>
                     </TabPane>
                     <TabPane tab={<p><Icon type="upload" /><Message id="upload-tab-upload-video" /></p>} key="2">
                         <div className="container-fluid">

@@ -1,7 +1,6 @@
 import React from "react";
 
-import { Button, Popconfirm, Select } from 'antd';
-import { NotificationManager } from 'react-notifications';
+import { Button, Popconfirm, Select, notification } from 'antd';
 import { Message } from '@wikimedia/react.i18n';
 import PopupTools from 'popup-tools';
 
@@ -51,7 +50,7 @@ class Header extends React.Component {
             this.setState({ user: data.user });
             localStorage.setItem('user', JSON.stringify(data.user));
             this.props.socket.emit('authenticate', data.user)
-            NotificationManager.success("Logged in successfully");
+            notification.success({message:"Logged in successfully"});
           }
         }
       );
@@ -63,7 +62,7 @@ class Header extends React.Component {
       user: null,
       selectedOptionName: 'new-file'
     });
-    NotificationManager.success("Logged out successfully");
+    notification.success({message:"Logged out successfully"});
     this.props.parentUserUpdateCallback( null );
   }
     render() {
