@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
+import  DragResize  from './DragResize';
 
-import Draggable from "react-draggable";
 import axios from "axios";
 import io from 'socket.io-client';
 
 import '../App.css';
+import '../DragResize.css';
 import '../style/dark-theme.css';
 import 'antd/dist/antd.css';
 import 'video-react/dist/video-react.css';
@@ -57,6 +58,7 @@ class Home extends Component {
 
     this.handleDrag = this.handleDrag.bind(this);
     this.onDragStop = this.onDragStop.bind(this);
+    this.onResizeStop = this.onResizeStop.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
     this.checkTitleInUrl = this.checkTitleInUrl.bind(this);
@@ -70,6 +72,8 @@ class Home extends Component {
     this.cropVideo = this.cropVideo.bind(this);
     this.UndodisableAudio = this.UndodisableAudio.bind(this);
     this.RotateValue = this.RotateValue.bind(this);
+
+    this.videoCanPlay = this.videoCanPlay.bind(this);
 
     //Implementing steps
     this.changeStep = this.changeStep.bind(this);
@@ -121,13 +125,15 @@ class Home extends Component {
       displayVideoSettings: false,
       displayURLBox: true,
       validateVideoURL: false,
-      RotateValue: -1,
+      RotateValue: 3,
+      rotateDegress: '',
       displaynewVideoName: false,
       DisplayFailedNotification: false,
     
       uploadedFile: null,
       fileList: [],
-      temporaryTrimValue: [{ from: null, to: null }]
+      temporaryTrimValue: [{ from: null, to: null }],
+      videoReady: false
     }
   }
 
@@ -195,8 +201,15 @@ class Home extends Component {
   RotateValue(RotateValue) {
     RotateValue = (RotateValue + 1) % 4;
     this.setState({
-      RotateValue: RotateValue
-    })
+      RotateValue: RotateValue,
+      rotateDegress: (RotateValue === 3) ? '' :  ' - '+(RotateValue + 1) * 90 + 'deg'
+    });
+
+    if(RotateValue === 3){
+      this.setState({
+        rotateVideo: false
+      })
+    }
   }
 
   changeStep = num => {
@@ -356,165 +369,7 @@ class Home extends Component {
     this.setState({
       displayCrop: true,
       displayTrim: false,
-      displayRotate: false,
       displayPlayer: false
-    }, () => {
-      const self = this;
-      const resizerBlock = this.dragRef;
-      if (!resizerBlock) return;
-      const resizers = resizerBlock.querySelectorAll('.resizer');
-
-      const minSize = 100;
-      let original_width = 0;
-      let original_height = 0;
-      let original_mouse_x = 0;
-      let original_mouse_y = 0;
-      let transformValue = [0, 0];
-
-      let width = 0;
-      let height = 0;
-      let top = 0;
-      let left = 0;
-
-      function getTruePropertyValue(property) {
-        return parseFloat(getComputedStyle(resizerBlock, null).getPropertyValue(property).replace('px', ''));
-      }
-
-      function getTransformValue() {
-        return resizerBlock.style.transform.replace(/[^0-9\-.,]/g, '').split(',').map(Number);
-      }
-
-      function getPlayerCoords() {
-        return document.getElementById('video-1').getBoundingClientRect();
-      }
-
-      resizers.forEach(resizer => {
-        const resizerPosition = resizer.className.split(' ')[1];
-
-        resizer.addEventListener('mousedown', e => {
-          e.preventDefault();
-
-          original_width = getTruePropertyValue('width');
-          original_height = getTruePropertyValue('height');
-          transformValue = getTransformValue();
-          original_mouse_x = e.pageX;
-          original_mouse_y = e.pageY;
-
-          window.addEventListener('mousemove', resize);
-          window.addEventListener('mouseup', stopResize);
-        });
-
-        resizer.addEventListener('touchstart', e => {
-          e.preventDefault();
-
-          original_width = getTruePropertyValue('width');
-          original_height = getTruePropertyValue('height');
-          transformValue = getTransformValue();
-
-          // taking the first touch event and
-          // ignoring touch events for other fingers
-          original_mouse_x = e.changedTouches[0].pageX;
-          original_mouse_y = e.changedTouches[0].pageY;
-
-          window.addEventListener('touchmove', resize);
-          window.addEventListener('touchend', stopResize);
-        });
-
-        function resize(e) {
-          // check if it is a touch interface,
-          // else do everything the usual way
-          e = (e.changedTouches && e.changedTouches[0]) || e;
-          switch (resizerPosition) {
-            case 'top-center':
-              top = e.pageY - original_mouse_y;
-              height = original_height - (e.pageY - original_mouse_y);
-              if (height > minSize && transformValue[1] + top >= 0) {
-                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1] + top}px)`;
-                resizerBlock.style.height = `${height}px`;
-              }
-              break;
-            case 'bottom-center':
-              height = original_height + (e.pageY - original_mouse_y);
-              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
-                resizerBlock.style.height = `${height}px`;
-              }
-              break;
-            case 'left-center':
-              left = e.pageX - original_mouse_x;
-              width = original_width - (e.pageX - original_mouse_x);
-              if (width > minSize && transformValue[0] + left >= 0) {
-                resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1]}px)`;
-                resizerBlock.style.width = `${width}px`;
-              }
-              break;
-            case 'right-center':
-              width = original_width + (e.pageX - original_mouse_x);
-              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
-                resizerBlock.style.width = `${width}px`;
-              }
-              break;
-            case 'top-left':
-              width = original_width - (e.pageX - original_mouse_x);
-              height = original_height - (e.pageY - original_mouse_y);
-              if (width > minSize && transformValue[0] + (e.pageX - original_mouse_x) >= 0) {
-                resizerBlock.style.width = `${width}px`;
-                left = e.pageX - original_mouse_x;
-              }
-              if (height > minSize && transformValue[1] + (e.pageY - original_mouse_y) >= 0) {
-                resizerBlock.style.height = `${height}px`;
-                top = e.pageY - original_mouse_y;
-              }
-              resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1] + top}px)`;
-              break;
-            case 'top-right':
-              width = original_width + (e.pageX - original_mouse_x);
-              height = original_height - (e.pageY - original_mouse_y);
-              top = e.pageY - original_mouse_y;
-              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
-                resizerBlock.style.width = `${width}px`;
-              }
-              if (height > minSize && transformValue[1] + top >= 0) {
-                resizerBlock.style.height = `${height}px`;
-                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1] + top}px)`;
-              }
-              break;
-            case 'bottom-left':
-              height = original_height + (e.pageY - original_mouse_y);
-              width = original_width - (e.pageX - original_mouse_x);
-              left = e.pageX - original_mouse_x;
-              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
-                resizerBlock.style.height = `${height}px`;
-              }
-              if (width > minSize && transformValue[0] + left >= 0) {
-                resizerBlock.style.width = `${width}px`;
-                resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1]}px)`;
-              }
-              break;
-            case 'bottom-right':
-              width = original_width + (e.pageX - original_mouse_x);
-              height = original_height + (e.pageY - original_mouse_y);
-              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
-                resizerBlock.style.width = `${width}px`;
-              }
-              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
-                resizerBlock.style.height = `${height}px`;
-              }
-              break;
-            default:
-              break;
-          }
-        }
-
-        function stopResize() {
-          if (self.refs.player !== undefined) {
-            self.onDragStop();
-            window.removeEventListener('mousemove', resize);
-            window.removeEventListener('touchmove', resize);
-            window.removeEventListener('mouseup', stopResize);
-            window.removeEventListener('touchend', stopResize);
-          }
-        }
-      });
     });
   }
 
@@ -544,7 +399,6 @@ class Home extends Component {
   displayRotate() {
     this.setState({
       displayRotate: true,
-      displayCrop: false,
       displayTrim: false,
       displayPlayer: false,
       trimMode: "rotate"
@@ -612,24 +466,31 @@ class Home extends Component {
     });
   }
 
-  onDragStop() {
-    const parentBox = this.refs.player.video.video.getBoundingClientRect();
+  onDragStop(data) {
+    const {left, top, width, height}= data;
     this.setState({
-      duration: this.refs.player.video.video
-        .duration
+      x_value: left,
+      y_value: top,
+      out_height: height,
+      out_width: width
     });
-    if (!this.dragRef) return;
-    const dragElBox = this.dragRef.getBoundingClientRect();
-    const xPercentage = ((dragElBox.x - parentBox.x) / parentBox.width * 100);
-    const yPercentage = ((dragElBox.y - parentBox.y) / parentBox.height * 100);
-    const widthPercentage = (dragElBox.width / parentBox.width * 100);
-    const heightPercentage = (dragElBox.height / parentBox.height * 100);
+
+  }
+
+  onResizeStop(data){
+    const {left, top, width, height}= data;
     this.setState({
-      x_value: xPercentage,
-      y_value: yPercentage,
-      out_height: heightPercentage,
-      out_width: widthPercentage
+      x_value: left,
+      y_value: top,
+      out_height: height,
+      out_width: width
     });
+  }
+
+  videoCanPlay(...args){
+    this.setState({
+      videoReady: true
+    })
   }
 
   previewCallback(res) {
@@ -808,7 +669,7 @@ class Home extends Component {
         undoClick: () => {
           this.setState({ rotateVideo: false });
         },
-        text: this.props.banana.i18n('setting-rotate'),
+        text: this.props.banana.i18n('setting-rotate') + this.state.rotateDegress,
       },
       {
         icon:"scissor",
@@ -915,8 +776,25 @@ class Home extends Component {
   }
 
   render() {
-    const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-  
+    // Rotate video inside container and scale to fit height
+    if(this.refs.player && this.state.changeStep !== 3) {
+      const videoEl = document.querySelector('#video-player');
+      const videoWidth = videoEl.offsetWidth;
+      const videoHeight = videoEl.offsetHeight;
+
+      // rotate video accourding to rotate value
+      let transform = `rotate(${(this.state.RotateValue + 1) * 90}deg)`;
+
+      // if video is rotated 90 or 180 deg then add scale
+      if (this.state.RotateValue === 0 || this.state.RotateValue === 2) {
+        const scale = videoHeight / videoWidth;
+        transform += ` scale(${scale})`;
+      }
+
+      // Apply transform
+      document.querySelector('#video-player').style.transform = transform;
+  }
+
     console.log("URL: " + this.state.inputVideoUrl);
 
     return (
@@ -927,7 +805,7 @@ class Home extends Component {
           socket={socket} width={this.state.width}
           api_url={API_URL} />
         <form onSubmit={this.onSubmit}>
-          <Content className="Content">
+          <Content className="Content" style={{maxWidth: '99%'}}>
             <div className="row m-0">
               <div className="col-sm-12 col-md-8 p-4">
                 <div>
@@ -1004,7 +882,7 @@ class Home extends Component {
                                 this.player = player;
                               }}
                               ref="player"
-                              videoId="video-1"
+                              videoId="video-player"
                             >
                               <BigPlayButton position="center" />
                               <source src={`${API_URL}/${video.path}`} />
@@ -1014,9 +892,9 @@ class Home extends Component {
                       </div>
                     ))}
 
-                    {/* Crop Video */}
-                    {this.state.displayVideoSettings && !this.state.displayRotate ? (
-                      <div>
+                    {/* Rotate and Crop Video */}
+                    {this.state.displayVideoSettings || this.state.displayRotate ? (
+                      <div id="RotateCropVideo">
                         <div
                           className="box"
                           style={{
@@ -1027,46 +905,21 @@ class Home extends Component {
                           }}
                         >
                           {this.state.cropVideo && (
-                              <Draggable
-                                bounds="parent"
-                                {...dragHandlers}
-                                axis="both"
-                                handle="#draggable-area"
-                                onDrag={(e, ui) => {
-                                  this.handleDrag(ui);
-                                }}
-                                onStop={this.onDragStop}
-                              >
-                                <div
-                                  ref={ref => (this.dragRef = ref)}
-                                  className="box"
-                                  id="crop-area"
-                                  onHeightReady={height =>
-                                    console.log("Height: " + height)
-                                  }
-                                  style={{ height: "95%", width: "95%" }}
-                                >
-                                    <div id="draggable-area"></div>
-                                    <div className="resizers">
-                                      <div className="resizer top-left"></div>
-                                      <div className="resizer top-center"></div>
-                                      <div className="resizer top-right"></div>
-                                      <div className="resizer bottom-left"></div>
-                                      <div className="resizer bottom-center"></div>
-                                      <div className="resizer bottom-right"></div>
-                                      <div className="resizer left-center"></div>
-                                      <div className="resizer right-center"></div>
-                                    </div>
-                                    <div className="crosshair"></div>
-                                </div>
-                              </Draggable>
+                            <DragResize 
+                              boundsEl='#video-player'
+                              playerState={this.refs.player.getState()}
+                              rotateValue={this.state.RotateValue}
+                              onDragStop={ this.onDragStop }
+                              onResizeStop={ this.onResizeStop }
+                              videoReady={this.state.videoReady}
+                            />
                           )}
 
                             <Player
                               ref="player"
-                              height="300"
-                              width="300"
-                              videoId="video-1"
+                              videoId="video-player"
+                              style={{ width: "100%", height: "100%"}}
+                              onCanPlay={this.videoCanPlay}
                             >
                               <BigPlayButton position="center" />
                               <source src={this.state.playerSource} />
@@ -1076,17 +929,6 @@ class Home extends Component {
 
                     ) : null}
 
-                    {/* Rotate Video */}
-                    {this.state.displayRotate ? (
-                      <div>
-                        <div id={"RotatePlayerValue" + this.state.RotateValue} style={{ marginTop: "8em" }} >
-                          <Player ref="player" videoId="video-1" >
-                            <BigPlayButton position="center" />
-                            <source src={this.state.playerSource} />
-                          </Player>
-                        </div>
-                      </div>
-                    ) : null}
                   </div>
                 </div>
               </div>

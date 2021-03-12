@@ -1,6 +1,6 @@
 {
   "name": "video-cut-tool",
-  "version": "0.4.3",
+  "version": "0.4.4",
   "description": "A tool to edit videos",
   "private": true,
   "engines": {
@@ -15,7 +15,6 @@
     "popup-tools": "^1.0.2",
     "react": "^16.8.4",
     "react-dom": "^16.8.4",
-    "react-draggable": "^3.3.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.3.0",
     "socket.io-client": "^2.3.0",

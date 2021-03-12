@@ -15,8 +15,9 @@ module.exports = function(){
                 path: "/",
                 home_page:"/",
                 not_found_path:"/",
-                backend_url: "http://localhost:4000",
-                socket_io_path: "/socket.io"
+                backend_url: "http://localhost:4000/video-cut-tool-back-end",
+                socket_io_path: "/socket.io",
+                socket_io_url: 'http://localhost:4000'
             }
     }
 }
