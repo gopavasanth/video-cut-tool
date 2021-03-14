@@ -1,5 +1,6 @@
 import React from "react";
-import { Button, Icon } from "antd";
+import { Button } from "antd";
+import Icon from '@ant-design/icons';
 import { Message } from '@wikimedia/react.i18n';
 
 class Setting extends React.Component {

@@ -1,5 +1,6 @@
 import React, { Component, useContext } from 'react';
-import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
+import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Col, Radio, Button, Progress, Spin } from 'antd';
+import Icon from '@ant-design/icons';
 import { Player, BigPlayButton } from 'video-react';
 
 import Draggable from "react-draggable";
