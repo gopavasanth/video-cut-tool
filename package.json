@@ -8,8 +8,8 @@
   },
   "dependencies": {
     "@wikimedia/react.i18n": "^2.0.3",
-    "antd": "^3.26.7",
-    "axios": "^0.19.1",
+    "antd": "^4.14.0",
+    "axios": "^0.21.1",
     "bootstrap": "^4.4.1",
     "popup-tools": "^1.0.2",
     "react": "^16.8.4",
@@ -18,8 +18,8 @@
     "react-notifications": "^1.4.3",
     "react-router": "^5.0.0",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "^3.3.0",
-    "react-spinners": "^0.5.13",
+    "react-scripts": "^4.0.3",
+    "react-spinners": "^0.10.6",
     "reactstrap": "^8.3.1",
     "socket.io-client": "^2.3.0",
     "video-react": "^0.13.6"
