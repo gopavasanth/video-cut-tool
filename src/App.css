@@ -23,6 +23,7 @@ header .dark-theme-switch {
   position: relative;
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  flex-shrink: 0;
 }
 
 header .dark-theme-switch .theme-switch-inner {
@@ -85,6 +86,10 @@ section.layout{
 
 .button-columns .ant-row > div.ant-col {
   padding: 0 10px;
+}
+
+.final-video-title{
+  word-wrap: break-word;
 }
 
 @media (max-width: 1199px) {

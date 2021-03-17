@@ -1155,7 +1155,7 @@ class Home extends Component {
                     {this.state.videos.map((video, index, videoArr) => (
                       <div key={'option-' + video.path}>
                         <div id={video.path.split('/').pop().split('.')[0]}>
-                          <h6 style={{ textAlign: 'center' }}>{video.title}</h6>
+                          <h6 className="final-video-title" style={{ textAlign: 'center' }}>{video.title}</h6>
                           <div className="button-columns row-on-mobile">
                             <div className="row">
                               <div className="col-sm-6 col-md-6 py-1">
