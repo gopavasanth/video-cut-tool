@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
-import  DragResize  from './DragResize';
+import DragResize from './DragResize';
 
 import axios from "axios";
 import io from 'socket.io-client';
@@ -129,7 +129,7 @@ class Home extends Component {
       rotateDegress: '',
       displaynewVideoName: false,
       DisplayFailedNotification: false,
-    
+
       uploadedFile: null,
       fileList: [],
       temporaryTrimValue: [{ from: null, to: null }],
@@ -202,10 +202,10 @@ class Home extends Component {
     RotateValue = (RotateValue + 1) % 4;
     this.setState({
       RotateValue: RotateValue,
-      rotateDegress: (RotateValue === 3) ? '' :  ' - '+(RotateValue + 1) * 90 + 'deg'
+      rotateDegress: (RotateValue === 3) ? '' : ' - ' + (RotateValue + 1) * 90 + 'deg'
     });
 
-    if(RotateValue === 3){
+    if (RotateValue === 3) {
       this.setState({
         rotateVideo: false
       })
@@ -467,7 +467,7 @@ class Home extends Component {
   }
 
   onDragStop(data) {
-    const {left, top, width, height}= data;
+    const { left, top, width, height } = data;
     this.setState({
       x_value: left,
       y_value: top,
@@ -477,8 +477,8 @@ class Home extends Component {
 
   }
 
-  onResizeStop(data){
-    const {left, top, width, height}= data;
+  onResizeStop(data) {
+    const { left, top, width, height } = data;
     this.setState({
       x_value: left,
       y_value: top,
@@ -487,7 +487,7 @@ class Home extends Component {
     });
   }
 
-  videoCanPlay(...args){
+  videoCanPlay(...args) {
     this.setState({
       videoReady: true
     })
@@ -519,13 +519,13 @@ class Home extends Component {
         res.data.videos.map((item, index) => {
           let newVideoTitle = this.state.videos[index].title.split('.');
           let oldVideoTitle = this.state.videos[index].title.split('.');
-          
+
           newVideoTitle[0] = newVideoTitle[0].concat('_(edited)');
 
           if (index > 0) newVideoTitle[0] = newVideoTitle[0].concat(`(${index})`);
           newVideoTitle[1] = item.split('.')[1];
           newVideoTitle = newVideoTitle.join('.');
-          
+
           if (index > 0) oldVideoTitle[0] = oldVideoTitle[0].concat(`(${index})`);
           oldVideoTitle[1] = item.split('.')[1];
           oldVideoTitle = oldVideoTitle.join('.');
@@ -658,7 +658,7 @@ class Home extends Component {
         text: this.props.banana.i18n('setting-audio'),
       },
       {
-        icon:"redo",
+        icon: "redo",
         property: false,
         undoProperty: !this.state.rotateVideo,
         click: () => {
@@ -674,7 +674,7 @@ class Home extends Component {
         text: this.props.banana.i18n('setting-rotate') + this.state.rotateDegress,
       },
       {
-        icon:"scissor",
+        icon: "scissor",
         property: this.state.trimVideo,
         undoProperty: !this.state.trimVideo,
         click: () => {
@@ -779,7 +779,7 @@ class Home extends Component {
 
   render() {
     // Rotate video inside container and scale to fit height
-    if(this.refs.player && this.state.changeStep !== 3) {
+    if (this.refs.player && this.state.changeStep !== 3) {
       const videoEl = document.querySelector('#video-player');
       const videoWidth = videoEl.offsetWidth;
       const videoHeight = videoEl.offsetHeight;
@@ -795,19 +795,19 @@ class Home extends Component {
 
       // Apply transform
       document.querySelector('#video-player').style.transform = transform;
-  }
+    }
 
     console.log("URL: " + this.state.inputVideoUrl);
 
     return (
       <Layout className="layout">
         <Header
-          parentUserUpdateCallback={(user) => { this.setState({user: user}); }}
+          parentUserUpdateCallback={(user) => { this.setState({ user: user }); }}
           parentLanguageUpdateCallback={this.props.parentLanguageUpdateCallback}
           socket={socket} width={this.state.width}
           api_url={API_URL} />
         <form onSubmit={this.onSubmit}>
-          <Content className="Content" style={{maxWidth: '99%'}}>
+          <Content className="Content" style={{ maxWidth: '99%' }}>
             <div className="row m-0">
               <div className="col-sm-12 col-md-8 p-4">
                 <div>
@@ -864,14 +864,14 @@ class Home extends Component {
                             </ul>
                           </>
                         ) : (
-                            <>
-                              <p style={{ margin: "5px 0" }}>
-                                <Message id="new-video" /> <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
-                                  https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
-                                </a>
-                              </p>
-                            </>
-                          )}
+                          <>
+                            <p style={{ margin: "5px 0" }}>
+                              <Message id="new-video" /> <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
+                                https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
+                              </a>
+                            </p>
+                          </>
+                        )}
                       </div>
                     )}
                     {this.state.changeStep === 3 && this.state.videos.map(video => (
@@ -907,26 +907,27 @@ class Home extends Component {
                           }}
                         >
                           {this.state.cropVideo && (
-                            <DragResize 
+                            <DragResize
                               boundsEl='#video-player'
                               playerState={this.refs.player.getState()}
                               rotateValue={this.state.RotateValue}
-                              onDragStop={ this.onDragStop }
-                              onResizeStop={ this.onResizeStop }
+                              onDragStop={this.onDragStop}
+                              onResizeStop={this.onResizeStop}
                               videoReady={this.state.videoReady}
                             />
                           )}
 
-                            <Player
-                              ref="player"
-                              videoId="video-player"
-                              style={{ width: "100%", height: "100%"}}
-                              onCanPlay={this.videoCanPlay}
-                            >
-                              <BigPlayButton position="center" />
-                              <source src={this.state.playerSource} />
-                            </Player>
-                          </div>
+                          <Player
+                            ref="player"
+                            videoId="video-player"
+                            style={{ width: "100%", height: "100%" }}
+                            onCanPlay={this.videoCanPlay}
+                            muted={this.state.disableAudio}
+                          >
+                            <BigPlayButton position="center" />
+                            <source src={this.state.playerSource} />
+                          </Player>
+                        </div>
                       </div>
 
                     ) : null}
@@ -989,24 +990,24 @@ class Home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-from`}
-                                    value={this.state.temporaryTrimValue[i].from||formatTime(trim.from)}
-                                    onChange={ obj => {
+                                    value={this.state.temporaryTrimValue[i].from || formatTime(trim.from)}
+                                    onChange={obj => {
                                       let temporaryTrimValue = this.state.temporaryTrimValue;
                                       temporaryTrimValue[i].from = obj.target.value;
-                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
+                                      if (obj.target.value === '' || /^[0-9:.]*$/.test(obj.target.value)) {
                                         this.setState({
                                           temporaryTrimValue: temporaryTrimValue
                                         });
                                       }
-                                      if ( this.timeout ) {
-                                        clearTimeout( this.timeout );
+                                      if (this.timeout) {
+                                        clearTimeout(this.timeout);
                                       }
-                                      this.timeout = setTimeout(() =>{
+                                      this.timeout = setTimeout(() => {
                                         let trims = this.state.trims;
                                         let temporaryTrimValue = this.state.temporaryTrimValue;
-                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].from );
-                                        if ( decodedTime !== null ) {
-                                          if ( decodedTime <= trims[i].to ){
+                                        let decodedTime = decodeTime(this.state.temporaryTrimValue[i].from);
+                                        if (decodedTime !== null) {
+                                          if (decodedTime <= trims[i].to) {
                                             trims[i].from = decodedTime;
                                           } else {
                                             trims[i].from = trims[i].to;
@@ -1034,24 +1035,24 @@ class Home extends Component {
                                   <Input
                                     placeholder="hh:mm:ss"
                                     id={`trim-${i}-to`}
-                                    value={this.state.temporaryTrimValue[i].to||formatTime(trim.to)}
-                                    onChange={ obj => {
+                                    value={this.state.temporaryTrimValue[i].to || formatTime(trim.to)}
+                                    onChange={obj => {
                                       let temporaryTrimValue = this.state.temporaryTrimValue;
                                       temporaryTrimValue[i].to = obj.target.value;
-                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
+                                      if (obj.target.value === '' || /^[0-9:.]*$/.test(obj.target.value)) {
                                         this.setState({
                                           temporaryTrimValue: temporaryTrimValue
                                         });
                                       }
-                                      if ( this.timeout ) {
-                                        clearTimeout( this.timeout );
+                                      if (this.timeout) {
+                                        clearTimeout(this.timeout);
                                       }
                                       this.timeout = setTimeout(() => {
                                         let trims = this.state.trims;
                                         let temporaryTrimValue = this.state.temporaryTrimValue;
-                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].to );
-                                        if ( decodedTime !== null ) {
-                                          if ( decodedTime >= trims[i].from ){
+                                        let decodedTime = decodeTime(this.state.temporaryTrimValue[i].to);
+                                        if (decodedTime !== null) {
+                                          if (decodedTime >= trims[i].from) {
                                             trims[i].to = decodedTime;
                                           } else {
                                             trims[i].to = trims[i].from;
@@ -1161,7 +1162,7 @@ class Home extends Component {
                               <div className="col-sm-6 col-md-6 py-1">
                                 <Button block type="primary">
                                   <a href={`${API_URL}/download/${video.path}`}>
-                                    <Icon type="DownloadOutlined"/><Message id="step-result-choice-download" />
+                                    <Icon type="DownloadOutlined" /><Message id="step-result-choice-download" />
                                   </a>
                                 </Button>
                               </div>
@@ -1217,12 +1218,12 @@ class Home extends Component {
                                         <Message id="upload-action-overwrite" />
                                       </Radio.Button>
                                     ) : (
-                                        <Tooltip title={OverwriteBtnTooltipMsg(this.state, this.props.banana)}>
-                                          <Radio.Button value="overwrite" disabled>
-                                            <Message id="upload-action-overwrite" />
-                                          </Radio.Button>
-                                        </Tooltip>
-                                      )}
+                                      <Tooltip title={OverwriteBtnTooltipMsg(this.state, this.props.banana)}>
+                                        <Radio.Button value="overwrite" disabled>
+                                          <Message id="upload-action-overwrite" />
+                                        </Radio.Button>
+                                      </Tooltip>
+                                    )}
                                     <Radio.Button value="new-file" onChange={() => {
                                       const newVideoList = videoArr;
 
@@ -1311,29 +1312,29 @@ class Home extends Component {
                               this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: this.props.banana.i18n('task-uploading-wikimedia-commons'), progressPercentage: 0 }, () => {
                                 this.onSubmit(e);
                               });
-                              setTimeout(() => this.setState({currentTask: this.props.banana.i18n('task-uploaded-wikimedia-commons'), loading: false,  displayLoadingMessage: false  }), 10000);
+                              setTimeout(() => this.setState({ currentTask: this.props.banana.i18n('task-uploaded-wikimedia-commons'), loading: false, displayLoadingMessage: false }), 10000);
                             }}
-                            
+
                             loading={this.state.loading}
                             block
                           >
                             <Icon type="upload" /> <Message id="upload-button" />
-                            </Button>
+                          </Button>
                         ) : (
-                            <Tooltip
-                              placement="topLeft"
-                              title={<Message id="login-alert-upload" />}
+                          <Tooltip
+                            placement="topLeft"
+                            title={<Message id="login-alert-upload" />}
+                          >
+                            <Button
+                              type="primary"
+                              onClick={() => showNotificationWithIcon("info", this.props.banana.i18n('notifications-wait'), this.props.banana)}
+                              disabled
+                              block
                             >
-                              <Button
-                                type="primary"
-                                onClick={() => showNotificationWithIcon("info", this.props.banana.i18n('notifications-wait'), this.props.banana)}
-                                disabled
-                                block
-                              >
-                                <Icon type="upload" /> <Message id="upload-button" />
-                              </Button>
-                            </Tooltip>
-                          )}
+                              <Icon type="upload" /> <Message id="upload-button" />
+                            </Button>
+                          </Tooltip>
+                        )}
                       </div>
                     )}
                   </>
@@ -1343,9 +1344,9 @@ class Home extends Component {
             <br />
           </Content>
         </form>
-     <Footer />
+        <Footer />
       </Layout >
-        );
+    );
   }
 }
 
