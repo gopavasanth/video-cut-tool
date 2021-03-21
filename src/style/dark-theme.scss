@@ -26,6 +26,9 @@ body[theme='dark'] {
       background-color: lighten($border-color, 60%);
     }
   }
+  #progress-bar-wrapper .ant-progress-text {
+    color: #b6e2fa
+  }
   .ant-select-dropdown,
   .ant-select-selection {
     background-color: $bg-color-accent3;

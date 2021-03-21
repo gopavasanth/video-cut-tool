@@ -1,0 +1,47 @@
+#progress-bar-wrapper {
+  width: 100%;
+  .ant-progress-text {
+    color: rgba(0, 0, 0, 0.65);
+  }
+  .progress-bar-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5em;
+    .progress-info-container {
+      display: flex;
+      flex-direction: column;
+
+      .progress-info-title {
+        font-size: 0.8em;
+        padding-bottom: 0.2em;
+      }
+    }
+  }
+  .progress-bar-indeterminant {
+    height: 8px;
+    width: 100%;
+    border-radius: 15px;
+    animation: animate-progress 2s linear infinite;
+    background-color: #1890ff;
+    background-image: linear-gradient(
+      -45deg,
+      rgba(255, 255, 255, 0.125) 25%,
+      transparent 25%,
+      transparent 50%,
+      rgba(255, 255, 255, 0.125) 50%,
+      rgba(255, 255, 255, 0.125) 75%,
+      transparent 75%,
+      transparent
+    );
+    background-size: 35px 35px;
+  }
+}
+
+@keyframes animate-progress {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 35px 35px;
+  }
+}

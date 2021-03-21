@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
+import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
 import DragResize from './DragResize';
+import ProgressBar from './ProgressBar';
 
 import axios from "axios";
 import io from 'socket.io-client';
@@ -9,6 +10,7 @@ import io from 'socket.io-client';
 import '../App.css';
 import '../DragResize.css';
 import '../style/dark-theme.css';
+import '../style/progress-bar.css';
 import 'antd/dist/antd.css';
 import 'video-react/dist/video-react.css';
 import UploadBox from './UploadBox';
@@ -133,7 +135,8 @@ class Home extends Component {
       uploadedFile: null,
       fileList: [],
       temporaryTrimValue: [{ from: null, to: null }],
-      videoReady: false
+      videoReady: false,
+      progressBarInfo: null
     }
   }
 
@@ -156,13 +159,41 @@ class Home extends Component {
       console.log('ON PROCESSS', progressData)
       const { stage, status } = progressData;
       if (status === 'processing') {
+        let currentTask = this.props.banana.i18n(`task-stage-${stage.replace(' ', '_')}`);
+        if(stage === 'manipulations') {
+          const tasks = [];
+          if(this.state.rotateVideo){
+            tasks.push(this.props.banana.i18n(`task-stage-rotating`))
+          }
+
+          if(this.state.disableAudio){
+            tasks.push(this.props.banana.i18n(`task-stage-losing_audio`))
+          }
+
+          if(this.state.cropVideo){
+            tasks.push(this.props.banana.i18n(`task-stage-cropping`))
+          }
+
+          if(this.state.trimVideo){
+            tasks.push(this.props.banana.i18n(`task-stage-trimming`))
+          }
+
+          currentTask += ` (${tasks.join(", ")})`;
+        }
         this.setState({
           progressPercentage: 50,
-          currentTask: this.props.banana.i18n(`task-stage-${stage.replace(' ', '_')}`),
+          currentTask: currentTask
         });
       } else if (status === 'done') {
         this.previewCallback({ data: { videos: progressData.outputs } })
       }
+    });
+
+    socket.on('progress:updateBar', data => {
+      const { progress_info } = data;
+      this.setState({
+        progressBarInfo: progress_info
+      });
     });
 
     // Check if title passed as parameter into url
@@ -836,7 +867,7 @@ class Home extends Component {
                       <div
                         style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                       >
-                        {!this.state.upload && <Spin size="large" style={{ marginBottom: 2 }} />}
+                        {!this.state.upload && <ProgressBar info={this.state.progressBarInfo} />}
                         {/*Modify*/}
                         <p style={{ marginBottom: 0 }}>
                           <Message id="task-current" placeholders={[this.state.currentTask]} />
