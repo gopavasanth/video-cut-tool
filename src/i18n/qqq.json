@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"FF11",
 			"Robby"
 		]
 	},
@@ -26,9 +27,9 @@
 	"preview-text": "Text of button that starts the converting process and lets the user preview the video",
 	"preview-title": "Title above the button that starts the converting process",
 	"setting-audio": "Text on button that removes audio",
-	"setting-crop": "Text on button that lets the user crop the video",
+	"setting-crop": "Text on button that lets the user crop the video\n\n''Crop'' means the same as reducing the size of a picture. However, if cropping a video, this will be applied to each freeze frame.",
 	"setting-rotate": "Text on button that lets the user rotate the video",
-	"setting-trim": "Text on button that lets the user trim the video",
+	"setting-trim": "Text on button that lets the user trim the video\n\n''Trim'' lets the user cut off the beginning and the end of the video",
 	"step-result": "Title of step 3 of the progress bar\n{{identical|Result}}",
 	"step-result-choice-download": "Text of the button that lets the user download the converted video(s)",
 	"step-result-choice-upload": "Text of the button that lets the user upload the video(s)",
