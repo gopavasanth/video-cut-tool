@@ -2,6 +2,12 @@ import React, { useState, useRef, useEffect, useLayoutEffect } from 'react';
 
 function DragResize(props) {
   // Set main variables
+  const isTouch = 'ontouchstart' in window ? true : false;
+  const events = {
+    POINTER_DOWN: isTouch ? 'touchstart' : 'mousedown',
+    POINTER_UP: isTouch ? 'touchend' : 'mouseup',
+    POINTER_MOVE: isTouch ? 'touchmove' : 'mousemove',
+  };
   const dragResizeEl = useRef(null);
   let videoBounds = useRef({});
   let boxBounds = useRef({});
@@ -59,6 +65,13 @@ function DragResize(props) {
 
   const updateResizeState = newResizeState => {
     setResizeState({ ...resizeState, ...newResizeState });
+  };
+
+  const getPointerPosition = e => {
+    return {
+      clientX: isTouch ? e.changedTouches[0].clientX : e.clientX,
+      clientY: isTouch ? e.changedTouches[0].clientY : e.clientY,
+    };
   };
 
   // Toggle text selection for better UX when dragging/resizing
@@ -148,7 +161,7 @@ function DragResize(props) {
     };
 
     updateBoxStyle(updateBoxBounds);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.rotateValue, props.videoReady]);
 
   // Drag
@@ -159,29 +172,28 @@ function DragResize(props) {
   });
 
   useEffect(() => {
-    window.addEventListener('mousemove', onDrag);
-    window.addEventListener('mouseup', onDragStop);
+    window.addEventListener(events.POINTER_MOVE, onDrag);
+    window.addEventListener(events.POINTER_UP, onDragStop);
 
     return () => {
-      window.removeEventListener('mousemove', onDrag);
-      window.removeEventListener('mouseup', onDragStop);
+      window.removeEventListener(events.POINTER_MOVE, onDrag);
+      window.removeEventListener(events.POINTER_UP, onDragStop);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dragState]);
 
   const onDragStart = e => {
     e.stopPropagation();
     disableSelection(true);
-
     boxBounds.current = dragResizeEl.current.getBoundingClientRect();
 
     const offsetX = parseInt(dragResizeEl.current.style.left) || 0;
     const offsetY = parseInt(dragResizeEl.current.style.top) || 0;
-
+    const { clientX, clientY } = getPointerPosition(e);
     const newDragState = {
       dragging: true,
-      initialX: e.clientX - offsetX,
-      initialY: e.clientY - offsetY,
+      initialX: clientX - offsetX,
+      initialY: clientY - offsetY,
     };
     updateDragState(newDragState);
   };
@@ -195,8 +207,10 @@ function DragResize(props) {
     const { height: containerHeight, width: containerWidth } = containerBounds.current;
     const { height: boxHeight, width: boxWidth } = boxBounds.current;
 
-    const currentX = e.clientX - initialX;
-    const currentY = e.clientY - initialY;
+    const { clientX, clientY } = getPointerPosition(e);
+
+    const currentX = clientX - initialX;
+    const currentY = clientY - initialY;
 
     const maxBoundX = boundsLeft + (boundsWidth - boxWidth);
     const maxBoundY = boundsTop + (boundsHeight - boxHeight);
@@ -214,7 +228,7 @@ function DragResize(props) {
 
   const onDragStop = e => {
     // e.stopPropagation is not working. Make sure drag is not fired
-    // when use is resizing
+    // when user is resizing
     const { resizing } = resizeState;
     if (resizing) {
       return;
@@ -246,14 +260,14 @@ function DragResize(props) {
   });
 
   useEffect(() => {
-    window.addEventListener('mousemove', onResize);
-    window.addEventListener('mouseup', onResizeStop);
+    window.addEventListener(events.POINTER_MOVE, onResize);
+    window.addEventListener(events.POINTER_UP, onResizeStop);
 
     return () => {
-      window.removeEventListener('mousemove', onResize);
-      window.removeEventListener('mouseup', onResizeStop);
+      window.removeEventListener(events.POINTER_MOVE, onResize);
+      window.removeEventListener(events.POINTER_UP, onResizeStop);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [resizeState]);
 
   /**
@@ -301,11 +315,11 @@ function DragResize(props) {
     updateDragState({
       dragging: false,
     });
-
+    const { clientX, clientY } = getPointerPosition(e);
     updateResizeState({
       resizing: true,
-      initResizeX: e.clientX,
-      initResizeY: e.clientY,
+      initResizeX: clientX,
+      initResizeY: clientY,
       position: e.target.getAttribute('data-position'),
     });
   };
@@ -316,10 +330,10 @@ function DragResize(props) {
     const { resizing, initResizeX, initResizeY, position } = resizeState;
 
     if (!resizing) return;
-
+    const { clientX, clientY } = getPointerPosition(e);
     const { left: boxLeft, top: boxTop, right: boxRight, bottom: boxBottom } = boxStyle.numbers;
-    const currentResizeX = e.clientX - initResizeX;
-    const currentResizeY = e.clientY - initResizeY;
+    const currentResizeX = clientX - initResizeX;
+    const currentResizeY = clientY - initResizeY;
     const newPosition = {};
     switch (position) {
       case 'top-right':
@@ -381,15 +395,47 @@ function DragResize(props) {
   };
 
   return (
-    <div id="drag-resize" ref={dragResizeEl} onMouseDown={onDragStart} style={boxStyle.full}>
-      <div className="resize-handle" data-position="top-left" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="top-center" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="top-right" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="bottom-left" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="bottom-center" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="bottom-right" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="middle-right" onMouseDown={onResizeStart}></div>
-      <div className="resize-handle" data-position="middle-left" onMouseDown={onResizeStart}></div>
+    <div id="drag-resize" ref={dragResizeEl} onMouseDown={onDragStart} onTouchStart={onDragStart} style={boxStyle.full}>
+      <div
+        className="resize-handle"
+        data-position="top-left"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="top-center"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="top-right"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="bottom-left"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="bottom-center"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="bottom-right"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="middle-right"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
+      <div
+        className="resize-handle"
+        data-position="middle-left"
+        onMouseDown={onResizeStart}
+        onTouchStart={onResizeStart}></div>
     </div>
   );
 }

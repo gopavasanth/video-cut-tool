@@ -12,7 +12,8 @@ body[data-no-selection='true'] {
   bottom: 100px;
   box-sizing: border-box;
   box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
-
+  touch-action: none;
+  
   &::before {
     content: '';
     position: absolute;
