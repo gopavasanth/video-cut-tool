@@ -3,7 +3,9 @@
 		"authors": [
 			"Distel135",
 			"DraconicDark",
+			"FF-11",
 			"FF11",
+			"Gebu",
 			"Joanau",
 			"ManuelFranz"
 		]
@@ -41,8 +43,10 @@
 	"step-video-settings-title": "Schritt 2: Video-Einstellungen anpassen",
 	"step-video-url": "Video URL",
 	"success": "Erfolgreich abgeschlossen :)",
-	"task-current": "Ihr Video ist $1",
+	"task-current": "Aktuelle Stufe: $1",
 	"task-processing": "Verarbeite",
+	"task-stage-downloading": "Herunterladen",
+	"task-stage-manipulations": "Änderungen",
 	"task-stage-concating": "zusammenfassen",
 	"task-stage-converting_video_format": "Das Videoformat wird konvertiert",
 	"task-stage-cropping": "Zuschneiden",
@@ -52,6 +56,10 @@
 	"task-uploaded-wikimedia-commons": "Auf Wikimedia Commons hochgeladen",
 	"task-uploading": "lädt hoch",
 	"task-uploading-wikimedia-commons": "Hochladen auf Wikimedia Commons",
+	"progress-bitrate": "Bitrate",
+	"progress-speed": "Geschwindigkeit",
+	"progress-time": "Zeit",
+	"progress-frame": "Frame",
 	"undo": "Rückgängig",
 	"upload-action-new-file": "Als neue Datei hochladen",
 	"upload-action-new-file-title": "Titel",

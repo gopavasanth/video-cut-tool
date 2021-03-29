@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Hedda",
+			"Joseph",
 			"MuratTheTurkish"
 		]
 	},
@@ -38,8 +39,10 @@
 	"step-video-settings-title": "2. adım: Video Ayarlarını Yapın",
 	"step-video-url": "Video Bağlantısı",
 	"success": "Başarıyla tamamlandı :)",
-	"task-current": "Videonuz: $1",
+	"task-current": "Geçerli aşama: $1",
 	"task-processing": "işleniyor",
+	"task-stage-downloading": "indiriliyor",
+	"task-stage-manipulations": "işlemeler",
 	"task-stage-concating": "bitiştiriyor",
 	"task-stage-converting_video_format": "video biçimine dönüştürüyor",
 	"task-stage-cropping": "kırpıyor",
@@ -49,6 +52,10 @@
 	"task-uploaded-wikimedia-commons": "Wikimedia Commons'a yüklendi",
 	"task-uploading": "yükleniyor",
 	"task-uploading-wikimedia-commons": "Wikimedia Commons'a yükleniyor",
+	"progress-bitrate": "Bit hızı",
+	"progress-speed": "Hız",
+	"progress-time": "Zaman",
+	"progress-frame": "Çerçeve",
 	"undo": "Geri al",
 	"upload-action-new-file": "Yeni bir dosya olarak yükle",
 	"upload-action-new-file-title": "Başlık",
