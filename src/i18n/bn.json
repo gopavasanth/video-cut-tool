@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"R4356th",
+			"WikiAbuHuraira",
 			"আফতাবুজ্জামান"
 		]
 	},
@@ -51,6 +52,7 @@
 	"task-uploading": "আপলোড করা হচ্ছে",
 	"task-uploading-wikimedia-commons": "উইকিমিডিয়া কমন্সে আপলোড করা হচ্ছে",
 	"progress-bitrate": "বিটরেট",
+	"progress-speed": "গতি",
 	"progress-time": "সময়",
 	"progress-frame": "ফ্রেম",
 	"undo": "পূর্বাবস্থায় ফেরান",
