@@ -37,7 +37,7 @@
 	"step-video-settings-title": "2단계: 동영상 설정 수정하기",
 	"step-video-url": "동영상 URL",
 	"success": "성공적으로 완료하였습니다 :)",
-	"task-current": "동영상은 $1입니다",
+	"task-current": "현재 단계: $1",
 	"task-processing": "처리 중",
 	"task-stage-downloading": "다운로드 중",
 	"task-stage-concating": "이어 붙이기",

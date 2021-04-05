@@ -1,7 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
-			"Sabelöga"
+			"Sabelöga",
+			"WikiPhoenix"
 		]
 	},
 	"404-go-back": "Gå till huvudsidan",
@@ -39,6 +40,7 @@
 	"success": "Slutfört :)",
 	"task-current": "Din video är $1",
 	"task-processing": "bearbetar",
+	"task-stage-downloading": "laddar ned",
 	"task-stage-concating": "konkatenera",
 	"task-stage-converting_video_format": "konverterar videoformat",
 	"task-stage-cropping": "klipper",
@@ -48,6 +50,9 @@
 	"task-uploaded-wikimedia-commons": "Laddades upp till Wikimedia Commons",
 	"task-uploading": "laddar upp",
 	"task-uploading-wikimedia-commons": "laddar upp till Wikimedia Commons",
+	"progress-bitrate": "Bithastighet",
+	"progress-speed": "Hastighet",
+	"progress-time": "Tid",
 	"undo": "Ångra",
 	"upload-action-new-file": "Ladda upp som en ny fil",
 	"upload-action-new-file-title": "Titel",
