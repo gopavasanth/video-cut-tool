@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"Fitoschido",
+			"Lys534",
 			"MarleneR329"
 		]
 	},
@@ -23,6 +24,7 @@
 	"step-video-settings": "Ajustes de video",
 	"step-video-url": "URL del vídeo",
 	"task-processing": "procesando",
+	"progress-time": "Tiempo",
 	"undo": "Deshacer",
 	"upload-action-new-file": "Carga como archivo nuevo",
 	"upload-action-new-file-title": "Título",

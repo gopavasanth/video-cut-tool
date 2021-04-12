@@ -10,6 +10,7 @@
 	"404-image-description": "404 Pagina non trovata",
 	"error": "Qualcosa è andato storto",
 	"file-not-existing": "Il file non esiste",
+	"footer-authors": "$1 e $2",
 	"languages": "Lingue",
 	"login": "Registrati / Accedi",
 	"login-alert": "Accedi per utilizzare lo strumento",
