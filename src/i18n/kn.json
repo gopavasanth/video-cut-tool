@@ -1,0 +1,28 @@
+{
+	"@metadata": {
+		"authors": [
+			"AVSmalnad77",
+			"ಮಲ್ನಾಡಾಚ್ ಕೊಂಕ್ಣೊ"
+		]
+	},
+	"404-go-back": "ಮುಖ್ಯ ಪುಟಕ್ಕೆ ಹೋಗಿ",
+	"404-image-description": "೪೦೪ ಪುಟ ಸಿಗಲಿಲ್ಲ",
+	"error": "ಏನೋ ಎಡವಟ್ಟಾಗಿದೆ",
+	"footer-authors": "$1 ಮತ್ತು $2",
+	"languages": "ಭಾಷೆಗಳು",
+	"login-alert-upload": "ಕಾಮನ್ಸ್‌ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಲು ಲಾಗ್‌ಇನ್ ಆಗಿ",
+	"logout": "ಲಾಗ್ ಔಟ್",
+	"logout-confirm-no": "ಇಲ್ಲ",
+	"logout-confirm-text": "ನೀವು ಖಚಿತವಾಗಿ ಬಯಸುವಿರಾ?",
+	"logout-confirm-yes": "ಹೌದು",
+	"preview-text": "ಮುನ್ನೋಟ",
+	"step-result": "ಫಲಿತಾಂಶ",
+	"step-result-choice-download": "ಡೌನ್‍ಲೋಡ್",
+	"step-result-choice-upload": "ಕಾಮನ್ಸ್‌ಗೆ ಅಪ್‌ಲೋಡ್ ಮಾಡಿ",
+	"undo": "ರದ್ದುಗೊಳಿಸಿ",
+	"upload-action-new-file-title": "ಶೀರ್ಷಿಕೆ",
+	"upload-text": "ಪಠ್ಯ:",
+	"video-trim-from": "ಇಂದ",
+	"video-trim-to": "ಗೆ",
+	"welcome": "ಸುಸ್ವಾಗತ, $1!"
+}

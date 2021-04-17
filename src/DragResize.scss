@@ -1,0 +1,127 @@
+body[data-no-selection='true'] {
+  user-select: none;
+}
+#drag-resize {
+  border: 3px solid #3192f5;
+  z-index: 20;
+  cursor: pointer;
+  position: absolute;
+  left: 100px;
+  top: 100px;
+  right: 100px;
+  bottom: 100px;
+  box-sizing: border-box;
+  box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+  touch-action: none;
+  
+  &::before {
+    content: '';
+    position: absolute;
+    top: 33.3%;
+    left: 2px;
+    right: 2px;
+    height: 33.3%;
+    border-top: 2px dashed;
+    border-bottom: 2px dashed;
+    border-color: #ddd;
+    pointer-events: none;
+  }
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 33.3%;
+    left: 33.3%;
+    top: 2px;
+    bottom: 2px;
+    border-left: 2px dashed;
+    border-right: 2px dashed;
+    border-color: #ddd;
+    pointer-events: none;
+  }
+  .resize-handle {
+    height: 12px;
+    width: 12px;
+    position: absolute;
+    z-index: 1;
+    border-color: #3192f5;
+    $margin: 4px;
+    $border: 3px solid #3192f5;
+    &::before {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      height: 200%;
+      width: 200%;
+      transform: translate(-50%, -50%);
+      content: '';
+    }
+    &[data-position='top-left'] {
+      left: $margin;
+      top: $margin;
+      cursor: nwse-resize;
+      border-top: $border;
+      border-left: $border;
+    }
+
+    &[data-position='top-center'] {
+      left: 50%;
+      top: $margin;
+      cursor: n-resize;
+      border-top: $border;
+      width: 20px;
+      transform: translateX(-50%);
+    }
+
+    &[data-position='top-right'] {
+      right: $margin;
+      top: $margin;
+      cursor: nesw-resize;
+      border-top: $border;
+      border-right: $border;
+    }
+
+    &[data-position='bottom-left'] {
+      left: $margin;
+      bottom: $margin;
+      cursor: nesw-resize;
+      border-bottom: $border;
+      border-left: $border;
+    }
+
+    &[data-position='bottom-center'] {
+      left: 50%;
+      bottom: $margin;
+      cursor: n-resize;
+      border-bottom: $border;
+      width: 20px;
+      transform: translateX(-50%);
+    }
+
+    &[data-position='bottom-right'] {
+      right: $margin;
+      bottom: $margin;
+      cursor: nwse-resize;
+      border-right: $border;
+      border-bottom: $border;
+    }
+
+    &[data-position='middle-left'] {
+      left: $margin;
+      top: 50%;
+      cursor: e-resize;
+      border-left: $border;
+      height: 30px;
+      transform: translateY(-50%);
+    }
+
+    &[data-position='middle-right'] {
+      right: $margin;
+      top: 50%;
+      cursor: e-resize;
+      border-right: $border;
+      height: 30px;
+      transform: translateY(-50%);
+    }
+  }
+}

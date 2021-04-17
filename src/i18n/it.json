@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Ajeje Brazorf",
 			"Beta16",
 			"EditGio"
 		]
@@ -37,6 +38,7 @@
 	"task-uploaded-wikimedia-commons": "Caricato su Wikimedia Commons",
 	"task-uploading": "caricamento in corso",
 	"task-uploading-wikimedia-commons": "caricando su Wikimedia Commons",
+	"progress-speed": "Velocità",
 	"undo": "Annulla",
 	"upload-action-new-file": "Carica come un nuovo file",
 	"upload-action-new-file-title": "Titolo",

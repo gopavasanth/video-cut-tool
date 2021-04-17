@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Joquliina",
 			"Nike"
 		]
 	},
@@ -33,5 +34,6 @@
 	"step-result-title": "Vaihe 3: Valitse valintasi",
 	"step-video-settings": "Videoasetukset",
 	"step-video-settings-title": "Vaihe 2: Määrittele videoasetukset",
+	"progress-speed": "Nopeus",
 	"undo": "Kumoa"
 }

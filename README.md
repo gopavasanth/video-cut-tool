@@ -10,7 +10,7 @@ You can learn more in the https://commons.wikimedia.org/wiki/Commons:VideoCutToo
 ### Install front-end
 ```
 git clone "https://gerrit.wikimedia.org/r/labs/tools/VideoCutTool"   # clone front-end
-cd ./VideoCutTool                                                    # move to front-end directory
+cd ./VideoCutTool                                                    # move to front-end directory
 npm install                                                          # install node dependencies
 google-chrome http://localhost:3000                                  # open in web-browser with hot-reload & console messages
 ```
@@ -26,6 +26,8 @@ In the project directory, you need to use the following command to run the appli
 ### Install back-end (Connect with the tool's back-end)
 ```
 git clone "https://gerrit.wikimedia.org/r/labs/tools/video-cut-tool-back-end"     # clone back-end
+cd ./video-cut-tool-back-end         # move to back-end directory
+npm install                          # install node dependencies
 ```
 
 To run the back-end tool you need to request Mediawiki OAuth keys from 
@@ -41,11 +43,6 @@ To run the back-end tool you need to request Mediawiki OAuth keys from
 2. Call back URL as 'https://localhost:4000/video-cut-tool-back-end/auth/mediawiki/callback'
 	
 After submitting form, you will be given `config.consumer_key` and `config.consumer_secret` substitue these keys in your `config.js` file.
-
-```
-cd ./video-cut-tool-back-end         # move to back-end directory
-npm install                          # install node dependencies
-```
 
 You are also required to install and start MongoDB, Follow official documentation for the installation and starting service locally https://docs.mongodb.com/manual/installation/
 

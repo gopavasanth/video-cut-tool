@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"FF-11",
+			"FF11",
 			"Robby"
 		]
 	},
@@ -26,9 +28,9 @@
 	"preview-text": "Text of button that starts the converting process and lets the user preview the video",
 	"preview-title": "Title above the button that starts the converting process",
 	"setting-audio": "Text on button that removes audio",
-	"setting-crop": "Text on button that lets the user crop the video",
+	"setting-crop": "Text on button that lets the user crop the video\n\n''Crop'' means the same as reducing the size of a picture. However, if cropping a video, this will be applied to each freeze frame.",
 	"setting-rotate": "Text on button that lets the user rotate the video",
-	"setting-trim": "Text on button that lets the user trim the video",
+	"setting-trim": "Text on button that lets the user trim the video\n\n''Trim'' lets the user cut off the beginning and the end of the video",
 	"step-result": "Title of step 3 of the progress bar\n{{identical|Result}}",
 	"step-result-choice-download": "Text of the button that lets the user download the converted video(s)",
 	"step-result-choice-upload": "Text of the button that lets the user upload the video(s)",
@@ -39,6 +41,8 @@
 	"success": "Message showing that the video converted successfully",
 	"task-current": "Message shown after user clicks \"Preview\" and the current step of conversion\n* $1 - current task",
 	"task-processing": "Shows that the current task is \"processing\"",
+	"task-stage-downloading": "Shows that the current task is \"downloading\"",
+	"task-stage-manipulations": "Shows that the current task is in \"manipulations\" phase",
 	"task-stage-concating": "Shows that the current task is \"concating\"",
 	"task-stage-converting_video_format": "Shows that the current task is \"converting video format\"",
 	"task-stage-cropping": "Shows that the current task is \"cropping\"",
@@ -48,6 +52,11 @@
 	"task-uploaded-wikimedia-commons": "Shows the video was \"Uploaded to Wikimedia Commons\"",
 	"task-uploading": "Shows that the current task is \"uploading\"",
 	"task-uploading-wikimedia-commons": "Shows that the current task is \"uploading to Wikimedia Commons\"",
+	"trim-total-duration": "Shows the total duration for all trims",
+	"progress-bitrate": "Shows the bitrate of the progress bar",
+	"progress-speed": "Shows the rate of speed of the progreess bar",
+	"progress-time": "Shows the time of the progresss bar",
+	"progress-frame": "Shows the frames of the progress bar",
 	"undo": "Undoes an action done at step 2 (eg. remove audio)\n{{Identical|Undo}}",
 	"upload-action-new-file": "Text of the button that selects the \"upload as new file\" option",
 	"upload-action-new-file-title": "Title of the box where a new file name may be given\n{{identical|Title}}",

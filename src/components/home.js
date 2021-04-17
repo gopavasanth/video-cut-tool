@@ -1,23 +1,25 @@
-import React, { Component, useContext } from 'react';
-import { Alert, Tooltip, Steps, Divider, Input, Slider, Typography, Layout, Icon, Col, Radio, Button, Progress, Spin } from 'antd';
+import React, { Component } from 'react';
+import { Alert, Tooltip, Steps, Divider, Input, Layout, Icon, Col, Radio, Button, Progress } from 'antd';
 import { Player, BigPlayButton } from 'video-react';
-
-import Draggable from "react-draggable";
+import DragResize from './DragResize';
+import ProgressBar from './ProgressBar';
+import Trim from './Trim';
 import axios from "axios";
 import io from 'socket.io-client';
 
-import "../App.css";
+import '../App.css';
+import '../DragResize.css';
 import '../style/dark-theme.css';
-import "antd/dist/antd.css";
-import "video-react/dist/video-react.css";
+import '../style/progress-bar.css';
+import 'antd/dist/antd.css';
+import 'video-react/dist/video-react.css';
 import UploadBox from './UploadBox';
 import Footer from './Footer';
 import Header from './Header';
 import VideoSettings from './VideoSettings';
-import NotifUtils from "./notificationsUtils";
+import NotifUtils from '../utils/notifications';
 import withBananaContext from './withBananaContext';
 import { Message } from '@wikimedia/react.i18n';
-import { formatTime, decodeTime } from '../utils/time';
 
 const { OverwriteBtnTooltipMsg, showNotificationWithIcon } = NotifUtils;
 const ENV_SETTINGS = require("../env")();
@@ -43,7 +45,6 @@ class Home extends Component {
   constructor(props) {
     super(props);
 
-    this.onChange = this.onChange.bind(this);
     this.onSubmit = this.onSubmit.bind(this);
     this.handleValueChange = this.handleValueChange.bind(this);
     this.updatePlayerInfo = this.updatePlayerInfo.bind(this);
@@ -55,8 +56,8 @@ class Home extends Component {
     this.displayRotate = this.displayRotate.bind(this);
     this.displayVideoSettings = this.displayVideoSettings.bind(this);
 
-    this.handleDrag = this.handleDrag.bind(this);
     this.onDragStop = this.onDragStop.bind(this);
+    this.onResizeStop = this.onResizeStop.bind(this);
     this.beforeOnTapCrop = this.beforeOnTapCrop.bind(this);
     this.AfterOnTapCrop = this.AfterOnTapCrop.bind(this);
     this.checkTitleInUrl = this.checkTitleInUrl.bind(this);
@@ -65,11 +66,11 @@ class Home extends Component {
     this.getFileNameFromPath = this.getFileNameFromPath.bind(this);
 
     this.rotateVideo = this.rotateVideo.bind(this);
-    this.trimIntoMultipleVideos = this.trimIntoMultipleVideos.bind(this);
-    this.trimIntoSingleVideo = this.trimIntoSingleVideo.bind(this);
     this.cropVideo = this.cropVideo.bind(this);
     this.UndodisableAudio = this.UndodisableAudio.bind(this);
     this.RotateValue = this.RotateValue.bind(this);
+
+    this.videoCanPlay = this.videoCanPlay.bind(this);
 
     //Implementing steps
     this.changeStep = this.changeStep.bind(this);
@@ -77,7 +78,13 @@ class Home extends Component {
     this.state = {
       ...this.initalState(),
     }
-
+    
+    // Extract trims and related state. This will stop componenet re-rendering
+    this.trims = [];
+    this.trimMode = {
+      trimIntoSingleVideo: true,
+      trimIntoMultipleVideos: false
+    }
   }
 
   initalState() {
@@ -87,9 +94,7 @@ class Home extends Component {
         y: 0
       },
       videos: [],
-      trimMode: "single",
       inputVideoUrl: "",
-      trims: [{ from: 0, to: 5 }],
       out_width: "",
       out_height: "",
       x_value: "",
@@ -107,8 +112,6 @@ class Home extends Component {
       trimVideo: false,
       rotateVideo: false,
       cropVideo: false,
-      trimIntoSingleVideo: true,
-      trimIntoMultipleVideos: false,
       //loading button
       loading: false,
       displayLoadingMessage: false,
@@ -121,13 +124,15 @@ class Home extends Component {
       displayVideoSettings: false,
       displayURLBox: true,
       validateVideoURL: false,
-      RotateValue: -1,
+      RotateValue: 3,
+      rotateDegress: '',
       displaynewVideoName: false,
       DisplayFailedNotification: false,
-    
+
       uploadedFile: null,
       fileList: [],
-      temporaryTrimValue: [{ from: null, to: null }]
+      videoReady: false,
+      progressBarInfo: null
     }
   }
 
@@ -148,15 +153,43 @@ class Home extends Component {
       console.log(data)
       const progressData = data;
       console.log('ON PROCESSS', progressData)
-      const { stage, status, ...rest } = progressData;
+      const { stage, status } = progressData;
       if (status === 'processing') {
+        let currentTask = this.props.banana.i18n(`task-stage-${stage.replace(' ', '_')}`);
+        if(stage === 'manipulations') {
+          const tasks = [];
+          if(this.state.rotateVideo){
+            tasks.push(this.props.banana.i18n(`task-stage-rotating`))
+          }
+
+          if(this.state.disableAudio){
+            tasks.push(this.props.banana.i18n(`task-stage-losing_audio`))
+          }
+
+          if(this.state.cropVideo){
+            tasks.push(this.props.banana.i18n(`task-stage-cropping`))
+          }
+
+          if(this.state.trimVideo){
+            tasks.push(this.props.banana.i18n(`task-stage-trimming`))
+          }
+
+          currentTask += ` (${tasks.join(", ")})`;
+        }
         this.setState({
           progressPercentage: 50,
-          currentTask: this.props.banana.i18n(`task-stage-${stage.replace(' ', '_')}`),
+          currentTask: currentTask
         });
       } else if (status === 'done') {
         this.previewCallback({ data: { videos: progressData.outputs } })
       }
+    });
+
+    socket.on('progress:updateBar', data => {
+      const { progress_info } = data;
+      this.setState({
+        progressBarInfo: progress_info
+      });
     });
 
     // Check if title passed as parameter into url
@@ -172,6 +205,14 @@ class Home extends Component {
 
   resetState = () => {
     this.setState({ ...this.initalState() });
+  }
+
+  updateTrimsFromChild = (type, newValue) => {
+    if(type === 'trims') {
+      this.trims = newValue;  
+    } else if (type === 'trimMode') {
+      this.trimMode = newValue;
+    }
   }
 
   enterLoading = () => {
@@ -195,8 +236,15 @@ class Home extends Component {
   RotateValue(RotateValue) {
     RotateValue = (RotateValue + 1) % 4;
     this.setState({
-      RotateValue: RotateValue
-    })
+      RotateValue: RotateValue,
+      rotateDegress: (RotateValue === 3) ? '' : ' - ' + (RotateValue + 1) * 90 + 'deg'
+    });
+
+    if (RotateValue === 3) {
+      this.setState({
+        rotateVideo: false
+      })
+    }
   }
 
   changeStep = num => {
@@ -332,19 +380,6 @@ class Home extends Component {
     });
   }
 
-  trimIntoMultipleVideos() {
-    this.setState({
-      trimIntoMultipleVideos: true,
-      trimIntoSingleVideo: false
-    });
-  }
-
-  trimIntoSingleVideo() {
-    this.setState({
-      trimIntoSingleVideo: true,
-      trimIntoMultipleVideos: false
-    });
-  }
 
   displayVideoSettings() {
     this.setState({
@@ -356,165 +391,7 @@ class Home extends Component {
     this.setState({
       displayCrop: true,
       displayTrim: false,
-      displayRotate: false,
       displayPlayer: false
-    }, () => {
-      const self = this;
-      const resizerBlock = this.dragRef;
-      if (!resizerBlock) return;
-      const resizers = resizerBlock.querySelectorAll('.resizer');
-
-      const minSize = 100;
-      let original_width = 0;
-      let original_height = 0;
-      let original_mouse_x = 0;
-      let original_mouse_y = 0;
-      let transformValue = [0, 0];
-
-      let width = 0;
-      let height = 0;
-      let top = 0;
-      let left = 0;
-
-      function getTruePropertyValue(property) {
-        return parseFloat(getComputedStyle(resizerBlock, null).getPropertyValue(property).replace('px', ''));
-      }
-
-      function getTransformValue() {
-        return resizerBlock.style.transform.replace(/[^0-9\-.,]/g, '').split(',').map(Number);
-      }
-
-      function getPlayerCoords() {
-        return document.getElementById('video-1').getBoundingClientRect();
-      }
-
-      resizers.forEach(resizer => {
-        const resizerPosition = resizer.className.split(' ')[1];
-
-        resizer.addEventListener('mousedown', e => {
-          e.preventDefault();
-
-          original_width = getTruePropertyValue('width');
-          original_height = getTruePropertyValue('height');
-          transformValue = getTransformValue();
-          original_mouse_x = e.pageX;
-          original_mouse_y = e.pageY;
-
-          window.addEventListener('mousemove', resize);
-          window.addEventListener('mouseup', stopResize);
-        });
-
-        resizer.addEventListener('touchstart', e => {
-          e.preventDefault();
-
-          original_width = getTruePropertyValue('width');
-          original_height = getTruePropertyValue('height');
-          transformValue = getTransformValue();
-
-          // taking the first touch event and
-          // ignoring touch events for other fingers
-          original_mouse_x = e.changedTouches[0].pageX;
-          original_mouse_y = e.changedTouches[0].pageY;
-
-          window.addEventListener('touchmove', resize);
-          window.addEventListener('touchend', stopResize);
-        });
-
-        function resize(e) {
-          // check if it is a touch interface,
-          // else do everything the usual way
-          e = (e.changedTouches && e.changedTouches[0]) || e;
-          switch (resizerPosition) {
-            case 'top-center':
-              top = e.pageY - original_mouse_y;
-              height = original_height - (e.pageY - original_mouse_y);
-              if (height > minSize && transformValue[1] + top >= 0) {
-                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1] + top}px)`;
-                resizerBlock.style.height = `${height}px`;
-              }
-              break;
-            case 'bottom-center':
-              height = original_height + (e.pageY - original_mouse_y);
-              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
-                resizerBlock.style.height = `${height}px`;
-              }
-              break;
-            case 'left-center':
-              left = e.pageX - original_mouse_x;
-              width = original_width - (e.pageX - original_mouse_x);
-              if (width > minSize && transformValue[0] + left >= 0) {
-                resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1]}px)`;
-                resizerBlock.style.width = `${width}px`;
-              }
-              break;
-            case 'right-center':
-              width = original_width + (e.pageX - original_mouse_x);
-              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
-                resizerBlock.style.width = `${width}px`;
-              }
-              break;
-            case 'top-left':
-              width = original_width - (e.pageX - original_mouse_x);
-              height = original_height - (e.pageY - original_mouse_y);
-              if (width > minSize && transformValue[0] + (e.pageX - original_mouse_x) >= 0) {
-                resizerBlock.style.width = `${width}px`;
-                left = e.pageX - original_mouse_x;
-              }
-              if (height > minSize && transformValue[1] + (e.pageY - original_mouse_y) >= 0) {
-                resizerBlock.style.height = `${height}px`;
-                top = e.pageY - original_mouse_y;
-              }
-              resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1] + top}px)`;
-              break;
-            case 'top-right':
-              width = original_width + (e.pageX - original_mouse_x);
-              height = original_height - (e.pageY - original_mouse_y);
-              top = e.pageY - original_mouse_y;
-              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
-                resizerBlock.style.width = `${width}px`;
-              }
-              if (height > minSize && transformValue[1] + top >= 0) {
-                resizerBlock.style.height = `${height}px`;
-                resizerBlock.style.transform = `translate(${transformValue[0]}px, ${transformValue[1] + top}px)`;
-              }
-              break;
-            case 'bottom-left':
-              height = original_height + (e.pageY - original_mouse_y);
-              width = original_width - (e.pageX - original_mouse_x);
-              left = e.pageX - original_mouse_x;
-              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
-                resizerBlock.style.height = `${height}px`;
-              }
-              if (width > minSize && transformValue[0] + left >= 0) {
-                resizerBlock.style.width = `${width}px`;
-                resizerBlock.style.transform = `translate(${transformValue[0] + left}px, ${transformValue[1]}px)`;
-              }
-              break;
-            case 'bottom-right':
-              width = original_width + (e.pageX - original_mouse_x);
-              height = original_height + (e.pageY - original_mouse_y);
-              if (width > minSize && transformValue[0] + width <= parseFloat(getPlayerCoords().width)) {
-                resizerBlock.style.width = `${width}px`;
-              }
-              if (height > minSize && transformValue[1] + height <= parseFloat(getPlayerCoords().height)) {
-                resizerBlock.style.height = `${height}px`;
-              }
-              break;
-            default:
-              break;
-          }
-        }
-
-        function stopResize() {
-          if (self.refs.player !== undefined) {
-            self.onDragStop();
-            window.removeEventListener('mousemove', resize);
-            window.removeEventListener('touchmove', resize);
-            window.removeEventListener('mouseup', stopResize);
-            window.removeEventListener('touchend', stopResize);
-          }
-        }
-      });
     });
   }
 
@@ -537,17 +414,14 @@ class Home extends Component {
       displayPlayer: true,
       displayCrop: false,
       displayRotate: false,
-      trimMode: "trim"
     });
   }
 
   displayRotate() {
     this.setState({
       displayRotate: true,
-      displayCrop: false,
       displayTrim: false,
       displayPlayer: false,
-      trimMode: "rotate"
     });
   }
 
@@ -569,67 +443,31 @@ class Home extends Component {
     });
   }
 
-  onChangeRadioButton = e => {
+  onDragStop(data) {
+    const { left, top, width, height } = data;
     this.setState({
-      value: e.target.value
+      x_value: left,
+      y_value: top,
+      out_height: height,
+      out_width: width
     });
-  };
 
-  // This is to add multiple "From" and "To" while trimming
-  add() {
-    let trims = this.state.trims;
-    trims.push({ from: 0, to: 5 });
-    let temporaryTrimValue = this.state.temporaryTrimValue;
-    temporaryTrimValue.push({ from: null, to: null });
+  }
+
+  onResizeStop(data) {
+    const { left, top, width, height } = data;
     this.setState({
-      trims: trims,
-      temporaryTrimValue: temporaryTrimValue
-    });
-  };
-
-  onChange = e => {
-    let trims = this.state.trims;
-    const id = e.target.id;
-    const index = id.match(/\d+/g).map(Number)[0];
-
-    if (id.includes("from")) {
-      trims[index].from = e.target.value;
-    } else if (id.includes("to")) {
-      trims[index].to = e.target.value;
-    }
-    this.setState({
-      trims: trims
-    });
-  };
-
-  handleDrag(ui) {
-    const { x, y } = this.state.deltaPosition;
-    this.setState({
-      deltaPosition: {
-        x: x + ui.deltaX,
-        y: y + ui.deltaY
-      }
+      x_value: left,
+      y_value: top,
+      out_height: height,
+      out_width: width
     });
   }
 
-  onDragStop() {
-    const parentBox = this.refs.player.video.video.getBoundingClientRect();
+  videoCanPlay(...args) {
     this.setState({
-      duration: this.refs.player.video.video
-        .duration
-    });
-    if (!this.dragRef) return;
-    const dragElBox = this.dragRef.getBoundingClientRect();
-    const xPercentage = ((dragElBox.x - parentBox.x) / parentBox.width * 100);
-    const yPercentage = ((dragElBox.y - parentBox.y) / parentBox.height * 100);
-    const widthPercentage = (dragElBox.width / parentBox.width * 100);
-    const heightPercentage = (dragElBox.height / parentBox.height * 100);
-    this.setState({
-      x_value: xPercentage,
-      y_value: yPercentage,
-      out_height: heightPercentage,
-      out_width: widthPercentage
-    });
+      videoReady: true
+    })
   }
 
   previewCallback(res) {
@@ -658,13 +496,13 @@ class Home extends Component {
         res.data.videos.map((item, index) => {
           let newVideoTitle = this.state.videos[index].title.split('.');
           let oldVideoTitle = this.state.videos[index].title.split('.');
-          
+
           newVideoTitle[0] = newVideoTitle[0].concat('_(edited)');
 
           if (index > 0) newVideoTitle[0] = newVideoTitle[0].concat(`(${index})`);
           newVideoTitle[1] = item.split('.')[1];
           newVideoTitle = newVideoTitle.join('.');
-          
+
           if (index > 0) oldVideoTitle[0] = oldVideoTitle[0].concat(`(${index})`);
           oldVideoTitle[1] = item.split('.')[1];
           oldVideoTitle = oldVideoTitle.join('.');
@@ -716,12 +554,12 @@ class Home extends Component {
     const self = this;
     const obj = {
       inputVideoUrl: this.state.inputVideoUrl,
-      trims: this.state.trims,
+      trims: this.trims,
       out_width: this.state.out_width,
       out_height: this.state.out_height,
       x_value: this.state.x_value,
       y_value: this.state.y_value,
-      trimMode: this.state.trimIntoSingleVideo ? "single" : "multiple",
+      trimMode: this.trimMode.trimIntoSingleVideo ? "single" : "multiple",
       value: this.state.value,
       user: this.state.user,
       trimVideo: this.state.trimVideo,
@@ -729,8 +567,8 @@ class Home extends Component {
       rotateVideo: this.state.rotateVideo,
       cropVideo: this.state.cropVideo,
       disableAudio: this.state.disableAudio,
-      trimIntoMultipleVideos: this.state.trimIntoMultipleVideos,
-      trimIntoSingleVideo: this.state.trimIntoSingleVideo,
+      trimIntoMultipleVideos: this.trimMode.trimIntoMultipleVideos,
+      trimIntoSingleVideo: this.trimMode.trimIntoSingleVideo,
       RotateValue: this.state.RotateValue,
       videos: this.state.upload
         ? this.state.videos.filter(video => video.displayUploadToCommons)
@@ -738,8 +576,8 @@ class Home extends Component {
     };
 
     let newVideos = this.state.videos;
-    if (!this.state.upload && this.state.trims.length > 1) {
-      for (let i = 0; i <= this.state.trims.length; i++) {
+    if (!this.state.upload && this.trims.length > 1) {
+      for (let i = 0; i <= this.trims.length; i++) {
         newVideos.push(this.state.videos[0]);
       }
     }
@@ -797,7 +635,7 @@ class Home extends Component {
         text: this.props.banana.i18n('setting-audio'),
       },
       {
-        icon:"redo",
+        icon: "redo",
         property: false,
         undoProperty: !this.state.rotateVideo,
         click: () => {
@@ -806,12 +644,14 @@ class Home extends Component {
           this.displayRotate();
         },
         undoClick: () => {
+          this.RotateValue(2);
+          this.displayRotate();
           this.setState({ rotateVideo: false });
         },
-        text: this.props.banana.i18n('setting-rotate'),
+        text: this.props.banana.i18n('setting-rotate') + this.state.rotateDegress,
       },
       {
-        icon:"scissor",
+        icon: "scissor",
         property: this.state.trimVideo,
         undoProperty: !this.state.trimVideo,
         click: () => {
@@ -892,8 +732,6 @@ class Home extends Component {
             trimVideo: false,
             rotateVideo: false,
             cropVideo: false,
-            trimIntoSingleVideo: true,
-            trimIntoMultipleVideos: false,
             disableAudio: false,
             displayURLBox: false,
           });
@@ -915,21 +753,36 @@ class Home extends Component {
   }
 
   render() {
-    const dragHandlers = { onStart: this.onStart, onStop: this.onStop };
-    const { uploadedFile } = this.state;
-    const uploadProperties = this.getUploadProperties();
+    // Rotate video inside container and scale to fit height
+    if (this.refs.player && this.state.changeStep !== 3) {
+      const videoEl = document.querySelector('#video-player');
+      const videoWidth = videoEl.offsetWidth;
+      const videoHeight = videoEl.offsetHeight;
+
+      // rotate video accourding to rotate value
+      let transform = `rotate(${(this.state.RotateValue + 1) * 90}deg)`;
+
+      // if video is rotated 90 or 180 deg then add scale
+      if (this.state.RotateValue === 0 || this.state.RotateValue === 2) {
+        const scale = videoHeight / videoWidth;
+        transform += ` scale(${scale})`;
+      }
+
+      // Apply transform
+      document.querySelector('#video-player').style.transform = transform;
+    }
 
     console.log("URL: " + this.state.inputVideoUrl);
 
     return (
       <Layout className="layout">
         <Header
-          parentUserUpdateCallback={(user) => { this.setState({user: user}); }}
+          parentUserUpdateCallback={(user) => { this.setState({ user: user }); }}
           parentLanguageUpdateCallback={this.props.parentLanguageUpdateCallback}
           socket={socket} width={this.state.width}
           api_url={API_URL} />
         <form onSubmit={this.onSubmit}>
-          <Content className="Content">
+          <Content className="Content" style={{ maxWidth: '99%' }}>
             <div className="row m-0">
               <div className="col-sm-12 col-md-8 p-4">
                 <div>
@@ -958,7 +811,7 @@ class Home extends Component {
                       <div
                         style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
                       >
-                        {!this.state.upload && <Spin size="large" style={{ marginBottom: 2 }} />}
+                        {!this.state.upload && <ProgressBar info={this.state.progressBarInfo} />}
                         {/*Modify*/}
                         <p style={{ marginBottom: 0 }}>
                           <Message id="task-current" placeholders={[this.state.currentTask]} />
@@ -986,16 +839,24 @@ class Home extends Component {
                             </ul>
                           </>
                         ) : (
-                            <>
-                              <p style={{ margin: "5px 0" }}>
-                                <Message id="new-video" /> <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
-                                  https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
-                                </a>
-                              </p>
-                            </>
-                          )}
+                          <>
+                            <p style={{ margin: "5px 0" }}>
+                              <Message id="new-video" /> <a href={`https://commons.wikimedia.org/wiki/File:${this.state.videos[0].title}`} target="_blank" rel="noopener noreferrer">
+                                https://commons.wikimedia.org/wiki/File:{this.state.videos[0].title}
+                              </a>
+                            </p>
+                          </>
+                        )}
                       </div>
                     )}
+                    {this.state.displayVideoSettings && this.state.trimVideo && (
+                    <Trim
+                      player={this.refs.player}
+                      videoSelector='#video-player'
+                      videoReady={this.state.videoReady}
+                      trimsUpdater={this.updateTrimsFromChild}
+                      ></Trim>
+                     )}
                     {this.state.changeStep === 3 && this.state.videos.map(video => (
                       <div className="row" key={'preview-video-' + video.path}>
                         <div className="col-sm-12 p-2">
@@ -1006,7 +867,7 @@ class Home extends Component {
                                 this.player = player;
                               }}
                               ref="player"
-                              videoId="video-1"
+                              videoId="video-player"
                             >
                               <BigPlayButton position="center" />
                               <source src={`${API_URL}/${video.path}`} />
@@ -1016,9 +877,9 @@ class Home extends Component {
                       </div>
                     ))}
 
-                    {/* Crop Video */}
-                    {this.state.displayVideoSettings && !this.state.displayRotate ? (
-                      <div>
+                    {/* Rotate and Crop Video */}
+                    {this.state.displayVideoSettings || this.state.displayRotate ? (
+                      <div id="RotateCropVideo">
                         <div
                           className="box"
                           style={{
@@ -1029,66 +890,31 @@ class Home extends Component {
                           }}
                         >
                           {this.state.cropVideo && (
-                              <Draggable
-                                bounds="parent"
-                                {...dragHandlers}
-                                axis="both"
-                                handle="#draggable-area"
-                                onDrag={(e, ui) => {
-                                  this.handleDrag(ui);
-                                }}
-                                onStop={this.onDragStop}
-                              >
-                                <div
-                                  ref={ref => (this.dragRef = ref)}
-                                  className="box"
-                                  id="crop-area"
-                                  onHeightReady={height =>
-                                    console.log("Height: " + height)
-                                  }
-                                  style={{ height: "95%", width: "95%" }}
-                                >
-                                    <div id="draggable-area"></div>
-                                    <div className="resizers">
-                                      <div className="resizer top-left"></div>
-                                      <div className="resizer top-center"></div>
-                                      <div className="resizer top-right"></div>
-                                      <div className="resizer bottom-left"></div>
-                                      <div className="resizer bottom-center"></div>
-                                      <div className="resizer bottom-right"></div>
-                                      <div className="resizer left-center"></div>
-                                      <div className="resizer right-center"></div>
-                                    </div>
-                                    <div className="crosshair"></div>
-                                </div>
-                              </Draggable>
+                            <DragResize
+                              boundsEl='#video-player'
+                              playerState={this.refs.player.getState()}
+                              rotateValue={this.state.RotateValue}
+                              onDragStop={this.onDragStop}
+                              onResizeStop={this.onResizeStop}
+                              videoReady={this.state.videoReady}
+                            />
                           )}
 
-                            <Player
-                              ref="player"
-                              height="300"
-                              width="300"
-                              videoId="video-1"
-                            >
-                              <BigPlayButton position="center" />
-                              <source src={this.state.playerSource} />
-                            </Player>
-                          </div>
-                      </div>
-
-                    ) : null}
-
-                    {/* Rotate Video */}
-                    {this.state.displayRotate ? (
-                      <div>
-                        <div id={"RotatePlayerValue" + this.state.RotateValue} style={{ marginTop: "8em" }} >
-                          <Player ref="player" videoId="video-1" >
+                          <Player
+                            ref="player"
+                            videoId="video-player"
+                            style={{ width: "100%", height: "100%" }}
+                            onCanPlay={this.videoCanPlay}
+                            muted={this.state.disableAudio}
+                          >
                             <BigPlayButton position="center" />
                             <source src={this.state.playerSource} />
                           </Player>
                         </div>
                       </div>
+
                     ) : null}
+
                   </div>
                 </div>
               </div>
@@ -1102,176 +928,6 @@ class Home extends Component {
                     </h5>
                     <VideoSettings settings={this.getSettings()} />
                     <Divider />
-                    {this.state.trimVideo ? (
-                      <Col>
-                        <h5>
-                          <Message id="video-trim-title" />
-                        </h5>
-                        {this.refs.player && this.state.trims.map((trim, i) => (
-                          <React.Fragment key={'trim-' + i}>
-                            <Slider
-                              range
-                              step={0.1}
-                              min={0}
-                              max={this.refs.player.video.video.duration}
-                              value={[trim.from, trim.to]}
-                              tipFormatter={formatTime}
-                              onChange={obj => {
-                                let trims = this.state.trims;
-                                trims[i].from = obj[0];
-                                trims[i].to = obj[1];
-                                this.setState({
-                                  trims: trims
-                                });
-                                if (this.unsubscribeToStateChanges) {
-                                  this.unsubscribeToStateChanges();
-                                }
-                                this.refs.player.seek(obj[0]);
-                                this.refs.player.play();
-                                this.unsubscribeToStateChanges = this.refs.player.subscribeToStateChange((state) => {
-                                  if (state.currentTime > obj[1]) {
-                                    this.refs.player.pause();
-                                  }
-                                });
-                              }}
-                            />
-                            <div className="row" key={i}>
-                              <div className="col-md-6">
-                                <Typography.Text
-                                  strong
-                                  style={{ paddingRight: "0.2rem" }}
-                                >
-                                  <Message id="video-trim-from" />
-                                </Typography.Text>
-                                <div className="form-group">
-                                  <Input
-                                    placeholder="hh:mm:ss"
-                                    id={`trim-${i}-from`}
-                                    value={this.state.temporaryTrimValue[i].from||formatTime(trim.from)}
-                                    onChange={ obj => {
-                                      let temporaryTrimValue = this.state.temporaryTrimValue;
-                                      temporaryTrimValue[i].from = obj.target.value;
-                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
-                                        this.setState({
-                                          temporaryTrimValue: temporaryTrimValue
-                                        });
-                                      }
-                                      if ( this.timeout ) {
-                                        clearTimeout( this.timeout );
-                                      }
-                                      this.timeout = setTimeout(() =>{
-                                        let trims = this.state.trims;
-                                        let temporaryTrimValue = this.state.temporaryTrimValue;
-                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].from );
-                                        if ( decodedTime !== null ) {
-                                          if ( decodedTime <= trims[i].to ){
-                                            trims[i].from = decodedTime;
-                                          } else {
-                                            trims[i].from = trims[i].to;
-                                            trims[i].to = decodedTime;
-                                            temporaryTrimValue[i].to = null;
-                                          }
-                                          temporaryTrimValue[i].from = null;
-                                        }
-                                        this.setState({
-                                          trims: trims
-                                        });
-                                      }, 1000);
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              <div className="col-md-6">
-                                <Typography.Text
-                                  strong
-                                  style={{ paddingRight: "0.2rem" }}
-                                >
-                                  <Message id="video-trim-to" />
-                                </Typography.Text>
-                                <div className="form-group">
-                                  <Input
-                                    placeholder="hh:mm:ss"
-                                    id={`trim-${i}-to`}
-                                    value={this.state.temporaryTrimValue[i].to||formatTime(trim.to)}
-                                    onChange={ obj => {
-                                      let temporaryTrimValue = this.state.temporaryTrimValue;
-                                      temporaryTrimValue[i].to = obj.target.value;
-                                      if( obj.target.value === '' || /^[0-9:.]*$/.test( obj.target.value ) ){
-                                        this.setState({
-                                          temporaryTrimValue: temporaryTrimValue
-                                        });
-                                      }
-                                      if ( this.timeout ) {
-                                        clearTimeout( this.timeout );
-                                      }
-                                      this.timeout = setTimeout(() => {
-                                        let trims = this.state.trims;
-                                        let temporaryTrimValue = this.state.temporaryTrimValue;
-                                        let decodedTime = decodeTime( this.state.temporaryTrimValue[i].to );
-                                        if ( decodedTime !== null ) {
-                                          if ( decodedTime >= trims[i].from ){
-                                            trims[i].to = decodedTime;
-                                          } else {
-                                            trims[i].to = trims[i].from;
-                                            trims[i].from = decodedTime;
-                                            temporaryTrimValue[i].from = null;
-                                          }
-                                          temporaryTrimValue[i].to = null;
-                                        }
-                                        this.setState({
-                                          trims: trims
-                                        });
-                                      }, 1000);
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              {i > 0 && (
-                                <div className="col-md-4">
-                                  <Button style={{ height: '100%' }} block onClick={() => {
-                                    let newTrimsVar = this.state.trims.slice();
-                                    newTrimsVar.splice(i, 1);
-                                    this.setState({ trims: newTrimsVar });
-                                  }}>
-                                    <Icon type="close" />
-                                  </Button>
-                                </div>
-                              )}
-                            </div>
-                          </React.Fragment>
-                        ))}
-                        <Button
-                          type="primary"
-                          onClick={() => {
-                            this.add();
-                          }}
-                          style={{ width: "100%", margin: "1rem 0" }}
-                        >
-                          <Icon type="plus" /> <Message id="video-trim-more" />
-                        </Button>
-                        <br />
-                        {this.state.trims.length > 1 && (
-                          <div className="row p-3">
-                            <div className="col-sm-6">
-                              <Radio
-                                checked={this.state.trimIntoSingleVideo}
-                                onClick={this.trimIntoSingleVideo}
-                              >
-                                <Message id="video-trim-more-concatenate" />
-                              </Radio>
-                            </div>
-                            <div className="col-sm-6">
-                              <Radio
-                                checked={this.state.trimIntoMultipleVideos}
-                                onClick={this.trimIntoMultipleVideos}
-                              >
-                                <Message id="video-trim-more-multiple" />
-                              </Radio>
-                            </div>
-                          </div>
-                        )}
-                      </Col>
-                    ) : null}
 
                     <h5 style={{ textAlign: "center" }}>
                       <Message id="preview-title" />
@@ -1313,13 +969,13 @@ class Home extends Component {
                     {this.state.videos.map((video, index, videoArr) => (
                       <div key={'option-' + video.path}>
                         <div id={video.path.split('/').pop().split('.')[0]}>
-                          <h6 style={{ textAlign: 'center' }}>{video.title}</h6>
+                          <h6 className="final-video-title" style={{ textAlign: 'center' }}>{video.title}</h6>
                           <div className="button-columns row-on-mobile">
                             <div className="row">
                               <div className="col-sm-6 col-md-6 py-1">
                                 <Button block type="primary">
                                   <a href={`${API_URL}/download/${video.path}`}>
-                                    <Message id="step-result-choice-download" />
+                                    <Icon type="DownloadOutlined" /><Message id="step-result-choice-download" />
                                   </a>
                                 </Button>
                               </div>
@@ -1375,12 +1031,12 @@ class Home extends Component {
                                         <Message id="upload-action-overwrite" />
                                       </Radio.Button>
                                     ) : (
-                                        <Tooltip title={OverwriteBtnTooltipMsg(this.state, this.props.banana)}>
-                                          <Radio.Button value="overwrite" disabled>
-                                            <Message id="upload-action-overwrite" />
-                                          </Radio.Button>
-                                        </Tooltip>
-                                      )}
+                                      <Tooltip title={OverwriteBtnTooltipMsg(this.state, this.props.banana)}>
+                                        <Radio.Button value="overwrite" disabled>
+                                          <Message id="upload-action-overwrite" />
+                                        </Radio.Button>
+                                      </Tooltip>
+                                    )}
                                     <Radio.Button value="new-file" onChange={() => {
                                       const newVideoList = videoArr;
 
@@ -1466,32 +1122,32 @@ class Home extends Component {
                           <Button
                             type="primary"
                             onClick={e => {
-                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: this.context('task-uploading-wikimedia-commons'), progressPercentage: 0 }, () => {
+                              this.setState({ upload: true, displayLoadingMessage: true, displaynewVideoName: true, loading: true, currentTask: this.props.banana.i18n('task-uploading-wikimedia-commons'), progressPercentage: 0 }, () => {
                                 this.onSubmit(e);
                               });
-                              setTimeout(() => this.setState({currentTask: this.props.banana.i18n('task-uploaded-wikimedia-commons'), loading: false,  displayLoadingMessage: false  }), 10000);
+                              setTimeout(() => this.setState({ currentTask: this.props.banana.i18n('task-uploaded-wikimedia-commons'), loading: false, displayLoadingMessage: false }), 10000);
                             }}
-                            
+
                             loading={this.state.loading}
                             block
                           >
                             <Icon type="upload" /> <Message id="upload-button" />
-                            </Button>
+                          </Button>
                         ) : (
-                            <Tooltip
-                              placement="topLeft"
-                              title={<Message id="login-alert-upload" />}
+                          <Tooltip
+                            placement="topLeft"
+                            title={<Message id="login-alert-upload" />}
+                          >
+                            <Button
+                              type="primary"
+                              onClick={() => showNotificationWithIcon("info", this.props.banana.i18n('notifications-wait'), this.props.banana)}
+                              disabled
+                              block
                             >
-                              <Button
-                                type="primary"
-                                onClick={() => showNotificationWithIcon("info", this.props.banana.i18n('notifications-wait'), this.props.banana)}
-                                disabled
-                                block
-                              >
-                                <Icon type="upload" /> <Message id="upload-button" />
-                              </Button>
-                            </Tooltip>
-                          )}
+                              <Icon type="upload" /> <Message id="upload-button" />
+                            </Button>
+                          </Tooltip>
+                        )}
                       </div>
                     )}
                   </>
@@ -1501,9 +1157,9 @@ class Home extends Component {
             <br />
           </Content>
         </form>
-     <Footer />
+        <Footer />
       </Layout >
-        );
+    );
   }
 }
 

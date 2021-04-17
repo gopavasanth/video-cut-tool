@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Si109",
 			"Yfdyh000"
 		]
 	},
@@ -38,11 +39,15 @@
 	"success": "成功完成 :)",
 	"task-current": "您的视频$1",
 	"task-processing": "正在处理",
+	"task-stage-downloading": "下载中",
 	"task-stage-converting_video_format": "正在转换视频格式",
 	"task-stage-cropping": "剪辑中",
 	"task-uploaded-wikimedia-commons": "已上传到维基共享资源",
 	"task-uploading": "正在上传",
 	"task-uploading-wikimedia-commons": "正在上传到维基共享资源",
+	"progress-speed": "速度",
+	"progress-time": "时间",
+	"progress-frame": "框",
 	"undo": "撤销",
 	"upload-action-new-file": "上传为新文件",
 	"upload-action-new-file-title": "标题",

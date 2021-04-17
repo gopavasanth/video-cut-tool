@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"LaMagiaaa",
-			"Omotecho"
+			"Omotecho",
+			"Tamaki Wakita"
 		]
 	},
 	"404-go-back": "メインページへ移動する",
@@ -38,7 +39,10 @@
 	"step-video-settings-title": "ステップ2：動画設定の調整",
 	"step-video-url": "動画のURL",
 	"success": "完成が成功しました :)",
+	"task-current": "現在のステージ: $1",
 	"task-processing": "処理中",
+	"task-stage-downloading": "ダウンロード中",
+	"task-stage-manipulations": "操作",
 	"task-stage-concating": "統合中",
 	"task-stage-converting_video_format": "動画のフォーマットを変換",
 	"task-stage-losing_audio": "音声を除去中",
@@ -47,6 +51,10 @@
 	"task-uploaded-wikimedia-commons": "ウィキメディア コモンズにアップロードしました",
 	"task-uploading": "アップロード中です",
 	"task-uploading-wikimedia-commons": "コモンズにアップロード中です",
+	"progress-bitrate": "ビットレート",
+	"progress-speed": "スピード",
+	"progress-time": "日時",
+	"progress-frame": "フレーム",
 	"undo": "取り消し",
 	"upload-action-new-file": "新しいファイルとしてアップロードする",
 	"upload-action-new-file-title": "タイトル",

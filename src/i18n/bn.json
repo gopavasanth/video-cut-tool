@@ -1,6 +1,8 @@
 {
 	"@metadata": {
 		"authors": [
+			"R4356th",
+			"WikiAbuHuraira",
 			"আফতাবুজ্জামান"
 		]
 	},
@@ -39,6 +41,7 @@
 	"success": "সফলভাবে সম্পন্ন :)",
 	"task-current": "আপনার ভিডিওটি $1",
 	"task-processing": "প্রক্রিয়াকরণ করা হচ্ছে",
+	"task-stage-downloading": "ডাউনলোড হচ্ছে",
 	"task-stage-concating": "শ্রেণীবদ্ধভাবে সংযুক্ত করা হচ্ছে",
 	"task-stage-converting_video_format": "ভিডিও বিন্যাসে রূপান্তর করা হচ্ছে",
 	"task-stage-cropping": "কাটা হচ্ছে",
@@ -48,6 +51,10 @@
 	"task-uploaded-wikimedia-commons": "উইকিমিডিয়া কমন্সে আপলোড করা হয়েছে",
 	"task-uploading": "আপলোড করা হচ্ছে",
 	"task-uploading-wikimedia-commons": "উইকিমিডিয়া কমন্সে আপলোড করা হচ্ছে",
+	"progress-bitrate": "বিটরেট",
+	"progress-speed": "গতি",
+	"progress-time": "সময়",
+	"progress-frame": "ফ্রেম",
 	"undo": "পূর্বাবস্থায় ফেরান",
 	"upload-action-new-file": "নতুন ফাইল হিসেবে আপলোড করুন",
 	"upload-action-new-file-title": "শিরোনাম",

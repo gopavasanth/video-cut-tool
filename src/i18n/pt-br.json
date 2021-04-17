@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Eduardo Addad de Oliveira",
-			"Eduardoaddad"
+			"Eduardoaddad",
+			"Mariagarbin"
 		]
 	},
 	"404-go-back": "Vá para a página inicial",
@@ -38,8 +39,10 @@
 	"step-video-settings-title": "Etapa 2: ajustar as configurações de vídeo",
 	"step-video-url": "URL do vídeo",
 	"success": "Completado com sucesso :)",
-	"task-current": "Seu vídeo é $1",
+	"task-current": "Estágio atual: $1",
 	"task-processing": "processando",
+	"task-stage-downloading": "Baixando",
+	"task-stage-manipulations": "manipulações",
 	"task-stage-concating": "concatenando",
 	"task-stage-converting_video_format": "convertendo formato de vídeo",
 	"task-stage-cropping": "cortando",
@@ -49,6 +52,10 @@
 	"task-uploaded-wikimedia-commons": "Enviado ao Wikimedia Commons",
 	"task-uploading": "enviando",
 	"task-uploading-wikimedia-commons": "Enviando ao Wikimedia Commons",
+	"progress-bitrate": "Taxa de bits",
+	"progress-speed": "Velocidade",
+	"progress-time": "Tempo",
+	"progress-frame": "Quadro",
 	"undo": "Desfazer",
 	"upload-action-new-file": "Carregar como um novo arquivo",
 	"upload-action-new-file-title": "Título",

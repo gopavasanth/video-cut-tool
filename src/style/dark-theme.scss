@@ -10,21 +10,24 @@ $disabled-color: #656565;
 $disabled-border-color: rgba($disabled-color, 30%);
 $disabled-bg-color: desaturate($bg-color-accent2, 60%);
 body {
-  header .dark-theme-switch{
+  header .dark-theme-switch {
     border-color: lighten($border-color, 20%);
 
-    .theme-switch-inner{
+    .theme-switch-inner {
       background-color: lighten($border-color, 20%);
     }
   }
 }
 body[theme='dark'] {
-  header .dark-theme-switch{
+  header .dark-theme-switch {
     border-color: lighten($border-color, 60%);
 
-    .theme-switch-inner{
+    .theme-switch-inner {
       background-color: lighten($border-color, 60%);
     }
+  }
+  #progress-bar-wrapper .ant-progress-text {
+    color: #b6e2fa;
   }
   .ant-select-dropdown,
   .ant-select-selection {
@@ -222,6 +225,12 @@ body[theme='dark'] section {
     .ant-slider-rail,
     .ant-slider-handle {
       background-color: $bg-color-accent2;
+    }
+  }
+  #trim-video-wrapper {
+    background-color: $bg-color-accent1;
+    .video-range-box .video-marker::after {
+      color: $text-color;
     }
   }
 }
