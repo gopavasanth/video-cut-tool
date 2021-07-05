@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"GuoPC",
 			"Si109",
 			"Yfdyh000"
 		]
@@ -33,18 +34,25 @@
 	"step-result": "结果",
 	"step-result-choice-download": "下载",
 	"step-result-choice-upload": "上传到维基共享资源",
+	"step-result-title": "第三步：做出选择",
 	"step-video-settings": "视频设置",
 	"step-video-settings-title": "第二步：调整视频设置",
 	"step-video-url": "视频网址",
 	"success": "成功完成 :)",
-	"task-current": "您的视频$1",
+	"task-current": "当前阶段：$1",
 	"task-processing": "正在处理",
 	"task-stage-downloading": "下载中",
+	"task-stage-manipulations": "操作",
+	"task-stage-concating": "连接中",
 	"task-stage-converting_video_format": "正在转换视频格式",
 	"task-stage-cropping": "剪辑中",
+	"task-stage-losing_audio": "丢弃音频中",
+	"task-stage-rotating": "旋转中",
+	"task-stage-trimming": "裁剪中",
 	"task-uploaded-wikimedia-commons": "已上传到维基共享资源",
 	"task-uploading": "正在上传",
 	"task-uploading-wikimedia-commons": "正在上传到维基共享资源",
+	"progress-bitrate": "比特率",
 	"progress-speed": "速度",
 	"progress-time": "时间",
 	"progress-frame": "框",
