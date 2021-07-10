@@ -5,6 +5,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 
 import { IntlProvider } from '@wikimedia/react.i18n'
 
+import bn from './i18n/bn';
 import da from './i18n/da';
 import de from './i18n/de';
 import en from './i18n/en';
@@ -56,7 +57,7 @@ class App extends Component {
   render() {
     return (
       <React.Fragment>
-        <IntlProvider locale={this.state.locale} messages={{da, de, en, es, fi, fr, ko, kulatn, lb, mk, ptbr, ru, sv, tr, zhhans, zhhant}}>
+        <IntlProvider locale={this.state.locale} messages={{bn, da, de, en, es, fi, fr, ko, kulatn, lb, mk, ptbr, ru, sv, tr, zhhans, zhhant}}>
           <BrowserRouter>
             <AppRoutes languageUpdateCallback={this.languageUpdateCallback.bind(this)} />
           </BrowserRouter>
