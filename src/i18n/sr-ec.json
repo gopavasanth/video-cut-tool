@@ -1,0 +1,37 @@
+{
+	"@metadata": {
+		"authors": [
+			"Kizule"
+		]
+	},
+	"error": "Нешто није у реду",
+	"file-not-existing": "Датотека не постоји",
+	"footer-authors": "$1 и $2",
+	"languages": "Језици",
+	"logout-confirm-no": "Не",
+	"logout-confirm-text": "Јесте ли сигурни?",
+	"logout-confirm-yes": "Да",
+	"notifications-not-existing": "Датотека не постоји на Викимедијиној Остави",
+	"notifications-title": "Обавештење!",
+	"step-result": "Резултат",
+	"step-video-settings": "Подешавања видеа",
+	"step-video-url": "URL видеа",
+	"task-uploaded-wikimedia-commons": "Отпремљено на Викимедијину Оставу",
+	"progress-speed": "Брзина",
+	"progress-time": "Време",
+	"progress-frame": "Оквир",
+	"undo": "Опозови",
+	"upload-action-new-file": "Отпреми као нову датотеку",
+	"upload-action-new-file-title": "Наслов",
+	"upload-action-overwrite": "Замени",
+	"upload-action-title": "Акција за датотеку",
+	"upload-button": "Отпреми на Оставу",
+	"upload-comment": "Коментар отпремања:",
+	"upload-edit-button": "Уреди видео",
+	"upload-tab-upload-video": "Отпреми видео",
+	"upload-tab-video-url": "URL видеа",
+	"upload-text": "Текст:",
+	"video-trim-from": "Од",
+	"video-trim-more": "Додај још",
+	"welcome": "Добро дошли, $1"
+}
