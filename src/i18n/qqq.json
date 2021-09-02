@@ -1,11 +1,6 @@
 {
 	"@metadata": {
-		"authors": [
-			"Akmaie Ajam",
-			"FF-11",
-			"FF11",
-			"Robby"
-		]
+		"authors": ["FF-11", "FF11", "Robby"]
 	},
 	"404-go-back": "Text of button on the 404 error page",
 	"404-image-description": "Text for the alt attribute of the image on the 404 error page",
@@ -25,6 +20,7 @@
 	"notifications-not-existing": "Title of tooltip when file is not existing",
 	"notifications-not-overwritable": "Title of tooltip when file is not existing",
 	"notifications-title": "Title of all notification popups",
+	"notifications-title-error": "Title of error notification popups",
 	"notifications-wait": "Text of natification showing when starting to convert a video",
 	"preview-text": "Text of button that starts the converting process and lets the user preview the video",
 	"preview-title": "Title above the button that starts the converting process",
@@ -53,6 +49,9 @@
 	"task-uploaded-wikimedia-commons": "Shows the video was \"Uploaded to Wikimedia Commons\"",
 	"task-uploading": "Shows that the current task is \"uploading\"",
 	"task-uploading-wikimedia-commons": "Shows that the current task is \"uploading to Wikimedia Commons\"",
+	"trim-total-duration": "Shows the total duration for all trims",
+	"theme-darkmode": "Display dark mode title",
+	"theme-lightmode": "Display light mode title",
 	"progress-bitrate": "Shows the bitrate of the progress bar",
 	"progress-speed": "Shows the rate of speed of the progress bar",
 	"progress-time": "Shows the time of the progresss bar",

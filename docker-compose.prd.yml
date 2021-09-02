@@ -1,0 +1,40 @@
+version: '3.9'
+services:
+  videocuttool:
+    container_name: videocuttool
+    build:
+      context: .
+      dockerfile: Dockerfile.prd
+    volumes:
+      - ./src:/app/src:ro
+      - ./server:/app/server
+      - ./public:/app/public
+      - '/app/node_modules'
+    ports:
+      - '80:80'
+      - '4000:4000'
+    environment:
+      - NODE_ENV=production
+    networks:
+      - my-network
+    links:
+      - mongodb
+    depends_on:
+      - mongodb
+  mongodb:
+    image: 'mongo:4'
+    command: ["--bind_ip_all"]
+    # environment:
+    #   - MONGO_INITDB_ROOT_USERNAME=admin
+    #   - MONGO_INITDB_ROOT_PASSWORD=<YOUR_PASSWORD>
+    ports:
+      - 27017:27017
+    restart: always
+    # volumes:
+    #   - ./mongodb/db:/data/db
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

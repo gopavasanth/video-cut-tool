@@ -24,7 +24,7 @@ yarn-error.log*
 
 # server
 /server/node_modules
-
-#OAuth
-config.js
-.eslintrc.js
+/server/videos/*
+!/server/videos/.gitkeep
+/server/public/*
+!/server/public/.gitkeep
