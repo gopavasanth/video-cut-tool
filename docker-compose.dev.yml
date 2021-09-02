@@ -1,0 +1,27 @@
+version: '3.7'
+services:
+  videocuttool:
+    container_name: videocuttool
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./src:/app/src:ro
+      - ./server:/app/server
+      - ./public:/app/public
+      - '/app/node_modules'
+    ports:
+      - '3000:3000'
+      - '4000:4000'
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+      - NODE_ENV=development
+    links:
+      - mongo
+    depends_on:
+      - mongo
+  mongo:
+    container_name: videocuttool-mongo
+    image: 'mongo:4'
+    ports:
+      - '27017:27017'

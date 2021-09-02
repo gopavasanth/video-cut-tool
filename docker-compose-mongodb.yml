@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  mongo:
+    image: mongo
+    container_name: "mongo"
+    restart: always
+    # environment:
+    #   MONGO_INITDB_ROOT_USERNAME: root
+    #   MONGO_INITDB_ROOT_PASSWORD: example
+    volumes:
+      - './dockervolume/mongodb:/data/db'
+    ports:
+      - 27018:27017

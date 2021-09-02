@@ -1,0 +1,25 @@
+# Install node
+FROM node:14
+
+# Install FFMPEG library
+RUN apt update -y
+RUN apt install ffmpeg -y
+
+# Set the workdir /app
+WORKDIR /app
+
+# Frontend
+# Copy the package.json to workdir
+COPY package.json ./
+COPY server/package.json ./server/
+
+# Run npm install - install the npm dependencies
+RUN npm install --legacy-peer-deps
+
+# Copy application source
+COPY . .
+
+EXPOSE 3000 4000 8081
+
+# Start the application
+CMD ["npm", "run", "dev"]

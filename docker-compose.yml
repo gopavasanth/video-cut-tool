@@ -1,0 +1,13 @@
+version: '3.4'
+
+services:
+  videocuttool:
+    image: videocuttool
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    environment:
+      NODE_ENV: production
+    ports:
+      - 80:80
+      - 4000:4000

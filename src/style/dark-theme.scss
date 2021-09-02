@@ -1,230 +1,93 @@
-$bg-color: #11161c;
-$bg-color-accent1: #0f1d2b;
-$bg-color-accent2: #10273b;
-$bg-color-accent3: #0f304f;
-$bg-color-accent4: #0c3d69;
-$border-color: #0f304f;
+@import '_mixins';
+$bg-color-accent0: #032948;
+$bg-color-accent1: #064273;
+$bg-color-accent2: #0c436f;
+$bg-color-accent3: #105288;
+$bg-color-accent4: #54a0de;
+$border-color: #0074a2;
 $text-color: #b6e2fa;
 
 $disabled-color: #656565;
 $disabled-border-color: rgba($disabled-color, 30%);
 $disabled-bg-color: desaturate($bg-color-accent2, 60%);
-body {
-  header .dark-theme-switch{
-    border-color: lighten($border-color, 20%);
 
-    .theme-switch-inner{
-      background-color: lighten($border-color, 20%);
-    }
-  }
-}
 body[theme='dark'] {
-  header .dark-theme-switch{
-    border-color: lighten($border-color, 60%);
+	color: #b6e2fa;
 
-    .theme-switch-inner{
-      background-color: lighten($border-color, 60%);
-    }
-  }
-  #progress-bar-wrapper .ant-progress-text {
-    color: #b6e2fa
-  }
-  .ant-select-dropdown,
-  .ant-select-selection {
-    background-color: $bg-color-accent3;
-    color: $text-color;
-    border-color: $border-color;
-  }
-  .ant-select-arrow {
-    color: $text-color;
-  }
-  .ant-select-dropdown-menu-item-group-title {
-    color: darken($text-color, 20%);
-  }
-  .ant-select-dropdown-menu-item-selected {
-    background-color: $bg-color-accent2;
-  }
+	#sidebar {
+		background-color: $bg-color-accent0;
+	}
 
-  .ant-select-dropdown-menu-item {
-    color: $text-color;
-    &:hover:not(.ant-select-dropdown-menu-item-disabled) {
-      background-color: lighten($bg-color-accent3, 10%);
-    }
-  }
-  .anticon.ant-notification-notice-icon-error {
-    color: #f37370;
-  }
-  .ant-notification-notice {
-    background-color: $bg-color-accent3;
-    color: $text-color;
-    box-shadow: 0 4px 12px rgba($text-color, 13%);
-    .ant-notification-notice-message,
-    .ant-notification-notice-description {
-      color: $text-color;
-    }
-  }
-}
-body[theme='dark'] section {
-  background: $bg-color;
-  color: $text-color;
+	#content {
+		background-color: $bg-color-accent1;
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6,
-  .ant-typography {
-    color: $text-color;
-  }
-  .ant-alert-error {
-    background-color: #2a1215;
-    border-color: #58181c;
-    .ant-alert-message,
-    .ant-alert-close-icon .anticon-close {
-      color: #fac8c3;
-    }
-  }
-  .ant-steps-item-wait {
-    .ant-steps-item-icon {
-      background-color: $disabled-bg-color;
-      border-color: $disabled-border-color;
-      > .ant-steps-icon {
-        color: $disabled-color;
-      }
-    }
-  }
+		#url-box .drop-area {
+			border-color: $border-color;
 
-  .ant-steps-item-finish {
-    > .ant-steps-item-container {
-      .ant-steps-item-icon {
-        background-color: $bg-color-accent4;
-        border-color: $bg-color-accent4;
-        > .ant-steps-icon {
-          color: $text-color;
-        }
-      }
+			.drop-area-click {
+				background-color: $bg-color-accent3;
+			}
+		}
 
-      > .ant-steps-item-content {
-        > .ant-steps-item-title {
-          color: $text-color;
-        }
-      }
-    }
-  }
+		.footer-wrapper {
+			color: $text-color;
 
-  .ant-steps-item-process,
-  .ant-steps-item-wait {
-    > .ant-steps-item-container {
-      > .ant-steps-item-content {
-        > .ant-steps-item-title {
-          color: rgba($text-color, 50%);
+			a {
+				color: darken($text-color, 10%);
+			}
+		}
+	}
 
-          &::after {
-            background-color: $border-color;
-          }
-        }
-      }
-    }
-  }
+	#video-player-container .video-controls-container .play-bar {
+		&::before {
+			background-color: $border-color;
+		}
 
-  .ant-card {
-    background-color: $bg-color-accent1;
-  }
+		.play-bar-handle {
+			background-color: $bg-color-accent4;
+		}
+	}
 
-  .ant-card-bordered {
-    border-color: $border-color;
-  }
+	#results-container .video-results-wrapper .video-results-header {
+		border-color: $border-color;
 
-  .ant-radio-inner {
-    background-color: $bg-color-accent4;
-    border-color: $border-color;
-    &::after {
-      background-color: $text-color;
-    }
-  }
+		h5 {
+			color: $text-color;
+		}
+	}
 
-  .ant-input {
-    background-color: $bg-color-accent3;
-    color: $text-color;
-    border-color: $border-color;
-  }
+	.input-group-text,
+	.form-control {
+		background-color: $bg-color-accent0;
+		color: $text-color;
+		border-color: $border-color;
+	}
 
-  .ant-btn {
-    background-color: $bg-color-accent2;
-    color: $text-color;
-    border-color: $border-color;
+	#trim-video-wrapper .video-trim-container {
+		@include scrollbars(4px, $text-color, rgba(255, 255, 255, 0.2));
+	}
 
-    &:hover {
-      background-color: lighten($bg-color-accent2, 5%);
-    }
-    &[disabled] {
-      color: $disabled-color;
-      background-color: $disabled-bg-color;
-      border-color: $disabled-border-color;
-    }
-  }
+	.popover {
+		.arrow {
+			&::after,
+			&::before {
+				border-bottom-color: $border-color;
+			}
+		}
 
-  .ant-upload.ant-upload-drag {
-    background-color: $bg-color-accent3;
-    border-color: lighten($border-color, 10%);
-    .ant-upload-text {
-      color: $text-color;
-    }
-  }
+		.popover-header {
+			background-color: $bg-color-accent3;
+			color: $text-color;
+			border-color: $border-color;
 
-  .ant-tabs {
-    color: $text-color;
+			&::before {
+				border-color: $border-color;
+			}
+		}
 
-    .ant-tabs-bar {
-      border-color: $border-color;
-    }
-  }
-
-  .ant-radio-wrapper {
-    color: $text-color;
-  }
-
-  .ant-divider {
-    background-color: $border-color;
-  }
-  .ant-layout-footer {
-    background-color: darken($bg-color, 1%);
-    color: $text-color;
-  }
-
-  .ant-radio-button-wrapper {
-    color: $text-color;
-    background: $bg-color-accent4;
-    border-color: $border-color;
-    -webkit-box-shadow: -1px 0 0 0 $text-color;
-    box-shadow: -1px 0 0 0 lighten($bg-color-accent4, 10%);
-    &::before {
-      background-color: lighten($border-color, 30%);
-    }
-    &:first-child {
-      border-color: $border-color;
-    }
-    &.ant-radio-button-wrapper-disabled {
-      color: $disabled-color;
-      background-color: $disabled-bg-color;
-      border-color: $disabled-border-color;
-    }
-  }
-  .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
-    background: $bg-color-accent3;
-    border-color: lighten($border-color, 30%);
-  }
-
-  .ant-slider {
-    &:hover {
-      .ant-slider-rail {
-        background-color: $bg-color-accent3;
-      }
-    }
-    .ant-slider-rail,
-    .ant-slider-handle {
-      background-color: $bg-color-accent2;
-    }
-  }
+		.popover-body {
+			background-color: $bg-color-accent4;
+			@include scrollbars(4px, $text-color, rgba(255, 255, 255, 0.2));
+		}
+	}
 }

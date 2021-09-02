@@ -1,0 +1,32 @@
+{
+	"name": "video-cut-tool-server",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"start": "node ./bin/www",
+		"serve": "nodemon index.js --legacy-watch --trace-warnings",
+		"start:prod": "pm2 node index.js",
+		"stop:prod": "pm2 stop app-server",
+		"test": "pm2 stop app-server"
+	},
+	"dependencies": {
+		"axios": "^0.24.0",
+		"concurrently": "^6.3.0",
+		"cookie-parser": "^1.4.5",
+		"cors": "^2.8.5",
+		"express": "^4.17.1",
+		"express-fileupload": "^1.2.1",
+		"express-session": "^1.17.2",
+		"form-data": "^4.0.0",
+		"mongoose": "^6.0.12",
+		"morgan": "^1.10.0",
+		"popup-tools": "^1.0.2",
+		"socket.io": "^4.3.1",
+		"video-cut-tool": "file:.."
+	},
+	"devDependencies": {
+		"nodemon": "^2.0.14",
+		"pug": "^3.0.2"
+	}
+}
