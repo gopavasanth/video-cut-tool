@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Minh Nguyen",
 			"Nguyễn Mạnh An"
 		]
 	},
@@ -61,7 +62,7 @@
 	"upload-action-title": "Hành động cho một tệp",
 	"upload-button": "Tải lên Commons",
 	"upload-comment": "Viết bình luận.",
-	"upload-edit-button": "Chỉnh sửa video",
+	"upload-edit-button": "Sửa đổi video",
 	"upload-tab-upload-video": "Tải tập tin lên",
 	"upload-tab-video-url": "URL video",
 	"upload-text": "Văn bản:",
