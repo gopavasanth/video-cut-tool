@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Akmaie Ajam",
 			"Naufal06",
 			"Sonic Speedy"
 		]
@@ -38,8 +39,11 @@
 	"step-video-settings-title": "Langkah 2: Sesuaikan pengaturan video",
 	"step-video-url": "URL Video",
 	"success": "Berhasil diselesaikan ;)",
-	"task-current": "Video Anda adalah $1",
+	"task-current": "Tahap saat ini: $1",
 	"task-processing": "sedang diproses",
+	"task-stage-downloading": "mengunduh",
+	"task-stage-manipulations": "manipulasi",
+	"task-stage-concating": "menyatukan",
 	"task-stage-converting_video_format": "Konversi format video",
 	"task-stage-cropping": "memotong",
 	"task-stage-losing_audio": "kehilangan audio",
@@ -48,6 +52,10 @@
 	"task-uploaded-wikimedia-commons": "Unggah ke Wikimedia Commons",
 	"task-uploading": "mengunggah",
 	"task-uploading-wikimedia-commons": "mengunggah ke Wikimedia Commons",
+	"progress-bitrate": "Laju bit",
+	"progress-speed": "Kecepatan",
+	"progress-time": "Waktu",
+	"progress-frame": "Bingkai",
 	"undo": "Urungkan",
 	"upload-action-new-file": "Unggah sebagai berkas baru",
 	"upload-action-new-file-title": "Judul",
@@ -62,6 +70,8 @@
 	"upload-upload-text": "Klik atau seret video ke area ini untuk mengunggah",
 	"video-trim-from": "Dari",
 	"video-trim-more": "Tambahkan Lebih Banyak",
+	"video-trim-more-concatenate": "Satukan menjadi video tunggal",
+	"video-trim-more-multiple": "Sebagai Beberapa Video",
 	"video-trim-title": "Pengaturan Pangkas Video",
 	"video-trim-to": "Ke",
 	"welcome": "Selamat datang, $1"

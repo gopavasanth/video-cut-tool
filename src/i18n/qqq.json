@@ -1,6 +1,7 @@
 {
 	"@metadata": {
 		"authors": [
+			"Akmaie Ajam",
 			"FF-11",
 			"FF11",
 			"Robby"
@@ -53,7 +54,7 @@
 	"task-uploading": "Shows that the current task is \"uploading\"",
 	"task-uploading-wikimedia-commons": "Shows that the current task is \"uploading to Wikimedia Commons\"",
 	"progress-bitrate": "Shows the bitrate of the progress bar",
-	"progress-speed": "Shows the rate of speed of the progreess bar",
+	"progress-speed": "Shows the rate of speed of the progress bar",
 	"progress-time": "Shows the time of the progresss bar",
 	"progress-frame": "Shows the frames of the progress bar",
 	"undo": "Undoes an action done at step 2 (eg. remove audio)\n{{Identical|Undo}}",
