@@ -2,7 +2,8 @@
 	"@metadata": {
 		"authors": [
 			"Joquliina",
-			"Nike"
+			"Nike",
+			"Veikk0.ma"
 		]
 	},
 	"404-go-back": "Mene etusivulle",
@@ -34,6 +35,10 @@
 	"step-result-title": "Vaihe 3: Valitse valintasi",
 	"step-video-settings": "Videoasetukset",
 	"step-video-settings-title": "Vaihe 2: Määrittele videoasetukset",
+	"step-video-url": "Videon verkko-osoite",
+	"task-uploaded-wikimedia-commons": "Tallennettu Wikimedia Commonsiin",
+	"task-uploading": "tallennetaan",
+	"task-uploading-wikimedia-commons": "tallennetaan Wikimedia Commonsiin",
 	"progress-speed": "Nopeus",
 	"undo": "Kumoa"
 }
