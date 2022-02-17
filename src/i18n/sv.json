@@ -41,6 +41,7 @@
 	"task-current": "Aktuell status: $1",
 	"task-processing": "bearbetar",
 	"task-stage-downloading": "laddar ned",
+	"task-stage-manipulations": "ändringar",
 	"task-stage-concating": "konkatenera",
 	"task-stage-converting_video_format": "konverterar videoformat",
 	"task-stage-cropping": "klipper",
