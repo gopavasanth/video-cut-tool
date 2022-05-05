@@ -3,6 +3,7 @@
 		"authors": [
 			"GuoPC",
 			"Si109",
+			"StarrySky",
 			"Yfdyh000"
 		]
 	},
@@ -52,6 +53,7 @@
 	"task-uploaded-wikimedia-commons": "已上传到维基共享资源",
 	"task-uploading": "正在上传",
 	"task-uploading-wikimedia-commons": "正在上传到维基共享资源",
+	"theme-lightmode": "灯光",
 	"progress-bitrate": "比特率",
 	"progress-speed": "速度",
 	"progress-time": "时间",
@@ -62,11 +64,11 @@
 	"upload-action-overwrite": "覆盖",
 	"upload-action-title": "文件操作",
 	"upload-button": "上传到维基共享资源",
-	"upload-comment": "上传备注：",
+	"upload-comment": "注释",
 	"upload-edit-button": "编辑视频",
 	"upload-tab-upload-video": "上传视频",
 	"upload-tab-video-url": "视频网址",
-	"upload-text": "文本：",
+	"upload-text": "文本",
 	"upload-upload-text": "单击或者拖放视频到此区域来上传",
 	"video-trim-from": "自",
 	"video-trim-more": "添加更多",
