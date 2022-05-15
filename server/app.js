@@ -23,15 +23,13 @@ function connectMongoDB(retry = 0) {
 	};
 
 	mongoose
-
 		.connect(config.DB_CONNECTION_URL, option)
 		.then(() => console.log('MongoDB Connected'))
 		.catch(err => {
 			console.log('error', '--------------------');
 			console.log(err.message);
 			console.log(config.DB_CONNECTION_URL);
-			console.log('>>>>>>>>>>>>>>>>>>>>', `Reconnecting to MongoDB ${retry}`);
-			connectMongoDB(retry + 1);
+			console.log(`Reconnecting to MongoDB ${retry}`);
 		});
 }
 
@@ -57,7 +55,7 @@ app.use(cors());
 app.use(
 	fileUpload({
 		useTempFiles: true,
-		tempFileDir: 'tmp/', // so that they're publicly accessable
+		tempFileDir: 'tmp/', // so that they're publicly accessible
 		limits: { fileSize: 500 * 1024 * 1024 },
 		abortOnLimit: true
 	})
@@ -72,15 +70,15 @@ app.use(
 );
 
 /* GET home page. */
-app.get('/', (req, res) => {
+app.get('/api/', (req, res) => {
 	res.json({ data: 'Homepage' });
 });
 
-app.get('/error', (req, res) => {
+app.get('/api/error', (req, res) => {
 	res.render('error', { error_message: req.session.error_message });
 });
 
-app.get('/login', (req, res) => {
+app.get('/api/login', (req, res) => {
 	const baseUrl = 'https://commons.wikimedia.org';
 	const endpoint = '/w/rest.php/oauth2/authorize';
 
@@ -91,7 +89,7 @@ app.get('/login', (req, res) => {
 	res.send(res.redirect(url));
 });
 
-app.get('/auth/mediawiki/callback', auth, async (req, res) => {
+app.get('/api/auth/mediawiki/callback', auth, async (req, res) => {
 	const {
 		refresh_token: refreshToken,
 		profile,
@@ -118,14 +116,14 @@ app.get('/auth/mediawiki/callback', auth, async (req, res) => {
 	}
 });
 
-app.get('/logout', (req, res) => {
+app.get('/api/logout', (req, res) => {
 	delete req.session.user;
 	res.redirect('/');
 });
 
-app.post('/process', processVideo);
-app.post('/upload', uploadVideos);
-app.get('/download/:videopath', downloadVideo);
+app.post('/api/process', processVideo);
+app.post('/api/upload', uploadVideos);
+app.get('/api/download/:videopath', downloadVideo);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
