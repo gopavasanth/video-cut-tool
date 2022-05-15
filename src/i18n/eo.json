@@ -1,0 +1,27 @@
+{
+	"@metadata": {
+		"authors": [
+			"Robin van der Vliet"
+		]
+	},
+	"404-go-back": "Iri al la ĉefpaĝo",
+	"footer-authors": "$1 kaj $2",
+	"languages": "Lingvoj",
+	"logout": "Elsaluti",
+	"logout-confirm-no": "Ne",
+	"logout-confirm-text": "Ĉu vi certas?",
+	"logout-confirm-yes": "Jes",
+	"notifications-title": "Sciigo!",
+	"step-result-choice-download": "Elŝuti",
+	"step-result-choice-upload": "Alŝuti al Komunejo",
+	"task-processing": "traktado",
+	"task-stage-downloading": "elŝutado",
+	"task-uploading": "alŝutado",
+	"undo": "Malfari",
+	"upload-action-new-file": "Alŝuti kiel novan dosieron",
+	"upload-action-new-file-title": "Titolo",
+	"upload-text": "Teksto:",
+	"video-trim-from": "De",
+	"video-trim-to": "Al",
+	"welcome": "Bonvenon, $1"
+}

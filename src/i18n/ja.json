@@ -2,6 +2,7 @@
 	"@metadata": {
 		"authors": [
 			"LaMagiaaa",
+			"MathXplore",
 			"Omotecho",
 			"Tamaki Wakita"
 		]
@@ -24,6 +25,7 @@
 	"notifications-not-existing": "ファイルがウィキメディア コモンズに存在しません",
 	"notifications-not-overwritable": "端末から動画の上書きはできません",
 	"notifications-title": "お知らせ",
+	"notifications-title-error": "エラー",
 	"notifications-wait": "投稿された動画は処理中です。新しい動画の生成まで少しお待ちください",
 	"preview-text": "プレビュー",
 	"preview-title": "変更をプレビュー",
@@ -51,6 +53,8 @@
 	"task-uploaded-wikimedia-commons": "ウィキメディア コモンズにアップロードしました",
 	"task-uploading": "アップロード中です",
 	"task-uploading-wikimedia-commons": "コモンズにアップロード中です",
+	"theme-darkmode": "ダーク",
+	"theme-lightmode": "ライト",
 	"progress-bitrate": "ビットレート",
 	"progress-speed": "スピード",
 	"progress-time": "日時",
@@ -61,11 +65,11 @@
 	"upload-action-overwrite": "上書きする",
 	"upload-action-title": "ファイルの操作",
 	"upload-button": "コモンズにアップロード",
-	"upload-comment": "コメントを投稿：",
+	"upload-comment": "コメント",
 	"upload-edit-button": "動画を編集",
 	"upload-tab-upload-video": "動画をアップロード",
 	"upload-tab-video-url": "動画のURL",
-	"upload-text": "テキスト：",
+	"upload-text": "テキスト",
 	"upload-upload-text": "このエリアをクリックするか、アップロードする動画をドラッグする",
 	"video-trim-from": "開始点",
 	"video-trim-more": "さらに追加",

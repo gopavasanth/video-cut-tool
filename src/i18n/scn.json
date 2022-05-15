@@ -1,0 +1,32 @@
+{
+	"@metadata": {
+		"authors": [
+			"Ajeje Brazorf"
+		]
+	},
+	"404-image-description": "404 Pàggina nun attruvata",
+	"file-not-existing": "Lu file nun esisti",
+	"footer-authors": "$1 e $2",
+	"languages": "Lingui",
+	"login-alert": "Pi favuri trasi pi usari lu strummentu",
+	"login-alert-upload": "Trasi pi càrricari supra Wikimedia Commons",
+	"logout": "Nesci",
+	"logout-confirm-no": "No",
+	"logout-confirm-text": "Sî sicuru?",
+	"logout-confirm-yes": "Sì",
+	"notifications-not-existing": "Lu file nun esisti supra Wikimedia Commons",
+	"notifications-title": "Nutìfica!",
+	"preview-text": "Antiprima",
+	"preview-title": "Antiprima dî mè canciamenti",
+	"step-result": "Risurtatu",
+	"step-result-choice-download": "Scàrrica",
+	"step-result-choice-upload": "Càrrica supra Commons",
+	"progress-speed": "Vilucitati",
+	"undo": "Annulla",
+	"upload-action-new-file-title": "Tìtulu",
+	"upload-action-title": "Azzioni p'un file",
+	"upload-button": "Càrrica supra Commons",
+	"upload-text": "Testu:",
+	"video-trim-more": "Agghiunci àutru",
+	"welcome": "Bimminuto, $1!"
+}

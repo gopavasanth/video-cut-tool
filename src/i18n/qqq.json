@@ -1,6 +1,11 @@
 {
 	"@metadata": {
-		"authors": ["FF-11", "FF11", "Robby"]
+		"authors": [
+			"Akmaie Ajam",
+			"FF-11",
+			"FF11",
+			"Robby"
+		]
 	},
 	"404-go-back": "Text of button on the 404 error page",
 	"404-image-description": "Text for the alt attribute of the image on the 404 error page",
@@ -53,7 +58,7 @@
 	"theme-darkmode": "Display dark mode title",
 	"theme-lightmode": "Display light mode title",
 	"progress-bitrate": "Shows the bitrate of the progress bar",
-	"progress-speed": "Shows the rate of speed of the progreess bar",
+	"progress-speed": "Shows the rate of speed of the progress bar",
 	"progress-time": "Shows the time of the progresss bar",
 	"progress-frame": "Shows the frames of the progress bar",
 	"undo": "Undoes an action done at step 2 (eg. remove audio)\n{{Identical|Undo}}",
