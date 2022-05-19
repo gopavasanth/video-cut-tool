@@ -16,6 +16,7 @@
 	"logout-confirm-yes": "Jo",
 	"notifications-not-existing": "Fichier gëtt et net op Wikimedia Commons",
 	"notifications-title": "Notifikatioun!",
+	"notifications-title-error": "Feeler!",
 	"preview-title": "Meng Ännerunge kucken ouni ze späicheren",
 	"setting-audio": "Audio ewechhuelen",
 	"setting-rotate": "Video rotéieren",
@@ -36,7 +37,7 @@
 	"upload-comment": "Bemierkung eroplueden:",
 	"upload-edit-button": "Video änneren",
 	"upload-tab-upload-video": "Video eroplueden",
-	"upload-text": "Text:",
+	"upload-text": "Text",
 	"video-trim-from": "Vum",
 	"video-trim-more": "Méi derbäisetzen",
 	"welcome": "Wëllkomm, $1"
