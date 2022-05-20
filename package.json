@@ -35,7 +35,7 @@
 	"bugs": {
 		"url": "https://phabricator.wikimedia.org/tag/videocuttool/"
 	},
-	"homepage": "https://videocuttool.wmflabs.org",
+	"homepage": "https://videocuttool.wmcloud.org",
 	"scripts": {
 		"start": "react-scripts start",
 		"build": "react-scripts build",
