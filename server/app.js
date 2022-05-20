@@ -39,7 +39,7 @@ const app = express();
 
 const __dirname = path.resolve();
 
-app.use('/public', express.static(path.join(__dirname, 'public')));
+app.use('/api/public', express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
@@ -70,6 +70,10 @@ app.use(
 );
 
 /* GET home page. */
+app.get('/', (req, res) => {
+	res.json({ data: 'Homepage' });
+});
+
 app.get('/api/', (req, res) => {
 	res.json({ data: 'Homepage' });
 });
@@ -89,7 +93,7 @@ app.get('/api/login', (req, res) => {
 	res.send(res.redirect(url));
 });
 
-app.get('/api/auth/mediawiki/callback', auth, async (req, res) => {
+app.get('/auth/mediawiki/callback', auth, async (req, res) => {
 	const {
 		refresh_token: refreshToken,
 		profile,
@@ -110,6 +114,8 @@ app.get('/api/auth/mediawiki/callback', auth, async (req, res) => {
 		};
 		res.end(PopupTools.popupResponse({ user: returnUserDocData }));
 	} catch (err) {
+		console.log('************');
+		console.log(err);
 		const error = err.toJSON();
 		req.session.error_message = error.message;
 		res.redirect('/error');
