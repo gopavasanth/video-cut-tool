@@ -1,6 +1,6 @@
 An online tool to cut/trim videos in Wikimedia commons.
 
-See live demo at: https://videocuttool.wmflabs.org/
+See live demo at: https://videocuttool.wmcloud.org/
 
 ## Learn More
 

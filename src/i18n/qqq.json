@@ -1,6 +1,11 @@
 {
 	"@metadata": {
-		"authors": ["FF-11", "FF11", "Robby"]
+		"authors": [
+			"Akmaie Ajam",
+			"FF-11",
+			"FF11",
+			"Robby"
+		]
 	},
 	"404-go-back": "Text of button on the 404 error page",
 	"404-image-description": "Text for the alt attribute of the image on the 404 error page",

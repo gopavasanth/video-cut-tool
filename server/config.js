@@ -1,6 +1,6 @@
 const config = {
-	DB_CONNECTION_URL: 'mongodb://mongo:27017/video-cut-tool',
-	BACKEND_URL: 'https://beta-videocuttool.wmflabs.org/video-cut-tool-back-end',
+	DB_CONNECTION_URL: 'mongodb://localhost:27017/video-cut-tool',
+	BACKEND_URL: 'https://beta-videocuttool.wmflabs.org/api/',
 	PORT: 4000,
 
 	// Ouath 2
