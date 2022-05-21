@@ -103,7 +103,7 @@ function Results() {
 			if (success === true) {
 				updateAppState({
 					notification: {
-						type: 'info',
+						type: 'success',
 						messageId: 'task-uploaded-wikimedia-commons'
 					},
 					// Reset UI
