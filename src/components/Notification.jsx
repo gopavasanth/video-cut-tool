@@ -23,9 +23,6 @@ function Notification() {
 					{...(notification.autohide && notification.type === 'error' ? { autohide: false } :
 					{ delay: notification.delay, autohide: true })}
 				>
-					{
-						console.log(notification.type, 'here')
-					}
 					<div className="notification-icon">
 						{notification.type !== 'error' && <InfoCircleFill />}
 						{notification.type === 'error' && <ExclamationCircleFill />}
