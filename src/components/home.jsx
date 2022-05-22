@@ -50,7 +50,7 @@ function Home() {
 		}
 
 		const location = window.location.href;
-		setTitle(location.split('?')[1].split('='));
+		setTitle(location.split('?')[1].split('=')[1]);
 		console.log(title, 'This ist he tiel');
 	}, []);
 

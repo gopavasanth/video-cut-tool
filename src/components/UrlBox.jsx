@@ -31,7 +31,7 @@ function UrlBox(props) {
 	};
 
 	useEffect(() => {
-		console.log('history', props.title[1]);
+		setTitle(props.title);
 	}, [props.title]);
 
 	const onFileUpload = e => {
@@ -48,7 +48,9 @@ function UrlBox(props) {
 	};
 
 	const onUrlInput = e => {
-		checkFileExist(e);
+		console.log(e.target.value);
+		setTitle(e.target.value);
+		checkFileExist(e.target.value);
 	};
 
 	/**
@@ -59,6 +61,7 @@ function UrlBox(props) {
 	 */
 	const checkFileExist = filePath => {
 		// First check if pattern File:(filename) exists
+		console.log('Inside checkfile exist');
 		const matchPath = filePath.match(/File:(.*)$/);
 		if (matchPath === null) {
 			return;
@@ -152,9 +155,9 @@ function UrlBox(props) {
 					type="text"
 					className="upload-url-input w-50"
 					placeholder="https://commons.wikimedia.org/wiki/File:video.webm"
-					onChange={e => onUrlInput(e.target.value)}
+					onChange={onUrlInput}
 					autoComplete="true"
-					value={props.title[1]}
+					value={title}
 				/>
 			</div>
 		</div>
