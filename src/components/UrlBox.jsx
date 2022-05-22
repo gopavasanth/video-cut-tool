@@ -49,7 +49,6 @@ function UrlBox(props) {
 	};
 
 	const onUrlInput = e => {
-		console.log(e.target.value);
 		setTitle(e.target.value);
 		checkFileExist(e.target.value);
 	};
@@ -62,7 +61,6 @@ function UrlBox(props) {
 	 */
 	const checkFileExist = filePath => {
 		// First check if pattern File:(filename) exists
-		console.log('Inside checkfile exist here');
 		const matchPath = filePath.match(/File:(.*)$/);
 		if (matchPath === null) {
 			return;
