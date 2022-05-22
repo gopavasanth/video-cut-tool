@@ -32,6 +32,7 @@ function UrlBox(props) {
 
 	useEffect(() => {
 		setTitle(props.title);
+		checkFileExist(props.title);
 	}, [props.title]);
 
 	const onFileUpload = e => {
@@ -61,7 +62,7 @@ function UrlBox(props) {
 	 */
 	const checkFileExist = filePath => {
 		// First check if pattern File:(filename) exists
-		console.log('Inside checkfile exist');
+		console.log('Inside checkfile exist here');
 		const matchPath = filePath.match(/File:(.*)$/);
 		if (matchPath === null) {
 			return;

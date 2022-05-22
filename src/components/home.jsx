@@ -50,8 +50,11 @@ function Home() {
 		}
 
 		const location = window.location.href;
-		setTitle(location.split('?')[1].split('=')[1]);
-		console.log(title, 'This ist he tiel');
+		if (location.indexOf('?') !== -1) {
+			setTitle('https://commons.wikimedia.org/wiki/File:' + location.split('?')[1].split('=')[1]);
+		} else {
+			setTitle('');
+		}
 	}, []);
 
 	const toggleSidebar = () => {
@@ -62,8 +65,6 @@ function Home() {
 
 	return (
 		<div id="main-container">
-			{console.log('stattus bar')}
-			{/* <Header /> */}
 			<Sidebar apiUrl={backend_url} />
 			<div id="content" className="flex-column">
 				<div className="logo-wrapper flex-sm-row">
