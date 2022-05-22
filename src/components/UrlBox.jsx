@@ -1,15 +1,16 @@
-import React, { useState, useRef, useContext } from 'react';
+import React, { useState, useRef, useContext, useEffect } from 'react';
 import { Message } from '@wikimedia/react.i18n';
 import { Form, FormLabel } from 'react-bootstrap';
 import path from 'path';
 import axios from 'axios';
 import { AppContext } from '../context';
 
-function UrlBox() {
+function UrlBox(props) {
 	const { updateAppState } = useContext(AppContext);
 
 	const allowedExtensions = '.mp4,.webm,.mov,.flv,.ogv';
 	const [mouseHover, setMouseHover] = useState(false);
+	const [title, setTitle] = useState('');
 	const fileUpload = useRef(null);
 	const dragEnter = () => {
 		setMouseHover(true);
@@ -29,6 +30,10 @@ function UrlBox() {
 		onFileUpload(e);
 	};
 
+	useEffect(() => {
+		console.log('history', props.title[1]);
+	}, [props.title]);
+
 	const onFileUpload = e => {
 		const files = (e.dataTransfer && e.dataTransfer.files) || e.nativeEvent.target.files;
 		if (files.length === 0) {
@@ -43,7 +48,7 @@ function UrlBox() {
 	};
 
 	const onUrlInput = e => {
-		checkFileExist(e.target.value);
+		checkFileExist(e);
 	};
 
 	/**
@@ -147,8 +152,9 @@ function UrlBox() {
 					type="text"
 					className="upload-url-input w-50"
 					placeholder="https://commons.wikimedia.org/wiki/File:video.webm"
-					onChange={onUrlInput}
+					onChange={e => onUrlInput(e.target.value)}
 					autoComplete="true"
+					value={props.title[1]}
 				/>
 			</div>
 		</div>
