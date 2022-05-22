@@ -14,7 +14,6 @@ import { clearItems, getStoredItem } from '../utils/storage';
 import logo from '../logo.svg';
 import '../style/main.css';
 import '../style/dark-theme.css';
-import Header from './Header';
 
 const settings = require('../env')();
 
@@ -69,7 +68,7 @@ function Home() {
 			<div id="content" className="flex-column">
 				<div className="logo-wrapper flex-sm-row">
 					<span className="menu-icon" onClick={toggleSidebar}>
-						Hello
+						<List size="25" />
 					</span>
 					<Image alt="logo" src={logo} width="100" height="40" />
 					<h1 className="text-white">VideoCutTool</h1>

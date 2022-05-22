@@ -52,9 +52,6 @@ function Trim(props) {
 	// Main player element
 	const mainVideoEl = useRef(null);
 
-	const [attrFrom, setAttrFrom] = useState(0);
-	const [attrTo, setAttrTo] = useState(0);
-
 	// Hidden player and canvase elements (used to extract thumbnails)
 	const trimVideoEl = useRef(null);
 	const canvasEl = useRef(null);
@@ -242,8 +239,7 @@ function Trim(props) {
 		const trims = rangeAttr.map(attrs => {
 			// side effect: accumlate duration to display in componenet
 			totalDurationAccumulate += attrs.to - attrs.from;
-			setAttrFrom(attrs.from);
-			setAttrTo(attrs.to);
+
 			return { from: attrs.from, to: attrs.to };
 		});
 
@@ -787,9 +783,6 @@ function Trim(props) {
 									onTouchStart={deleteTimeline}
 								/>
 							)}
-						</div>
-						<div className="button-group">
-							<input type="text" value={attrFrom} />
 						</div>
 					</div>
 				))}
