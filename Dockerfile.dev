@@ -12,9 +12,13 @@ WORKDIR /app
 # Copy the package.json to workdir
 COPY package.json ./
 COPY server/package.json ./server/
+COPY server/package-lock.json ./server
+
 
 # Run npm install - install the npm dependencies
 RUN npm install --legacy-peer-deps
+
+RUN cd server && npm install --legacy-peer-deps
 
 # Copy application source
 COPY . .
