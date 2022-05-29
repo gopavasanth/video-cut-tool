@@ -37,7 +37,7 @@ connectMongoDB();
 
 const app = express();
 
-const __dirname = path.resolve();
+const __dirname = `${path.resolve()}/server/`;
 
 app.use('/api/public', express.static(path.join(__dirname, 'public')));
 
@@ -75,11 +75,15 @@ app.get('/', (req, res) => {
 });
 
 app.get('/api/', (req, res) => {
-	res.json({ data: 'Homepage' });
+	res.json({ data: 'Back-end is up' });
 });
 
 app.get('/api/error', (req, res) => {
 	res.render('error', { error_message: req.session.error_message });
+});
+
++app.get('/test-auth', (req, res) => {
+	+res.sendFile(path.join(`${__dirname}/test-auth.html`));
 });
 
 app.get('/api/login', (req, res) => {
@@ -133,7 +137,7 @@ app.get('/api/download/:videopath', downloadVideo);
 
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
-	const err = new Error('Not Found');
+	const err = new Error(`Not Found${req.originalUrl}`);
 	err.status = 404;
 	next(err);
 });
