@@ -19,12 +19,20 @@ const settings = require('../env')();
 
 const { backend_url } = settings;
 
+console.log('check 1', socket.connected);
+socket.on('connect', () => {
+	console.log('check 2', socket.connected);
+});
+
+socket.on('connect_error', err => {
+	console.log(`connect_error due to ${err.message}`);
+});
+
 function Home() {
 	const { appState, updateAppState } = useContext(AppContext);
 	const { current_step: currentStep, notifications } = appState;
 	const [showSidebar, setShowSidebar] = useState(false);
 	const [title, setTitle] = useState('');
-
 	useEffect(() => {
 		// Cleare localstorage
 		clearItems([
@@ -50,7 +58,7 @@ function Home() {
 
 		const location = window.location.href;
 		if (location.indexOf('?') !== -1) {
-			setTitle('https://commons.wikimedia.org/wiki/File:' + location.split('?')[1].split('=')[1]);
+			setTitle(`https://commons.wikimedia.org/wiki/File:${location.split('?')[1].split('=')[1]}`);
 		} else {
 			setTitle('');
 		}

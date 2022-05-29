@@ -14,7 +14,7 @@ server.listen(PORT);
 
 const io = new Server(server, {
 	cors: {
-		origin: 'http://localhost:3000',
+		origin: 'https://videocuttool.wmcloud.org',
 		methods: ['GET', 'POST'],
 		credentials: true
 	},
@@ -23,6 +23,7 @@ const io = new Server(server, {
 });
 
 io.sockets.on('connection', socket => {
+	console.log('CONNECTED', socket.id);
 	app.set('socketid', socket.id);
 	socketController(socket, io);
 });

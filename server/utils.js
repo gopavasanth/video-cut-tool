@@ -5,8 +5,7 @@ import { parentPort } from 'worker_threads';
 
 const fsPromises = fs.promises;
 
-
-const __dirname = path.resolve();
+const __dirname = `${path.resolve()}/server/`;
 
 /**
  * Convert time to milliseconds
@@ -30,11 +29,11 @@ function convertTimeToMs(time) {
  */
 function deleteFiles(files) {
 	if (!Array.isArray(files)) {
-		fs.unlink(files, () => {});
+		fs.unlink(files, () => { });
 		return;
 	}
 	files.forEach(file => {
-		fs.unlink(file, () => {});
+		fs.unlink(file, () => { });
 	});
 }
 
