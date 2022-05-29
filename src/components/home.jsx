@@ -78,7 +78,6 @@ function Home() {
 					<span className="menu-icon" onClick={toggleSidebar}>
 						<List size="25" />
 					</span>
-
 					<Image alt="logo" src={logo} width="100" height="40" />
 					<h1 className="text-white">VideoCutTool</h1>
 				</div>
