@@ -410,6 +410,25 @@ $text-color: #b6e2fa;
 			align-items: center;
 		}
 
+		&[data-type='success'] {
+			$color: #28a745;
+			$text-color: darken($color, 30%);
+			$border-color: darken($color, 10%);
+
+			border-color: $text-color;
+
+			.notification-icon {
+				background-color: $color !important;
+				color: $text-color;
+			}
+
+			.notification-header,
+			.notification-body {
+				color: $text-color;
+				border-bottom: 0;
+			}
+		}
+
 		&[data-type='error'] {
 			$color: #b33939;
 			$text-color: darken($color, 30%);

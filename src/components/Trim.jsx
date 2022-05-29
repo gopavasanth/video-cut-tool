@@ -239,7 +239,6 @@ function Trim(props) {
 		const trims = rangeAttr.map(attrs => {
 			// side effect: accumlate duration to display in componenet
 			totalDurationAccumulate += attrs.to - attrs.from;
-
 			return { from: attrs.from, to: attrs.to };
 		});
 
