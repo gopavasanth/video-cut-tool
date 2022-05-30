@@ -11,14 +11,14 @@ switch (process.env.NODE_ENV) {
 			CLIENT_ID: '',
 			CLIENT_SECRET: ''
 		};
-
+		break;
 	default:
 		config = {
-			DB_CONNECTION_URL: 'mongodb://videocuttool-mongo:27017/video-cut-tool',
+			DB_CONNECTION_URL: 'mongodb://localhost:27017/video-cut-tool',
 			BACKEND_URL: 'http://localhost:4000/api/',
 			PORT: 4000,
 
-			// Ouath 2
+			// OAuth2 Credentials
 			CLIENT_ID: '',
 			CLIENT_SECRET: ''
 		};

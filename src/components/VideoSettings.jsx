@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef, useContext } from 'react';
-import { ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
+import { useEffect, useState, useRef, useContext } from 'react';
+import { ToggleButtonGroup, ButtonGroup, Button, ToggleButton } from 'react-bootstrap';
 import {
 	ArrowClockwise,
 	ArrowCounterclockwise,
@@ -157,7 +157,7 @@ function VideoSettings(props) {
 	/**
 	 * Callback to modify mute setting
 	 *
-	 * @param {boolearn} change True to mute, false otherwise
+	 * @param {boolean} change True to mute, false otherwise
 	 */
 	const muteAudio = change => {
 		updateVideoManipulationData({
@@ -175,22 +175,22 @@ function VideoSettings(props) {
 
 	/**
 	 * Callback to handle video rotation
-	 * @param {int} newRotatateValue New rotation value
+	 * @param {int} newRotateValue New rotation value
 	 */
-	const changeRotation = newRotatateValue => {
-		if (newRotatateValue < 0) newRotatateValue = 3;
-		if (newRotatateValue > 3) newRotatateValue = 0;
+	const changeRotation = newRotateValue => {
+		if (newRotateValue < 0) newRotateValue = 3;
+		if (newRotateValue > 3) newRotateValue = 0;
 
 		const videoEl = document.querySelector('#video-player video');
 		const videoWidth = videoEl.offsetWidth;
 		const videoHeight = videoEl.offsetHeight;
 
-		// rotate video accourding to rotate value
-		const transformRotate = (newRotatateValue + 1) * 90;
+		// rotate video according to rotate value
+		const transformRotate = (newRotateValue + 1) * 90;
 		let transform = `rotate(${transformRotate}deg)`;
 
 		// if video is rotated 90 or 180 deg then add scale
-		if (newRotatateValue === 0 || newRotatateValue === 2) {
+		if (newRotateValue === 0 || newRotateValue === 2) {
 			const scale = videoHeight / videoWidth;
 			transform += ` scale(${scale})`;
 		}
@@ -198,17 +198,17 @@ function VideoSettings(props) {
 		// Apply transform
 		document.querySelector('#video-player video').style.transform = transform;
 		updateVideoManipulationData({
-			rotate_value: newRotatateValue
+			rotate_value: newRotateValue
 		});
 
 		updateSettings({
-			modified: newRotatateValue !== 3
+			modified: newRotateValue !== 3
 		});
 	};
 
 	/**
-	 * This function is passed to child componenet to update
-	 * crop date once changes have been commited by user
+	 * This function is passed to child component to update
+	 * crop date once changes have been committed by user
 	 *
 	 * @param {object} data Crop data
 	 */
@@ -324,10 +324,15 @@ function VideoSettings(props) {
 			</div>
 			<div className="video-manipulations mt-5">
 				<div className="video-manipulation-controls d-flex flex-column flex-md-row">
-					<ButtonGroup toggle className="video-manipulation-group" aria-label="Video Manipulation">
+					<ToggleButtonGroup
+						name="manipulations"
+						className="video-manipulation-group"
+						aria-label="Video Manipulation"
+					>
 						{settings.map((setting, idx) => (
 							<ToggleButton
 								variant="primary"
+								id={`video-manipulation-${idx}`}
 								key={idx}
 								onChange={() => setCurrentSetting(setting)}
 								type="radio"
@@ -343,11 +348,11 @@ function VideoSettings(props) {
 								{setting.modified && <span className="modified" />}
 							</ToggleButton>
 						))}
-					</ButtonGroup>
-					<div className="action-buttons-group ml-md-auto d-flex mt-3 mt-md-0">
+					</ToggleButtonGroup>
+					<div className="action-buttons-group ms-md-auto d-flex mt-3 mt-md-0">
 						<Button
 							variant="primary"
-							className="mr-5"
+							className="me-5"
 							disabled={canPreview === false}
 							onClick={processVideo}
 						>
@@ -370,7 +375,7 @@ function VideoSettings(props) {
 				<div className="video-manipulations-options mt-4">
 					{currentSetting.type === 'rotate' && (
 						<div className="rotate-options">
-							<ButtonGroup className="mr-2">
+							<ButtonGroup className="me-2">
 								<Button
 									onClick={() => changeRotation(videoManipulationData.current.rotate_value - 1)}
 								>
@@ -387,8 +392,8 @@ function VideoSettings(props) {
 						</div>
 					)}
 					{currentSetting.type === 'mute' && (
-						<div className="volum-options">
-							<ButtonGroup toggle className="mr-2">
+						<div className="volume-options">
+							<ToggleButtonGroup name="mute" className="me-2">
 								<ToggleButton
 									variant="primary"
 									onClick={() => muteAudio(true)}
@@ -413,7 +418,7 @@ function VideoSettings(props) {
 										<span className="setting-title">Enable</span>
 									)}
 								</ToggleButton>
-							</ButtonGroup>
+							</ToggleButtonGroup>
 						</div>
 					)}
 					{videoPlayer.current && (

@@ -28,11 +28,11 @@ function Notification() {
 						{notification.type === 'error' && <ExclamationCircleFill />}
 					</div>
 					<div className="notification-header">
-						<strong className="mr-auto">
+						<strong className="me-auto">
 							{notification.type !== 'error' && <Message id="notifications-title" />}
 							{notification.type === 'error' && <Message id="notifications-title-error" />}
 						</strong>
-						<button type="button" className="ml-2 mb-1 close" data-dismiss="notification-wrapper" aria-label="Close" onClick={() => onToastClose(index)}>
+						<button type="button" className="ms-2 mb-1 close" data-dismiss="notification-wrapper" aria-label="Close" onClick={() => onToastClose(index)}>
 							<span aria-hidden="true">&times;</span>
 						</button>
 					</div>

@@ -14,7 +14,10 @@ server.listen(PORT);
 
 const io = new Server(server, {
 	cors: {
-		origin: process.env.NODE_ENV !== 'development' ? 'https://videocuttool.wmcloud.org' : 'http://localhost:3000',
+		origin:
+			process.env.NODE_ENV !== 'development'
+				? 'https://videocuttool.wmcloud.org'
+				: 'http://localhost:3000',
 		methods: ['GET', 'POST'],
 		credentials: true
 	},

@@ -37,20 +37,13 @@ connectMongoDB();
 
 const app = express();
 
-const __dirname = `${path.resolve()}/server/`;
+const __dirname =
+	process.env.NODE_ENV === 'development' ? `${path.resolve()}/` : `${path.resolve()}/server/`;
 
 app.use('/api/public', express.static(path.join(__dirname, 'public')));
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
-
-app.use(logger('dev'));
-app.use(express.json({ limit: '500mb' }));
-app.use(express.urlencoded({ limit: '500mb', extended: true }));
-app.use(cookieParser());
-
-// Use CORS and File Upload modules here
-app.use(cors());
 
 app.use(
 	fileUpload({
@@ -60,6 +53,14 @@ app.use(
 		abortOnLimit: true
 	})
 );
+
+app.use(logger('dev'));
+app.use(express.json({ limit: '500mb' }));
+app.use(express.urlencoded({ limit: '500mb', extended: true }));
+app.use(cookieParser());
+
+// Use CORS and File Upload modules here
+app.use(cors());
 
 app.use(
 	session({
@@ -82,7 +83,7 @@ app.get('/api/error', (req, res) => {
 	res.render('error', { error_message: req.session.error_message });
 });
 
-+app.get('/test-auth', (req, res) => {
+app.get('/test-auth', (req, res) => {
 	+res.sendFile(path.join(`${__dirname}/test-auth.html`));
 });
 

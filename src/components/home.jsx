@@ -19,7 +19,6 @@ const settings = require('../env')();
 
 const { backend_url } = settings;
 
-console.log('check 1', socket.connected);
 socket.on('connect', () => {
 	console.log('check 2', socket.connected);
 });
@@ -34,7 +33,7 @@ function Home() {
 	const [showSidebar, setShowSidebar] = useState(false);
 	const [title, setTitle] = useState('');
 	useEffect(() => {
-		// Cleare localstorage
+		// Clear localstorage
 		clearItems([
 			'video-manipulations',
 			'video-settings',

@@ -27,7 +27,7 @@ services:
     container_name: videocuttool-mongo
     image: 'mongo:4'
     volumes:
-      - ./data:/data/db
+      - ./mongo-data:/data/db
     ports:
       - '27017:27017'
     networks:
