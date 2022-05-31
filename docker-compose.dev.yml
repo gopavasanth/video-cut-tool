@@ -10,6 +10,7 @@ services:
       - ./server:/app/server
       - ./public:/app/public
       - '/app/node_modules'
+      - '/app/server/node_modules'
     ports:
       - '3000:3000'
       - '4000:4000'
@@ -20,8 +21,18 @@ services:
       - mongo
     depends_on:
       - mongo
+    networks:
+      - my-network
   mongo:
     container_name: videocuttool-mongo
     image: 'mongo:4'
+    volumes:
+      - ./mongo-data:/data/db
     ports:
       - '27017:27017'
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

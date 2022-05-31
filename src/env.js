@@ -3,11 +3,11 @@ module.exports = () => {
 		case 'production':
 			return {
 				path: '/',
-				home_page: 'https://videocuttool.wmflabs.org',
+				home_page: 'https://videocuttool.wmcloud.org',
 				not_found_path: '/',
-				backend_url: 'https://videocuttool.wmflabs.org:4000',
+				backend_url: 'https://videocuttool.wmcloud.org/api',
 				socket_io_path: '/socket.io',
-				socket_io_url: 'https://videocuttool.wmflabs.org:4000'
+				socket_io_url: 'https://videocuttool.wmcloud.org:4000'
 			};
 
 		default:
@@ -15,7 +15,7 @@ module.exports = () => {
 				path: '/',
 				home_page: '/',
 				not_found_path: '/',
-				backend_url: 'http://localhost:4000',
+				backend_url: 'http://localhost:4000/api',
 				socket_io_path: '/socket.io',
 				socket_io_url: 'http://localhost:4000'
 			};

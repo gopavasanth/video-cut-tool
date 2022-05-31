@@ -38,7 +38,7 @@ function Progress(props) {
 					<span className="progress-info-value">{frame}</span>
 				</div>
 			</div>
-			{!progressPercentage && <div className="progress-bar-indeterminant" />}
+			{!progressPercentage && <div className="progress-bar-indeterminate" />}
 			{progressPercentage && <ProgressBar animated now={progressPercentage} />}
 		</div>
 	);

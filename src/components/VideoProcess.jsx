@@ -14,7 +14,7 @@ function VideoProcess(props) {
 	const { appState, updateAppState } = useContext(AppContext);
 
 	const { manipulations, trim, settings } = props;
-	const { video_url } = appState;
+	const { video_url, file } = appState;
 
 	const [progressInfo, setProgressInfo] = useState(null);
 	const [currentTask, setCurrentTask] = useState(banana.i18n('task-processing'));
@@ -79,15 +79,23 @@ function VideoProcess(props) {
 				updateAppState({
 					current_sub_step: '',
 					notification: {
-						text: 'An error occured during the process',
+						text: 'An error occurred during the process',
 						type: 'error'
 					}
 				});
 			}
 		});
 
+		const formData = new FormData();
+		formData.append('data', JSON.stringify(settingData));
+		formData.append('file', file);
+
 		axios
-			.post(`${API_URL}/process`, settingData)
+			.post(`${API_URL}/process`, formData, {
+				headers: {
+					'Content-Type': 'multipart/form-data'
+				}
+			})
 			.then(res => {
 				console.log('RES', res);
 			})

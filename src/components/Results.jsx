@@ -35,7 +35,7 @@ function Results() {
 	};
 
 	useEffect(() => {
-		const { title, author, comment } = videoDetails;
+		const { title, author, comment = '' } = videoDetails;
 		const [day, month, year] = new Date()
 			.toLocaleDateString('en-GB', {
 				year: 'numeric',
@@ -53,9 +53,9 @@ function Results() {
 				comment,
 				text: [
 					'=={{int:filedesc}}==',
-					`{{Information${comment.length > 0 ? `\n|description=${comment}` : ''}`,
+					`{{Information${comment?.length > 0 ? `\n|description=${comment}` : ''}`,
 					`|date=${`${year}-${month}-${day}`}`,
-					`|source={{own}}${author.length > 0 ? `\n|author=[[User:${author}|${author}]]` : ''}`,
+					`|source={{own}}${author?.length > 0 ? `\n|author=[[User:${author}|${author}]]` : ''}`,
 					'}}\n',
 					'=={{int:license-header}}==',
 					'{{self|cc-by-sa-4.0}}\n',
@@ -103,7 +103,7 @@ function Results() {
 			if (success === true) {
 				updateAppState({
 					notification: {
-						type: 'info',
+						type: 'success',
 						messageId: 'task-uploaded-wikimedia-commons'
 					},
 					// Reset UI
@@ -140,7 +140,7 @@ function Results() {
 							{video.title.length === 0 && <h5>(No Title)</h5>}
 							<a
 								href={`${API_URL}/download/${video.path.replace('/public', '')}`}
-								className="btn btn-info mr-4"
+								className="btn btn-info me-4"
 							>
 								<Download />
 								<span className="button-title">
@@ -167,7 +167,7 @@ function Results() {
 							</div>
 							<div className="video-options">
 								<div className="form-group">
-									<ButtonGroup toggle className="mr-2">
+									<ButtonGroup className="mb-2">
 										<ToggleButton
 											variant="secondary"
 											onClick={() => updateUploadType(index, 'overwrite')}
@@ -194,11 +194,10 @@ function Results() {
 								</div>
 								{video.selectedOptionName === 'new-file' && (
 									<InputGroup className="mb-3" title={banana.i18n('upload-action-new-file-title')}>
-										<InputGroup.Prepend>
-											<InputGroup.Text>
-												<CardHeading size="18" />
-											</InputGroup.Text>
-										</InputGroup.Prepend>
+										<InputGroup.Text>
+											<CardHeading size="18" />
+										</InputGroup.Text>
+
 										<Form.Control
 											type="text"
 											defaultValue={video.title}
@@ -207,20 +206,18 @@ function Results() {
 									</InputGroup>
 								)}
 								<InputGroup className="mb-3" title={banana.i18n('upload-comment')}>
-									<InputGroup.Prepend>
-										<InputGroup.Text>
-											<ChatLeftTextFill size="18" />
-										</InputGroup.Text>
-									</InputGroup.Prepend>
+									<InputGroup.Text>
+										<ChatLeftTextFill size="18" />
+									</InputGroup.Text>
+
 									<Form.Control type="text" defaultValue={video.comment} />
 								</InputGroup>
 
 								<InputGroup className="mb-3" title={banana.i18n('upload-text')}>
-									<InputGroup.Prepend>
-										<InputGroup.Text>
-											<CardText size="18" />
-										</InputGroup.Text>
-									</InputGroup.Prepend>
+									<InputGroup.Text>
+										<CardText size="18" />
+									</InputGroup.Text>
+
 									<Form.Control as="textarea" rows={15} defaultValue={video.text.join('\n')} />
 								</InputGroup>
 							</div>
@@ -230,7 +227,7 @@ function Results() {
 				<div className="upload-button d-flex justify-content-center">
 					<Button onClick={uploadVideos}>
 						<Upload />
-						<span className="button-title ml-3">
+						<span className="button-title ms-3">
 							<Message id="upload-button" />
 						</span>
 					</Button>

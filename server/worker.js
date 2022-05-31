@@ -8,17 +8,25 @@ async function process() {
 		_id,
 		inputVideoUrl,
 		videoName,
+		videoDownloadPath,
 		settings: { trims, trimMode, crop, modified, rotateValue }
 	} = workerData;
 
 	const videoId = _id;
-	const donwloadingVideoInfo = {
+	const downloadingVideoInfo = {
 		videoName,
 		videoId
 	};
 
 	try {
-		const { error, videoPath } = await utils.downloadVideo(inputVideoUrl, donwloadingVideoInfo);
+		let error = false;
+		let videoPath = videoDownloadPath;
+
+		if (videoDownloadPath === null) {
+			const urlDownload = await utils.downloadVideo(inputVideoUrl, downloadingVideoInfo);
+			videoPath = urlDownload.videoPath;
+			error = urlDownload.error;
+		}
 		if (error || !videoPath || !fs.existsSync(videoPath)) {
 			return 'Error downloading video';
 		}
@@ -62,14 +70,14 @@ async function process() {
 			const trimStage = await utils.trimVideos(trimmingVideoInfo, trims, manipulations);
 			newVideoPath = trimStage.trimsLocations;
 
-			// Concatnate videos if mode is single
+			// Concatenate videos if mode is single
 			if (trimMode === 'single' && trims.length > 1) {
-				const concatingCideoInfo = {
+				const concatenatingVideoInfo = {
 					videoPaths: newVideoPath,
 					videoId
 				};
-				const concatStage = await utils.concatVideos(concatingCideoInfo);
-				newVideoPath = concatStage.concatedLocation;
+				const concatStage = await utils.concatVideos(concatenatingVideoInfo);
+				newVideoPath = concatStage.concatenatedLocation;
 			}
 		}
 
@@ -87,7 +95,8 @@ async function process() {
 		return convertFormat;
 	} catch (manipulationError) {
 		parentPort.postMessage({
-			status: 'error'
+			status: 'error',
+			error: manipulationError
 		});
 
 		return manipulationError;

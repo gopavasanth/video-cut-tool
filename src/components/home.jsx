@@ -19,13 +19,21 @@ const settings = require('../env')();
 
 const { backend_url } = settings;
 
+socket.on('connect', () => {
+	console.log('check 2', socket.connected);
+});
+
+socket.on('connect_error', err => {
+	console.log(`connect_error due to ${err.message}`);
+});
+
 function Home() {
 	const { appState, updateAppState } = useContext(AppContext);
 	const { current_step: currentStep, notifications } = appState;
 	const [showSidebar, setShowSidebar] = useState(false);
-
+	const [title, setTitle] = useState('');
 	useEffect(() => {
-		// Cleare localstorage
+		// Clear localstorage
 		clearItems([
 			'video-manipulations',
 			'video-settings',
@@ -46,6 +54,13 @@ function Home() {
 		} catch (e) {
 			updateAppState({ user: null });
 		}
+
+		const location = window.location.href;
+		if (location.indexOf('?') !== -1) {
+			setTitle(`https://commons.wikimedia.org/wiki/File:${location.split('?')[1].split('=')[1]}`);
+		} else {
+			setTitle('');
+		}
 	}, []);
 
 	const toggleSidebar = () => {
@@ -62,11 +77,10 @@ function Home() {
 					<span className="menu-icon" onClick={toggleSidebar}>
 						<List size="25" />
 					</span>
-
 					<Image alt="logo" src={logo} width="100" height="40" />
 					<h1 className="text-white">VideoCutTool</h1>
 				</div>
-				{currentStep === 1 && <UrlBox />}
+				{currentStep === 1 && <UrlBox title={title} />}
 				{currentStep === 2 && <VideoSettings user={appState.user} />}
 				{currentStep === 3 && <Results />}
 				<div className="footer-wrapper">

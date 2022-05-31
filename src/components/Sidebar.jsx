@@ -75,10 +75,10 @@ function Sidebar(props) {
 	};
 	const popover = (
 		<Popover id="popover-basic">
-			<Popover.Title as="h3">
+			<Popover.Header as="h3">
 				<Message id="logout-confirm-text" />
-			</Popover.Title>
-			<Popover.Content>
+			</Popover.Header>
+			<Popover.Body>
 				<Button variant="primary" size="sm" onClick={onLogOut}>
 					<Message id="logout-confirm-yes" />
 				</Button>
@@ -89,14 +89,14 @@ function Sidebar(props) {
 				>
 					<Message id="logout-confirm-no" />
 				</Button>
-			</Popover.Content>
+			</Popover.Body>
 		</Popover>
 	);
 
 	const localesListPopover = (
 		<Popover id="locales-popover">
-			<Popover.Title as="h3">Choose your language</Popover.Title>
-			<Popover.Content>
+			<Popover.Header as="h3">Choose your language</Popover.Header>
+			<Popover.Body>
 				{Object.keys(localesList).map((code, index) => (
 					<div
 						className={`locale-item ${
@@ -110,7 +110,7 @@ function Sidebar(props) {
 						{localesList[code].native_name}
 					</div>
 				))}
-			</Popover.Content>
+			</Popover.Body>
 		</Popover>
 	);
 

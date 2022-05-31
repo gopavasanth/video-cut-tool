@@ -1,4 +1,4 @@
-import React, { useState, useReducer, useRef, useEffect, useLayoutEffect } from 'react';
+import { useState, useReducer, useRef, useEffect, useLayoutEffect } from 'react';
 import { Message } from '@wikimedia/react.i18n';
 import {
 	Plus,
@@ -10,7 +10,7 @@ import {
 	Files,
 	ChevronBarContract
 } from 'react-bootstrap-icons';
-import { Spinner, Button, ButtonGroup, ToggleButton } from 'react-bootstrap';
+import { Spinner, Button, ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 import { formatTime } from '../utils/time';
 import '../style/trim.css';
 import { storeItem, getStoredItem } from '../utils/storage';
@@ -239,7 +239,6 @@ function Trim(props) {
 		const trims = rangeAttr.map(attrs => {
 			// side effect: accumlate duration to display in componenet
 			totalDurationAccumulate += attrs.to - attrs.from;
-
 			return { from: attrs.from, to: attrs.to };
 		});
 
@@ -699,12 +698,13 @@ function Trim(props) {
 					<Message id="trim-total-duration" />: {getTotalDuration()}
 				</div>
 				{rangeAttr.length > 1 && (
-					<ButtonGroup toggle className="mr-2">
+					<ToggleButtonGroup className="me-2" name="trimmode">
 						<ToggleButton
 							variant="primary"
 							onClick={() => updateTrimMode('single')}
 							type="radio"
 							name="trim-mode"
+							id="single-video-mode"
 							checked={trimMode === 'single'}
 						>
 							<ChevronBarContract />
@@ -716,6 +716,7 @@ function Trim(props) {
 							variant="primary"
 							type="radio"
 							name="trim-mode"
+							id="multiple-videos-mode"
 							onClick={() => updateTrimMode('multiple')}
 							checked={trimMode === 'multiple'}
 						>
@@ -724,7 +725,7 @@ function Trim(props) {
 								<Message id="video-trim-more-multiple" />
 							</span>
 						</ToggleButton>
-					</ButtonGroup>
+					</ToggleButtonGroup>
 				)}
 				<Button
 					variant="secondary"
