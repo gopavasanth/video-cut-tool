@@ -98,7 +98,7 @@ app.get('/api/login', (req, res) => {
 	res.send(res.redirect(url));
 });
 
-app.get('/auth/mediawiki/callback', auth, async (req, res) => {
+app.get('/api/auth/mediawiki/callback', auth, async (req, res) => {
 	const {
 		refresh_token: refreshToken,
 		profile,
