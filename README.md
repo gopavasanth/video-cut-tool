@@ -91,4 +91,4 @@ To run production you can run this command
 
 VideoCutTool is created by Gopa Vasanth as a part of 2019 Google Summer of Code in the mentorship of Pratik shetty, Hassan Amin and James Heilman.
 
-Khr2003 joined as a co-maintainer of the tool and revamped code based.
+Khr2003 joined as a co-maintainer of the tool and revamped code base.
