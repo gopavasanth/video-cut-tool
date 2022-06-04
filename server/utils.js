@@ -7,7 +7,7 @@ import axios from 'axios';
 const fsPromises = fs.promises;
 
 const __dirname =
-	process.env.NODE_ENV === 'development' ? `${path.resolve()}/` : `${path.resolve()}/server/`;
+	process.env.NODE_ENV === 'production' ? `${path.resolve()}/` : `${path.resolve()}/server/`;
 
 /**
  * Convert time to milliseconds
@@ -31,11 +31,11 @@ function convertTimeToMs(time) {
  */
 function deleteFiles(files) {
 	if (!Array.isArray(files)) {
-		fs.unlink(files, () => {});
+		fs.unlink(files, () => { });
 		return;
 	}
 	files.forEach(file => {
-		fs.unlink(file, () => {});
+		fs.unlink(file, () => { });
 	});
 }
 
