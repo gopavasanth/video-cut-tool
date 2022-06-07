@@ -24,7 +24,36 @@ Create an application with the following grants:
 
 - Upload, replace, and move files.
 
+If its for production, use call back URL as: https://videocuttool.wmcloud.org/api/auth/mediawiki/callback
+
 Add the keys to server/config.js file under CLIENT_ID and CLIENT_SERCRET after you clone the repo.
+
+### Connecting to Cloud VPS Servers
+
+Cloud VPS Horizon URL: https://horizon.wikimedia.org
+
+videocuttool instance using `ssh -J <username>@primary.bastion.wmflabs.org <username>@videocuttool.videocuttool.eqiad1.wikimedia.cloud`
+
+nc-videocuttool instance using `ssh -J <username>@primary.bastion.wmflabs.org <username>@nc-videocuttool.videocuttool.eqiad1.wikimedia.cloud`
+
+### Installing VideoCutTool in server
+
+Install the following utilities
+
+- git
+- node version v16.15.1
+- npm version v8.12.1
+- ffmpeg
+- mongodb
+- nginx
+
+### Database
+
+- View the users list using the following commands
+  - Connect to mongo using shell - `mongo`
+  - `show databases`
+  - `use video-cut-tool`
+  - `db.users.find({}, {"_id":0, username : 1})`
 
 ### Install Docker
 
@@ -60,6 +89,6 @@ To run production you can run this command
 
 ## Credits
 
-VideoCutTool is created and mostly written by Gopa Vasanth.
+VideoCutTool is created by Gopa Vasanth as a part of 2019 Google Summer of Code in the mentorship of Pratik shetty, Hassan Amin and James Heilman.
 
-This tool is built in the 2019 Google Summer of Code in the mentorship of Pratik shetty, Hassan Amin and James Heilman.
+Khr2003 joined as a co-maintainer of the tool and revamped code base.

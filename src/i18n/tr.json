@@ -3,7 +3,8 @@
 		"authors": [
 			"Hedda",
 			"Joseph",
-			"MuratTheTurkish"
+			"MuratTheTurkish",
+			"SaldırganSincap"
 		]
 	},
 	"404-go-back": "Anasayfaya git",
@@ -62,11 +63,11 @@
 	"upload-action-overwrite": "Üzerine yaz",
 	"upload-action-title": "Bir dosya için eylem",
 	"upload-button": "Commons'a Yükle",
-	"upload-comment": "Yorum yükle:",
+	"upload-comment": "Yorum",
 	"upload-edit-button": "Videoyu Düzenle",
 	"upload-tab-upload-video": "Videoyu Yükle",
 	"upload-tab-video-url": "Video Bağlantısı",
-	"upload-text": "Metin:",
+	"upload-text": "Metin",
 	"upload-upload-text": "Yüklemek için videoyu bu alana tıklayın veya sürükleyin",
 	"video-trim-from": "Gönderen:",
 	"video-trim-more": "Daha Fazla Ekle",

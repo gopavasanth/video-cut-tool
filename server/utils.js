@@ -2,11 +2,12 @@ import fs from 'fs';
 import path from 'path';
 import { spawn } from 'child_process';
 import { parentPort } from 'worker_threads';
+import axios from 'axios';
 
 const fsPromises = fs.promises;
 
-
-const __dirname = path.resolve();
+const __dirname =
+	process.env.NODE_ENV === 'production' ? `${path.resolve()}/` : `${path.resolve()}/server/`;
 
 /**
  * Convert time to milliseconds
@@ -30,16 +31,16 @@ function convertTimeToMs(time) {
  */
 function deleteFiles(files) {
 	if (!Array.isArray(files)) {
-		fs.unlink(files, () => {});
+		fs.unlink(files, () => { });
 		return;
 	}
 	files.forEach(file => {
-		fs.unlink(file, () => {});
+		fs.unlink(file, () => { });
 	});
 }
 
 /**
- * Spawn function warpped in Promise object
+ * Spawn function wrapped in Promise object
  *
  * @param {array} args Array of ffmpeg flags
  * @param {string} stage Current processing stage
@@ -131,7 +132,7 @@ function spawnAsyn(args, stage, videoId, resolveObj = {}, trimDuration = {}) {
 				console.log(`Stage ${stage} completed successfully`);
 				return resolve(resolveObj);
 			}
-			console.log(`An error occured during ${stage} stage`, code);
+			console.log(`An error occurred during ${stage} stage`, code);
 			return reject(code);
 		});
 	});
@@ -157,7 +158,7 @@ async function downloadVideo(url, videoInfo) {
 }
 
 /**
- * Perfom different manipulations on video (disable audio, rotation
+ * Perform different manipulations on video (disable audio, rotation
  * and cropping)
  *
  * @param {obj} videoInfo Object containing video info
@@ -268,10 +269,10 @@ async function concatVideos({ videoId, videoPaths }) {
 		fs.appendFileSync(videosListFileName, `file '${videoLocation}'\n`);
 	});
 
-	const concatedLocation = path.join(
+	const concatenatedLocation = path.join(
 		__dirname,
 		'videos',
-		`concated-video-${Date.now()}.${videoPaths[0].split('.').pop()}`
+		`concatenated-video-${Date.now()}.${videoPaths[0].split('.').pop()}`
 	);
 
 	const cmdArray = [
@@ -283,9 +284,9 @@ async function concatVideos({ videoId, videoPaths }) {
 		videosListFileName,
 		'-c',
 		'copy',
-		concatedLocation
+		concatenatedLocation
 	];
-	return spawnAsyn(cmdArray, 'contacting', videoId, { concatedLocation });
+	return spawnAsyn(cmdArray, 'contacting', videoId, { concatenatedLocation });
 }
 
 /**

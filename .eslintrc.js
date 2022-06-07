@@ -1,3 +1,6 @@
+DISABLE_ESLINT_PLUGIN = true;
+ESLINT_NO_DEV_ERRORS = true;
+
 // Disable all a11y rules
 const a11y = require('eslint-plugin-jsx-a11y');
 
@@ -66,7 +69,12 @@ module.exports = {
 		'react/jsx-props-no-spreading': ['warn'],
 		'react/destructuring-assignment': ['warn'],
 		'react/jsx-one-expression-per-line': ['warn'],
+		'react/function-component-definition': ['warn'],
+		'react/jsx-no-constructed-context-values': ['warn'],
+		'prefer-regex-literals': ['warn'],
 		'react/no-array-index-key': ['off'],
+		'react/react-in-jsx-scope': 0,
+		'react/jsx-uses-react': 0,
 		...a11yOff
 	}
 };

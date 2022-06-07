@@ -17,6 +17,7 @@ export const AppProvider = props => {
 		current_step: 1,
 		current_sub_step: '',
 		video_url: '',
+		file: null,
 		user: null,
 		socket: null,
 		current_locale: JSON.parse(localStorage.getItem('localeObj')) || defaultLocaleObj,

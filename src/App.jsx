@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 
 import { AppProvider } from './context';
 import Home from './components/home';
@@ -13,10 +13,10 @@ function App() {
 	return (
 		<AppProvider>
 			<BrowserRouter>
-				<Switch>
-					<Route exact path={ENV_SETTINGS.path} render={() => <Home />} title="VideoCutTool" />
-					<Route path={ENV_SETTINGS.not_found_path} component={NotFound} />
-				</Switch>
+				<Routes>
+					<Route exact path={ENV_SETTINGS.path} element={<Home />} title="VideoCutTool" />
+					<Route path={ENV_SETTINGS.not_found_path} element={NotFound} />
+				</Routes>
 			</BrowserRouter>
 		</AppProvider>
 	);

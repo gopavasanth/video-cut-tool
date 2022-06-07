@@ -20,17 +20,21 @@ function Notification() {
 					onClose={() => onToastClose(index)}
 					show={notification.show}
 					data-type={notification.type}
-					{...(notification.autohide && { delay: notification.delay, autohide: true })}
+					{...(notification.autohide && notification.type === 'error' ? { autohide: false } :
+					{ delay: notification.delay, autohide: true })}
 				>
 					<div className="notification-icon">
 						{notification.type !== 'error' && <InfoCircleFill />}
 						{notification.type === 'error' && <ExclamationCircleFill />}
 					</div>
 					<div className="notification-header">
-						<strong className="mr-auto">
+						<strong className="me-auto">
 							{notification.type !== 'error' && <Message id="notifications-title" />}
 							{notification.type === 'error' && <Message id="notifications-title-error" />}
 						</strong>
+						<button type="button" className="ms-2 mb-1 close" data-dismiss="notification-wrapper" aria-label="Close" onClick={() => onToastClose(index)}>
+							<span aria-hidden="true">&times;</span>
+						</button>
 					</div>
 					<div className="notification-body">
 						{notification.messageId && <Message id={notification.messageId} />}

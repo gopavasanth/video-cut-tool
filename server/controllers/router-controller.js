@@ -90,7 +90,7 @@ export const uploadVideos = async (req, res) => {
 			});
 		});
 
-		// Using allSettled to make sure we run the code after succesful attemptes
+		// Using allSettled to make sure we run the code after successful attempts
 		const responseAll = await Promise.allSettled(concurrentRequests);
 
 		// Check for errors (processing errors, not server errors)
@@ -121,9 +121,9 @@ export const uploadVideos = async (req, res) => {
 		if (response) {
 			const { data, status } = response;
 			console.log('ERROR', data);
-			return res.json({ success: false, message: 'An error has occured', status });
+			return res.json({ success: false, message: 'An error has occurred', status });
 		}
-		res.json({ success: false, message: error.message }); // 'An error occured'
+		res.json({ success: false, message: error.message }); // 'An error occurred'
 	}
 };
 
@@ -131,12 +131,33 @@ export const processVideo = async (req, res) => {
 	const io = req.app.get('socketio');
 	const socketID = req.app.get('socketid');
 
-	const { crop, inputVideoUrl, trimMode, trims, modified, rotateValue, videoName } = req.body;
-
+	const uploadedFile = req.files?.file;
 	try {
+		let videoDownloadPath = null;
+		// Handle file process from upload
+		if (uploadedFile !== undefined) {
+			const { name } = uploadedFile;
+			const videoExtension = name.split('.').pop().toLowerCase();
+			videoDownloadPath = path.join(
+				__dirname,
+				'videos',
+				`video_${Date.now()}_${parseInt(Math.random() * 10000, 10)}.${videoExtension}`
+			);
+
+			// Create a promise for the callback
+			await new Promise((resolve, reject) => {
+				uploadedFile.mv(videoDownloadPath, err => (err ? reject(err) : resolve()));
+			});
+		}
+
+		const { crop, inputVideoUrl, trimMode, trims, modified, rotateValue, videoName } = JSON.parse(
+			req.body.data
+		);
+
 		const worker = new Worker(path.resolve(__dirname, 'worker.js'), {
 			workerData: {
 				inputVideoUrl,
+				videoDownloadPath,
 				videoName,
 				settings: {
 					trims,
