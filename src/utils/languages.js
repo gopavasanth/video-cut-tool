@@ -34,10 +34,20 @@ const localesList = {
 		name: 'German',
 		locale: 'de-DE'
 	},
+	diq: {
+		native_name: 'Zazaki',
+		name: 'Dimli',
+		locale: 'diq-DIQ'
+	},
 	en: {
 		native_name: 'English',
 		name: 'English',
 		locale: 'en-US'
+	},
+	eo: {
+		native_name: 'Esperanto',
+		name: 'Esperanto',
+		locale: 'eo-EO'
 	},
 	es: {
 		native_name: 'Español',
@@ -109,20 +119,40 @@ const localesList = {
 		name: 'Malay',
 		locale: 'ms-MS'
 	},
+	my: {
+		native_name: 'Myanmasa',
+		name: 'Burmese',
+		locale: 'my-MY'
+	},
 	ptbr: {
 		native_name: 'Português do Brasil',
 		name: 'Portuguese - Brazil',
 		locale: 'ptbr-PT'
+	},
+	ro: {
+		native_name: 'Română',
+		name: 'Romanian',
+		locale: 'ru-RU'
 	},
 	ru: {
 		native_name: 'Русский',
 		name: 'Russian',
 		locale: 'ru-RU'
 	},
+	scn: {
+		native_name: 'Sicilianu',
+		name: 'Sicilian',
+		locale: 'scn-SCN'
+	},
 	sk: {
 		native_name: 'Slovenčina',
 		name: 'Slovak',
 		locale: 'sk-SK'
+	},
+	srec: {
+		native_name: 'Српски',
+		name: 'Serbian',
+		locale: 'srec-SREC'
 	},
 	sv: {
 		native_name: 'Svenska',
@@ -133,6 +163,16 @@ const localesList = {
 		native_name: 'Türkçe',
 		name: 'Turkish',
 		locale: 'tr-TR'
+	},
+	uk: {
+		native_name: 'Українська',
+		name: 'Ukrainian',
+		locale: 'uk-UK'
+	},
+	vi: {
+		native_name: 'Tiếng Việt',
+		name: 'Vietnamese',
+		locale: 'vi-VI'
 	},
 	zhhans: {
 		native_name: 'Chinese Traditional',
