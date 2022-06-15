@@ -94,7 +94,7 @@ function Home() {
 						>
 							<span>Gopa Vasanth</span>
 						</a>
-						, <b>Hassan Amin</b>,{' '}
+						,{' '}
 						<a
 							target="_blank"
 							rel="noreferrer"
@@ -103,12 +103,16 @@ function Home() {
 							<span>Abdul Al-Hasany</span>
 						</a>{' '}
 						|
-						<a href="https://github.com/gopavasanth/video-cut-tool">
-							<span> Github </span>
+						<a href="https://commons.wikimedia.org/wiki/Commons:VideoCutTool">
+							<span> Tutorial </span>
 						</a>
 						|
-						<a href="https://creativecommons.org/licenses/by/4.0/">
-							<span> CC BY SA 4.0 </span>
+						<a href="https://phabricator.wikimedia.org/project/view/4054/">
+							<span> Report issues </span>
+						</a>
+						|
+						<a href="https://github.com/gopavasanth/video-cut-tool">
+							<span> Github </span>
 						</a>
 					</div>
 				</div>
