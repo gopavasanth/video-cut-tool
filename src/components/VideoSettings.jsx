@@ -82,10 +82,10 @@ function VideoSettings(props) {
 	const [currentSetting, setCurrentSetting] = useState(false);
 
 	/**
-	 * Update settings by first cloning the curret settings
+	 * Update settings by first cloning the current settings
 	 * and then merging with the new ones
 	 *
-	 * @param {object} newSettings Object of newsettings
+	 * @param {object} newSettings Object of new settings
 	 * @param {string} type Type of setting (trim, mute .. etc)
 	 */
 	const updateSettings = (newSettings, type = currentSetting.type) => {
