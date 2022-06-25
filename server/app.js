@@ -38,7 +38,7 @@ connectMongoDB();
 const app = express();
 
 const __dirname =
-	process.env.NODE_ENV === 'production' ? `${path.resolve()}/` : `${path.resolve()}/server/`;
+	process.env.NODE_ENV === 'production' ? `${path.resolve()}/` : `${path.resolve()}/`;
 
 app.use('/api/public', express.static(path.join(__dirname, 'public')));
 

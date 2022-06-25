@@ -53,6 +53,7 @@ async function process() {
 				videoPath,
 				videoId
 			};
+
 			const manipulateStage = await utils.manipulateVideo(manipulationsVideoInfo, manipulations);
 			newVideoPath = manipulateStage.newVideoPath;
 		}
@@ -98,7 +99,7 @@ async function process() {
 			status: 'error',
 			error: manipulationError
 		});
-
+		console.log('ERROR', manipulationError);
 		return manipulationError;
 	}
 }

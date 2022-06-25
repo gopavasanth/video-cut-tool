@@ -7,7 +7,7 @@ import axios from 'axios';
 const fsPromises = fs.promises;
 
 const __dirname =
-	process.env.NODE_ENV === 'production' ? `${path.resolve()}/` : `${path.resolve()}/server/`;
+	process.env.NODE_ENV === 'production' ? `${path.resolve()}/` : `${path.resolve()}/`;
 
 /**
  * Convert time to milliseconds
@@ -355,6 +355,7 @@ async function moveVideosToPublic(videoPaths) {
 	if (!Array.isArray(videoPaths)) {
 		videoPaths = [videoPaths];
 	}
+
 
 	videoPaths.forEach((video, index) => {
 		const videoName = `${currentDate}-${index}.${video.split('.').pop()}`;
