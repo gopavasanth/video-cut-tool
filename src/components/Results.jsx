@@ -220,18 +220,18 @@ function Results() {
 
 									<Form.Control as="textarea" rows={15} defaultValue={video.text.join('\n')} />
 								</InputGroup>
+								<div className="upload-button d-flex justify-content-right">
+									<Button onClick={uploadVideos}>
+										<Upload />
+										<span className="button-title ms-3">
+											<Message id="upload-button" />
+										</span>
+									</Button>
+								</div>
 							</div>
 						</div>
 					</div>
 				))}
-				<div className="upload-button d-flex justify-content-center">
-					<Button onClick={uploadVideos}>
-						<Upload />
-						<span className="button-title ms-3">
-							<Message id="upload-button" />
-						</span>
-					</Button>
-				</div>
 			</div>
 			<div className="upload-progress-container">
 				<ProgressBar />
