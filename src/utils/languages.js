@@ -159,6 +159,11 @@ const localesList = {
 		name: 'Swedish',
 		locale: 'sv-SV'
 	},
+	te: {
+		native_name: 'తెలుగు',
+		name: 'Telugu',
+		locale: 'te-TE'
+	},
 	tr: {
 		native_name: 'Türkçe',
 		name: 'Turkish',

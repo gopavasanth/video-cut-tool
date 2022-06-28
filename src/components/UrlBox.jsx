@@ -7,7 +7,7 @@ import { AppContext } from '../context';
 function UrlBox(props) {
 	const { updateAppState } = useContext(AppContext);
 
-	const allowedExtensions = 'mp4,webm,mov,flv,ogv';
+	const allowedExtensions = 'video/mp4,video/x-m4v,video/*';
 	const [mouseHover, setMouseHover] = useState(false);
 	const [title, setTitle] = useState('');
 	const fileUpload = useRef(null);
