@@ -181,7 +181,8 @@ export const processVideo = async (req, res) => {
 		console.log(err);
 		return res.status(400).send('Something went wrong');
 	}
-	return res.status(200);
+	// return res.status(200);
+	res.writeHead(200).end('OK');
 };
 
 export const downloadVideo = (req, res) => {
